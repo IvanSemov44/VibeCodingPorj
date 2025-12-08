@@ -1,6 +1,7 @@
 # Environment files
 .env.local
 .env.production
+/.env
 
 # Node modules
 frontend/node_modules/
