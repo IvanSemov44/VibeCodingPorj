@@ -15,6 +15,13 @@ docker compose build php_fpm
 echo "🔄 Starting all services..."
 docker compose up -d
 
+# Pre-start: ensure cached config won't cause MissingAppKeyException
+echo "🔐 Clearing stale Laravel config cache (pre-start)"
+# Remove cached config file on host (if present) and inside container
+rm -f backend/bootstrap/cache/config.php || true
+docker compose exec -T php_fpm sh -lc 'rm -f /var/www/html/bootstrap/cache/config.php || true' || true
+docker compose exec -T php_fpm php artisan config:clear || echo "⚠️  Pre-start config:clear failed, continuing..."
+
 # Wait for services to be ready
 echo "⏳ Waiting for services to start..."
 sleep 15
@@ -36,7 +43,8 @@ if [ ! -f backend/.env ] || ! grep -q "APP_KEY=base64:" backend/.env; then
     echo "🗄️ Running database migrations..."
     docker compose exec -T php_fpm php artisan migrate --force || echo "⚠️  Migrations failed, continuing..."
     
-    # Cache configurations
+    # Clear and cache configurations (clear first to avoid stale cached config without APP_KEY)
+    docker compose exec -T php_fpm php artisan config:clear || echo "⚠️  Config clear failed, continuing..."
     docker compose exec -T php_fpm php artisan config:cache || echo "⚠️  Config cache failed, continuing..."
     docker compose exec -T php_fpm php artisan route:cache || echo "⚠️  Route cache failed, continuing..."
     

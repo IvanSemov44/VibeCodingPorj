@@ -1,0 +1,53 @@
+/**
+ * Alert/notification component with dismissible option
+ * @param {Object} props - Component props
+ * @param {('success'|'error'|'warning'|'info')} [props.type='info'] - Alert type
+ * @param {string} props.message - Alert message content
+ * @param {Function} [props.onClose] - Close handler (makes alert dismissible)
+ * @returns {JSX.Element} Alert component
+ * @example
+ * <Alert type="error" message={error} onClose={() => setError(null)} />
+ */
+export default function Alert({ type = 'info', message, onClose }) {
+  const types = {
+    success: { bg: '#d1fae5', border: '#86efac', color: '#065f46', icon: '✓' },
+    error: { bg: '#fee2e2', border: '#fecaca', color: '#991b1b', icon: '✕' },
+    warning: { bg: '#fef3c7', border: '#fde68a', color: '#92400e', icon: '⚠' },
+    info: { bg: '#dbeafe', border: '#bfdbfe', color: '#1e40af', icon: 'ℹ' }
+  };
+
+  const style = types[type] || types.info;
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'start',
+      gap: 12,
+      padding: 12,
+      background: style.bg,
+      border: `1px solid ${style.border}`,
+      borderRadius: 8,
+      color: style.color,
+      fontSize: 14
+    }}>
+      <span style={{ fontSize: 16, fontWeight: 'bold' }}>{style.icon}</span>
+      <div style={{ flex: 1 }}>{message}</div>
+      {onClose && (
+        <button
+          onClick={onClose}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: style.color,
+            cursor: 'pointer',
+            fontSize: 18,
+            padding: 0,
+            lineHeight: 1
+          }}
+        >
+          ×
+        </button>
+      )}
+    </div>
+  );
+}

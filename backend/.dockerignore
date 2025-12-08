@@ -1,0 +1,9 @@
+vendor
+node_modules
+.git
+.env
+storage/framework/cache/data
+storage/logs
+storage/debugbar
+.idea
+.vscode

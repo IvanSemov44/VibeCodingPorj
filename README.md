@@ -5,11 +5,31 @@ Location: /home/softart/scripts/vibecode-full-stack-starter-kit
 
 ## 🚀 Tech Stack
 
-- **Frontend**: Next.js + React + TypeScript (Port 8200)
-- **Backend**: Laravel + PHP 8.2 + Nginx (Port 8201)  
+- **Frontend**: Next.js 15 + React 19 + Turbopack (Port 8200)
+- **Backend**: Laravel 12 + PHP 8.2 + Nginx (Port 8201)  
 - **Database**: MySQL 8.0 (Port 8203)
 - **Cache**: Redis 7 (Port 8204)
 - **Development Tools**: Alpine container (Port 8205)
+
+## ✨ Features
+
+- 🎨 **Dark/Light Mode** with theme persistence
+- 🔐 **Authentication System** (Login/Register with Laravel Sanctum)
+- 📦 **Component Library** - 9 reusable UI components
+- 🪝 **Custom Hooks** - Form validation, auth, async operations
+- 📝 **Full JSDoc Documentation** - IntelliSense support for all APIs
+- 🎯 **Type Safety** - Type definitions for IDE autocomplete
+- 🔄 **Error Handling** - Structured API error management
+- 📱 **Responsive Design** - Mobile-first approach
+- ⚡ **Optimized DX** - Minimal boilerplate, maximum productivity
+
+## 📚 Documentation
+
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Component & hook examples
+- **[DOCUMENTATION.md](DOCUMENTATION.md)** - JSDoc/PHPDoc guide
+- **[CODE_STRUCTURE.md](frontend/CODE_STRUCTURE.md)** - Architecture overview
+- **[ENVIRONMENT.md](ENVIRONMENT.md)** - Environment setup
+- **[DOCUMENTATION_SUMMARY.md](DOCUMENTATION_SUMMARY.md)** - What's documented
 
 ## 📋 Quick Start
 
