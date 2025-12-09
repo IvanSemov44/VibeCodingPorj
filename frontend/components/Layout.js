@@ -23,7 +23,9 @@ export default function Layout({ children }) {
         } else {
           setUser(null);
         }
-      } catch (e) {
+      } catch (err) {
+        // Log the error for debugging while avoiding unused variable warnings
+        console.error('Error fetching user:', err);
         setUser(null);
       } finally {
         if (mounted) setLoading(false);

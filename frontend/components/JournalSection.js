@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import JournalEntry from './JournalEntry';
 import { getJournalEntries, createJournalEntry, deleteJournalEntry, getJournalStats } from '../lib/api';
 import { LoadingPage } from './Loading';
@@ -38,14 +38,10 @@ export default function JournalSection() {
   });
   const [formError, setFormError] = useState('');
 
-  useEffect(() => {
-    loadData();
-  }, [search, moodFilter, tagFilter]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       const params = {};
       if (search) params.search = search;
       if (moodFilter) params.mood = moodFilter;
@@ -67,7 +63,13 @@ export default function JournalSection() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, moodFilter, tagFilter]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

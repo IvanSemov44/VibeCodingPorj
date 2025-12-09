@@ -30,7 +30,7 @@ export default function JournalEntry({ entry, onDelete }) {
     setDeleting(true);
     try {
       await onDelete(entry.id);
-    } catch (error) {
+    } catch {
       setDeleting(false);
       alert('Failed to delete entry. Please try again.');
     }

@@ -53,5 +53,11 @@ export default function Card({ title, children, footer, className = '' }) {
 
 function parseClassName(className) {
   // Simple utility to add extra styles from className prop if needed
+  // Reference the param to avoid unused variable lint warnings
+  if (className && typeof className === 'string') {
+    // We currently don't parse class names into inline styles, but
+    // keep the hook here for future extension.
+    return {};
+  }
   return {};
 }

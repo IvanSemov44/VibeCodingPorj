@@ -37,7 +37,7 @@ export default function DashboardPage() {
           Welcome back, {user.name}! 👋
         </h1>
         <p style={{ margin: 0, fontSize: 16, color: 'var(--text-secondary)' }}>
-          Here's what's happening with your projects today.
+          Here is what is happening with your projects today.
         </p>
       </div>
 
