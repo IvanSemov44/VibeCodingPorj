@@ -71,6 +71,7 @@ export default function Layout({ children }) {
 
           <nav style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <Link href="/" style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '8px 12px', fontWeight: 500, transition: 'color 0.2s' }}>Home</Link>
+            <Link href="/tools" style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '8px 12px', fontWeight: 500, transition: 'color 0.2s' }}>Tools</Link>
             {!loading && user && (
               <Link href="/dashboard" style={{ color: 'var(--text-primary)', textDecoration: 'none', padding: '8px 12px', fontWeight: 500, transition: 'color 0.2s' }}>Dashboard</Link>
             )}
