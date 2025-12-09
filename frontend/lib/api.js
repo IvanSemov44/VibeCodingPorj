@@ -317,3 +317,45 @@ export async function getJournalStats() {
     throw handleApiError(err);
   }
 }
+
+/**
+ * Tools API
+ */
+export async function getTools(params = {}) {
+  try {
+    const qs = new URLSearchParams(params).toString();
+    return await fetchWithAuth(`${BASE}/api/tools${qs ? '?' + qs : ''}`);
+  } catch (err) {
+    console.error('Get tools error:', err);
+    throw handleApiError(err);
+  }
+}
+
+export async function getTool(id) {
+  try {
+    return await fetchWithAuth(`${BASE}/api/tools/${id}`);
+  } catch (err) {
+    console.error('Get tool error:', err);
+    throw handleApiError(err);
+  }
+}
+
+export async function createTool(data) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/tools`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Create tool failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
