@@ -178,7 +178,15 @@ export async function getTools(params: Record<string, string | number | boolean>
   return await parseListResponse<Tool>(res);
 }
 
-export async function getTool(id: number | string): Promise<Tool> { const res = await fetchWithAuth(`${BASE}/api/tools/${id}`); return await parseJson<Tool>(res); }
+export async function getTool(id: number | string): Promise<Tool> {
+  const res = await fetchWithAuth(`${BASE}/api/tools/${id}`);
+  const parsed = await parseJson<unknown>(res);
+  // API may return { data: Tool } or Tool directly — normalize to Tool
+  if (parsed && typeof parsed === 'object' && 'data' in (parsed as Record<string, unknown>)) {
+    return (parsed as Record<string, unknown>).data as Tool;
+  }
+  return parsed as Tool;
+}
 
 export async function createTool(data: ToolCreatePayload): Promise<Tool> {
   const res = await fetchWithAuth(`${BASE}/api/tools`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
