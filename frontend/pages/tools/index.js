@@ -5,6 +5,7 @@ import Link from 'next/link';
 export default function ToolsIndex() {
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [q, setQ] = useState('');
 
   useEffect(() => {
@@ -18,9 +19,22 @@ export default function ToolsIndex() {
       if (res.ok) {
         const data = await res.json();
         setTools(data.data || data);
+        setError('');
+      } else {
+        // Try to extract message from JSON body
+        let msg = 'Unable to load tools';
+        try {
+          const body = await res.json();
+          if (body && body.message) msg = body.message;
+        } catch {
+          // ignore JSON parse errors
+        }
+        setError(msg);
+        setTools([]);
       }
     } catch (err) {
       console.error(err);
+      setError('Unable to load tools (network error)');
     } finally {
       setLoading(false);
     }
@@ -39,6 +53,8 @@ export default function ToolsIndex() {
 
       {loading ? (
         <div>Loading...</div>
+      ) : error ? (
+        <div style={{ padding: 12, background: '#fee2e2', color: '#b91c1c', borderRadius: 6 }}>Unable to load tools. {error}</div>
       ) : tools.length === 0 ? (
         <div>No tools yet.</div>
       ) : (
