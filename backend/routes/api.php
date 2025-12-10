@@ -47,6 +47,8 @@ Route::middleware([
 	Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 	Route::match(['get','post'], 'user', [\App\Http\Controllers\Api\AuthController::class, 'user']);
 
+	// (debug route removed) programmatic login route used during troubleshooting
+
 	// Journal routes - require authentication (session + sanctum)
 	Route::middleware(['auth:sanctum'])->group(function () {
 		Route::get('journal', [\App\Http\Controllers\Api\JournalController::class, 'index']);
