@@ -13,8 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create application roles and seed example users
+        // Create application roles and seed example users and tools
         $this->call(\Database\Seeders\RoleSeeder::class);
         $this->call(\Database\Seeders\UserSeeder::class);
+        $this->call(\Database\Seeders\ToolSeeder::class);
     }
 }
