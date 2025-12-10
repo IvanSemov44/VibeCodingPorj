@@ -25,10 +25,10 @@ async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}): Promis
   const method = ((init.method as HttpMethod) || 'GET').toUpperCase() as HttpMethod;
   const unsafe: HttpMethod[] = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
-  if (unsafe.includes(method)) {
+    if (unsafe.includes(method)) {
     const token = currentXsrf();
     if (!token) {
-      try { await getCsrf(); } catch (_) { /* let request fail if CSRF required */ }
+      try { await getCsrf(); } catch { /* let request fail if CSRF required */ }
     }
   }
 
@@ -73,7 +73,7 @@ export async function getCsrf(): Promise<Response> {
 
 export async function login(data: { email: string; password: string }): Promise<AuthResponse> {
   try {
-    try { await getCsrf(); } catch (_) {}
+    try { await getCsrf(); } catch {}
 
     const res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.LOGIN}`, {
       method: 'POST',
@@ -95,7 +95,7 @@ export async function getUser(): Promise<User | null> {
       try {
         await getCsrf();
         res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.USER}`);
-      } catch (_) {}
+      } catch {}
     }
     if (res.status === 401) return null;
     return await parseJson<User>(res);

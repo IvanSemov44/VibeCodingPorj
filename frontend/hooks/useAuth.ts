@@ -18,7 +18,7 @@ export function useAuth(requireAuth = true): { user: User | null; loading: boole
         } else if (requireAuth) {
           router.push(ROUTES.LOGIN);
         }
-      } catch (err) {
+      } catch {
         if (requireAuth) {
           router.push(ROUTES.LOGIN);
         }
@@ -44,7 +44,7 @@ export function useRedirectIfAuthenticated(redirectTo = ROUTES.DASHBOARD): { che
         if (res) {
           router.push(redirectTo);
         }
-      } catch (err) {
+      } catch {
         // not authenticated; allow access
       } finally {
         setChecking(false);

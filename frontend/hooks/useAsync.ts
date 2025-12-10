@@ -3,24 +3,24 @@ import { useState, useCallback, useEffect } from 'react';
 type AsyncOptions<T> = {
   initialData?: T | null;
   onSuccess?: (data: T) => void;
-  onError?: (err: any) => void;
+  onError?: (err: unknown) => void;
 };
 
-export function useAsync<T = any>(asyncFn: (...args: any[]) => Promise<T>, options: AsyncOptions<T> = {}) {
+export function useAsync<T = unknown>(asyncFn: (...args: unknown[]) => Promise<T>, options: AsyncOptions<T> = {}) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<unknown>(null);
   const [data, setData] = useState<T | null>(options.initialData ?? null);
 
-  const execute = useCallback(async (...args: any[]) => {
+  const execute = useCallback(async (...args: unknown[]) => {
     setLoading(true);
     setError(null);
 
     try {
-      const result = await asyncFn(...args);
+      const result = await asyncFn(...(args as unknown[]));
       setData(result);
       options.onSuccess?.(result);
       return { success: true, data: result } as const;
-    } catch (err) {
+    } catch (err: unknown) {
       setError(err);
       options.onError?.(err);
       return { success: false, error: err } as const;

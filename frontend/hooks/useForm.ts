@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-type FieldRules = {
+type FieldRules<TValues extends Record<string, unknown> = Record<string, unknown>> = {
   required?: boolean;
   requiredMessage?: string;
   minLength?: number;
@@ -11,17 +11,17 @@ type FieldRules = {
   patternMessage?: string;
   match?: string;
   matchMessage?: string;
-  custom?: (value: any, values: any) => string | null | undefined;
+  custom?: (value: unknown, values: TValues) => string | null | undefined;
 };
 
-type ValidationRules = Record<string, FieldRules>;
+type ValidationRules<TValues extends Record<string, unknown>> = Record<string, FieldRules<TValues>>;
 
-export function useForm<T extends Record<string, any> = Record<string, any>>(initialValues: T, validationRules: ValidationRules = {}) {
+export function useForm<T extends Record<string, unknown> = Record<string, unknown>>(initialValues: T, validationRules: ValidationRules<T> = {} as ValidationRules<T>) {
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const handleChange = (field: keyof T & string, value: any) => {
+  const handleChange = (field: keyof T & string, value: unknown) => {
     setValues(prev => ({ ...prev, [field]: value } as T));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: null }));
@@ -36,21 +36,24 @@ export function useForm<T extends Record<string, any> = Record<string, any>>(ini
     const newErrors: Record<string, string> = {};
 
     Object.keys(validationRules).forEach(field => {
-      const rules = validationRules[field];
-      const value = (values as any)[field];
+      const rules = validationRules[field] as FieldRules<T>;
+      const rawValue = (values as unknown as Record<string, unknown>)[field];
+      const valueStr = typeof rawValue === 'string' ? rawValue : (rawValue == null ? '' : String(rawValue));
 
-      if (rules.required && !value?.trim?.()) {
+      if (rules.required && valueStr.trim().length === 0) {
         newErrors[field] = rules.requiredMessage || `${field} is required`;
-      } else if (rules.minLength && value?.length < rules.minLength) {
+      } else if (rules.minLength && valueStr.length < rules.minLength) {
         newErrors[field] = rules.minLengthMessage || `Must be at least ${rules.minLength} characters`;
-      } else if (rules.maxLength && value?.length > rules.maxLength) {
+      } else if (rules.maxLength && valueStr.length > rules.maxLength) {
         newErrors[field] = rules.maxLengthMessage || `Must be no more than ${rules.maxLength} characters`;
-      } else if (rules.pattern && !rules.pattern.test(value)) {
+      } else if (rules.pattern && !rules.pattern.test(valueStr)) {
         newErrors[field] = rules.patternMessage || 'Invalid format';
-      } else if (rules.match && value !== (values as any)[rules.match]) {
-        newErrors[field] = rules.matchMessage || 'Values do not match';
+      } else if (rules.match) {
+        const other = (values as unknown as Record<string, unknown>)[rules.match];
+        const otherStr = typeof other === 'string' ? other : (other == null ? '' : String(other));
+        if (valueStr !== otherStr) newErrors[field] = rules.matchMessage || 'Values do not match';
       } else if (rules.custom) {
-        const customError = rules.custom(value, values);
+        const customError = rules.custom(rawValue, values);
         if (customError) newErrors[field] = customError;
       }
     });

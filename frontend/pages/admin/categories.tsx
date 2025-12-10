@@ -22,7 +22,7 @@ export default function AdminCategories(): React.ReactElement {
     try {
       const list = await getCategories();
       setCategories(list || []);
-    } catch (err) {
+    } catch {
       setError('Failed to load categories');
     } finally {
       setLoading(false);
@@ -37,7 +37,7 @@ export default function AdminCategories(): React.ReactElement {
       setName('');
       setSlug('');
       await fetchCategories();
-    } catch (err) {
+    } catch {
       setError('Create failed');
     } finally {
       setSaving(false);
@@ -48,7 +48,7 @@ export default function AdminCategories(): React.ReactElement {
     try {
       await updateCategory(id, updated);
       await fetchCategories();
-    } catch (err) {
+    } catch {
       setError('Update failed');
     }
   }
@@ -58,7 +58,7 @@ export default function AdminCategories(): React.ReactElement {
     try {
       await deleteCategory(id);
       await fetchCategories();
-    } catch (err) {
+    } catch {
       setError('Delete failed');
     }
   }

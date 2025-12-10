@@ -33,7 +33,7 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
         const list = await getTags();
         if (!mounted) return;
         setOptions(list.map(t => t.name));
-      } catch (err) {
+      } catch {
         // ignore
       }
     })();
@@ -161,7 +161,7 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
               onClick={() => addTag(input.trim())}
               style={{ padding: '8px 12px', cursor: 'pointer', borderTop: '1px dashed #e5e7eb', background: activeIndex === filtered().length ? '#eef2ff' : 'transparent' }}
             >
-              Create "{input.trim()}"
+              {`Create "${input.trim()}"`}
             </div>
           )}
         </div>

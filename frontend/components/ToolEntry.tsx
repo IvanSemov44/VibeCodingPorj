@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Image from 'next/image';
 import { deleteTool } from '../lib/api';
 import type { Tool } from '../lib/types';
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElement {
-  const router = useRouter();
+  // router not used here
 
   const handleDelete = async () => {
     if (!confirm('Delete this tool?')) return;
@@ -18,9 +18,9 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
       await deleteTool(tool.id);
       if (onDeleted) onDeleted(tool.id);
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error(err);
-      // eslint-disable-next-line no-alert
+       
       alert('Failed to delete');
     }
   };
@@ -30,8 +30,7 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ display: 'flex', gap: 12 }}>
           {tool.screenshots && tool.screenshots[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={tool.screenshots[0]} alt="thumb" style={{ width: 96, height: 64, objectFit: 'cover', borderRadius: 6 }} />
+            <Image src={tool.screenshots[0]} alt="thumb" width={96} height={64} style={{ objectFit: 'cover', borderRadius: 6 }} />
           ) : null}
           <div>
             <div style={{ fontWeight: 700 }}>

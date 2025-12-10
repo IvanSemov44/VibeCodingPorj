@@ -26,7 +26,7 @@ export default function EditToolPage(): React.ReactElement | null {
         const jt = await getTags();
         setTags(jt || []);
       } catch (err) {
-        // eslint-disable-next-line no-console
+         
         console.error(err);
       }
     })();

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { createTool, getCsrf, uploadToolScreenshots, updateTool, deleteToolScreenshot } from '../lib/api';
 import TagMultiSelect from './TagMultiSelect';
 import type { Category, Tag, Tool, ToolCreatePayload, ToolUpdatePayload } from '../lib/types';
@@ -56,7 +57,7 @@ export default function ToolForm({ categories = [], roles = [], tags = [], allTa
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
   const [screenshotUrl, setScreenshotUrl] = useState<string>('');
-  const [initialScreenshots, setInitialScreenshots] = useState<string[]>([]);
+  const [, setInitialScreenshots] = useState<string[]>([]);
 
   // Narrow unknown error to an object with numeric `status` field
   const hasStatus = (e: unknown): e is { status: number } => {
@@ -88,7 +89,7 @@ export default function ToolForm({ categories = [], roles = [], tags = [], allTa
       }));
       setInitialScreenshots(initial.screenshots || []);
     }
-  }, [tags]);
+  }, [tags, initial]);
 
   const toggleArray = (key: keyof ToolPayload, value: number | string) => {
     const current = (form[key] as unknown as Array<number | string>) || [];
@@ -168,7 +169,7 @@ export default function ToolForm({ categories = [], roles = [], tags = [], allTa
       let data: Tool;
       if (form.id) {
         const { id, ...payload } = form;
-        data = await updateTool(form.id, payload as ToolUpdatePayload);
+        data = await updateTool(id as number, payload as ToolUpdatePayload);
       } else {
         data = await createTool(form as unknown as ToolCreatePayload);
       }
@@ -210,13 +211,13 @@ export default function ToolForm({ categories = [], roles = [], tags = [], allTa
           return;
         } catch (err2: unknown) {
           console.error('Retry delete after CSRF refresh failed', err2);
-          // eslint-disable-next-line no-alert
+           
           alert('Failed to delete screenshot (unauthenticated). Please sign in and try again.');
           return;
         }
       }
       console.error('Delete screenshot error', err);
-      // eslint-disable-next-line no-alert
+       
       alert((err instanceof Error && err.message) ? err.message : 'Failed to delete screenshot');
     } finally {
       setDeleting(false);
@@ -347,7 +348,7 @@ export default function ToolForm({ categories = [], roles = [], tags = [], allTa
           <button type="button" onClick={() => {
             const url = (screenshotUrl || '').trim();
             if (!url) return;
-            try { new URL(url); } catch (err) { alert('Please enter a valid URL'); return; }
+            try { new URL(url); } catch { alert('Please enter a valid URL'); return; }
             const newScreenshots = [...(form.screenshots || []), url];
             handleFieldChange('screenshots', newScreenshots);
             setScreenshotUrl('');
@@ -358,7 +359,7 @@ export default function ToolForm({ categories = [], roles = [], tags = [], allTa
           <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
             {(form.screenshots || []).map(s => (
               <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <img src={s} alt="screenshot" style={{ width: 120, height: 80, objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
+                <Image src={s} alt="screenshot" width={120} height={80} style={{ objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
                 <button type="button" onClick={() => handleDeleteScreenshot(s)} disabled={deleting} style={{ marginTop: 6 }}>Delete</button>
               </div>
             ))}

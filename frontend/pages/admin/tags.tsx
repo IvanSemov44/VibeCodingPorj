@@ -28,7 +28,7 @@ export default function AdminTags(): React.ReactElement {
     try {
       const list = await getTags();
       setTags(list || []);
-    } catch (err) {
+    } catch {
       setError('Failed to load tags');
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ export default function AdminTags(): React.ReactElement {
       setName('');
       setSlug('');
       await fetchTags();
-    } catch (err) {
+    } catch {
       setError('Create failed');
     } finally {
       setSaving(false);
@@ -54,7 +54,7 @@ export default function AdminTags(): React.ReactElement {
     try {
       await updateTag(id, updated);
       await fetchTags();
-    } catch (err) {
+    } catch {
       setError('Update failed');
     }
   }
@@ -64,7 +64,7 @@ export default function AdminTags(): React.ReactElement {
     try {
       await deleteTag(id);
       await fetchTags();
-    } catch (err) {
+    } catch {
       setError('Delete failed');
     }
   }

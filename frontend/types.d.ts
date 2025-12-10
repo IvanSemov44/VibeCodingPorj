@@ -101,17 +101,17 @@ export interface ValidationRule {
   patternMessage?: string;
   match?: string;
   matchMessage?: string;
-  custom?: (value: any, allValues: any) => string | null;
+  custom?: (value: unknown, allValues: Record<string, unknown>) => string | null;
 }
 
 /**
  * useForm hook return type
  */
-export interface UseFormReturn<T = any> {
+export interface UseFormReturn<T = Record<string, unknown>> {
   values: T;
   errors: Record<string, string>;
   touched: Record<string, boolean>;
-  handleChange: (field: string, value: any) => void;
+  handleChange: (field: string, value: unknown) => void;
   handleBlur: (field: string) => void;
   validate: () => boolean;
   reset: () => void;
@@ -137,19 +137,19 @@ export interface UseRedirectIfAuthenticatedReturn {
 /**
  * useAsync hook options
  */
-export interface UseAsyncOptions<T = any> {
+export interface UseAsyncOptions<T = unknown> {
   initialData?: T;
   onSuccess?: (data: T) => void;
-  onError?: (error: Error) => void;
+  onError?: (error: unknown) => void;
 }
 
 /**
  * useAsync hook return type
  */
-export interface UseAsyncReturn<T = any> {
-  execute: (...args: any[]) => Promise<{ success: boolean; data?: T; error?: Error }>;
+export interface UseAsyncReturn<T = unknown> {
+  execute: (...args: unknown[]) => Promise<{ success: boolean; data?: T; error?: unknown }>;
   loading: boolean;
-  error: Error | null;
+  error: unknown | null;
   data: T | null;
   reset: () => void;
 }
@@ -168,7 +168,7 @@ export interface ThemeContextValue {
 export class ApiError extends Error {
   status: number;
   errors: Record<string, string | string[]>;
-  constructor(message: string, status: number, errors?: Record<string, any>);
+  constructor(message: string, status: number, errors?: Record<string, unknown>);
 }
 
 /**
@@ -196,8 +196,8 @@ export interface Role {
 /**
  * API response type
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T;
   message?: string;
-  errors?: Record<string, string[]>;
+  errors?: Record<string, string[]> | Record<string, unknown[]>;
 }

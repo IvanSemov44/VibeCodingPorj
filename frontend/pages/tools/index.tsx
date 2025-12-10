@@ -13,7 +13,7 @@ export default function ToolsIndex(): React.ReactElement {
   const [error, setError] = useState<string>('');
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [page, setPage] = useState<number>(1);
-  const [perPage, setPerPage] = useState<number>(8);
+  const [perPage] = useState<number>(8);
   const [q, setQ] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);

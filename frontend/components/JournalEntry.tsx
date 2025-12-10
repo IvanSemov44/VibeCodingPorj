@@ -38,7 +38,7 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
     } catch {
       setDeleting(false);
       // keep UX simple for now
-      // eslint-disable-next-line no-alert
+       
       alert('Failed to delete entry. Please try again.');
     }
   };

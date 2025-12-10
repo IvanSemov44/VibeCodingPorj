@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getTool } from '../../../lib/api';
 
 type Category = { id: number; name: string };
@@ -37,7 +38,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
             setTool(toolObj as Tool);
             setError('');
       } catch (err) {
-        // eslint-disable-next-line no-console
+         
         console.error(err);
         setError('Network error');
       } finally {
@@ -105,7 +106,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
           <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
             {tool.screenshots.map((s) => (
               // `s` is expected to be a URL string
-              <img key={s} src={s} alt="screenshot" style={{ width: 240, height: 160, objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
+              <Image key={s} src={s} alt="screenshot" width={240} height={160} style={{ objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
             ))}
           </div>
         </div>

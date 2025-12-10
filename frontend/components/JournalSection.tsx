@@ -50,7 +50,7 @@ export default function JournalSection(): React.ReactElement {
       setEntries(entriesData || []);
       setStats(statsData || null);
     } catch (error) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to load journal data:', error);
     } finally {
       setLoading(false);
@@ -82,7 +82,7 @@ export default function JournalSection(): React.ReactElement {
         loadData();
       }
     } catch (error: unknown) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to create entry:', error);
       const message = (error && typeof error === 'object' && 'message' in (error as Record<string, unknown>)) ? String((error as Record<string, unknown>).message) : String(error || 'Failed to create entry. Please try again.');
       setFormError(message);
