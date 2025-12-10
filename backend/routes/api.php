@@ -32,9 +32,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // -------------------------
 // Auth + Journal endpoints
 // -------------------------
-// Use the `web_api` middleware group when endpoints need session support
-// (StartSession, cookies) while still being registered under /api.
-Route::middleware(['web_api'])->group(function () {
+// Use explicit middleware for session-supporting API endpoints instead of
+// referring to the group name. This avoids Laravel attempting to resolve
+// the group string as a container binding in some environments.
+Route::middleware([
+	\Illuminate\Cookie\Middleware\EncryptCookies::class,
+	\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+	\Illuminate\Session\Middleware\StartSession::class,
+	\Illuminate\View\Middleware\ShareErrorsFromSession::class,
+	\Illuminate\Routing\Middleware\SubstituteBindings::class,
+])->group(function () {
 	Route::post('register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 	Route::post('login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 	Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
