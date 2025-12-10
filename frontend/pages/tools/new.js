@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ToolForm from '../../components/ToolForm';
-import { getCsrf } from '../../lib/api';
+import { getCsrf, getCategories, getRoles } from '../../lib/api';
 
 export default function NewToolPage() {
   const [categories, setCategories] = useState([]);
@@ -12,8 +12,8 @@ export default function NewToolPage() {
       try {
         await getCsrf();
         const [catsRes, rolesRes] = await Promise.all([
-          fetch('/api/categories'),
-          fetch('/api/roles')
+          getCategories(),
+          getRoles()
         ]);
         if (catsRes.ok) setCategories(await catsRes.json());
         if (rolesRes.ok) setRoles(await rolesRes.json());

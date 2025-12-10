@@ -123,12 +123,7 @@ export async function login(email, password) {
  */
 export async function getUser() {
   try {
-    const res = await fetch(`${BASE}/api/user`, {
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json'
-      }
-    });
+    const res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.USER}`);
     // Don't log 401 as error - it's expected when not logged in
     if (!res.ok && res.status !== 401) {
       console.error('Get user error:', res.status, res.statusText);
@@ -137,6 +132,32 @@ export async function getUser() {
   } catch (err) {
     console.error('Get user error:', err);
     throw err;
+  }
+}
+
+/**
+ * Get public categories list
+ * @returns {Promise<Response>} Response with categories
+ */
+export async function getCategories() {
+  try {
+    return await fetchWithAuth(`${BASE}/api/categories`);
+  } catch (err) {
+    console.error('Get categories error:', err);
+    throw handleApiError(err);
+  }
+}
+
+/**
+ * Get public roles list
+ * @returns {Promise<Response>} Response with roles
+ */
+export async function getRoles() {
+  try {
+    return await fetchWithAuth(`${BASE}/api/roles`);
+  } catch (err) {
+    console.error('Get roles error:', err);
+    throw handleApiError(err);
   }
 }
 
