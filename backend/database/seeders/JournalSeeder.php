@@ -32,6 +32,18 @@ class JournalSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
 
+        // Additional journal entry for today
+        JournalEntry::create([
+            'user_id' => $user->id,
+            'title' => '📆 Daily Log — ' . Carbon::now()->toDateString(),
+            'content' => "Today continued polishing the tools workflow: improved validation feedback, fixed pagination behavior, and cleaned up the screenshot upload flow. Also adjusted middleware ordering to stabilize session-based auth for SPA clients. Small refactors and a couple of seeder updates were added to keep dev data useful.",
+            'mood' => 'happy',
+            'tags' => ['DevOps', 'Bugfix', 'UX'],
+            'xp' => 20,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
         $this->command->info('Journal entry seeded successfully for user: ' . $user->name);
     }
 }
