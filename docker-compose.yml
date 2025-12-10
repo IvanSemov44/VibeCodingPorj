@@ -92,6 +92,28 @@ services:
       retries: 3
       start_period: 30s
 
+  # One-shot DB initializer: waits for MySQL then runs migrations + seeders if needed
+  db_init:
+    image: vibecode-full-stack-starter-kit_php_laravel:latest
+    container_name: vibecode-full-stack-starter-kit_db_init
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/var/www/html:cached
+      - ./tools:/workspace:cached
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - MYSQL_ROOT_PASSWORD=vibecode-full-stack-starter-kit_mysql_pass
+      - MYSQL_DATABASE=vibecode-full-stack-starter-kit_app
+      - MYSQL_USER=vibecode-full-stack-starter-kit
+      - MYSQL_PASSWORD=vibecode-full-stack-starter-kit_mysql_pass
+      - DEMO_USER_PASSWORD=${DEMO_USER_PASSWORD:-password}
+    command: sh -c "/workspace/db_init.sh"
+    restart: 'no'
+    networks:
+      - vibecode-full-stack-starter-kit_network
+
   # MySQL Database
   mysql:
     image: mysql:8.0
