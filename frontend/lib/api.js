@@ -36,21 +36,34 @@ function currentXsrf() {
  * @returns {Promise<Response>} Fetch response
  */
 async function fetchWithAuth(url, options = {}) {
-  const headers = {
-    'Accept': 'application/json',
-    ...options.headers
-  };
+  // Ensure we include cookies for session-based auth
+  const method = (options.method || 'GET').toUpperCase();
 
-  const token = currentXsrf();
-  if (token) {
-    headers['X-XSRF-TOKEN'] = token;
+  // For unsafe methods, ensure CSRF cookie/token is present and fresh
+  const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'];
+  if (unsafe.includes(method)) {
+    const token = currentXsrf();
+    if (!token) {
+      // Try to refresh CSRF cookie from the backend before the request
+      try { await getCsrf(); } catch (e) { /* continue and let request fail if CSRF required */ }
+    }
   }
 
-  const response = await fetch(url, {
+  // Build headers (preserve any provided headers)
+  const headers = {
+    Accept: 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    ...(options.headers || {})
+  };
+
+  // If an XSRF token is available in cookie or cached, attach it explicitly
+  const tokenNow = currentXsrf();
+  if (tokenNow) headers['X-XSRF-TOKEN'] = tokenNow;
+
+  const response = await fetch(url, Object.assign({}, options, {
     credentials: 'include',
-    ...options,
     headers
-  });
+  }));
 
   return response;
 }
@@ -90,6 +103,9 @@ export async function getCsrf() {
  */
 export async function login(email, password) {
   try {
+    // Make sure we have a fresh CSRF cookie before attempting login
+    try { await getCsrf(); } catch (e) { /* ignore - backend may allow login without it */ }
+
     const res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.LOGIN}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -123,7 +139,16 @@ export async function login(email, password) {
  */
 export async function getUser() {
   try {
-    const res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.USER}`);
+    let res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.USER}`);
+    // If not authenticated, try refreshing CSRF once and retry (helps some session races)
+    if (res.status === 401) {
+      try {
+        await getCsrf();
+        res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.USER}`);
+      } catch (e) {
+        // swallow - we'll return the original 401 response
+      }
+    }
     // Don't log 401 as error - it's expected when not logged in
     if (!res.ok && res.status !== 401) {
       console.error('Get user error:', res.status, res.statusText);
@@ -157,6 +182,122 @@ export async function getRoles() {
     return await fetchWithAuth(`${BASE}/api/roles`);
   } catch (err) {
     console.error('Get roles error:', err);
+    throw handleApiError(err);
+  }
+}
+
+/**
+ * Get public tags list
+ * @returns {Promise<Response>} Response with tags
+ */
+export async function getTags() {
+  try {
+    return await fetchWithAuth(`${BASE}/api/tags`);
+  } catch (err) {
+    console.error('Get tags error:', err);
+    throw handleApiError(err);
+  }
+}
+
+// Category & Tag admin helpers (require auth:sanctum)
+export async function createCategory(data) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Create category failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function updateCategory(id, data) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/categories/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Update category failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function deleteCategory(id) {
+  try {
+    return await fetchWithAuth(`${BASE}/api/categories/${id}`, {
+      method: 'DELETE'
+    });
+  } catch (err) {
+    console.error('Delete category error:', err);
+    throw handleApiError(err);
+  }
+}
+
+export async function createTag(data) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Create tag failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function updateTag(id, data) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/tags/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Update tag failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function deleteTag(id) {
+  try {
+    return await fetchWithAuth(`${BASE}/api/tags/${id}`, {
+      method: 'DELETE'
+    });
+  } catch (err) {
+    console.error('Delete tag error:', err);
     throw handleApiError(err);
   }
 }
@@ -372,6 +513,86 @@ export async function createTool(data) {
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       throw new ApiError(errorData.message || 'Create tool failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function updateTool(id, data) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/tools/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Update tool failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function deleteTool(id) {
+  try {
+    return await fetchWithAuth(`${BASE}/api/tools/${id}`, {
+      method: 'DELETE'
+    });
+  } catch (err) {
+    console.error('Delete tool error:', err);
+    throw handleApiError(err);
+  }
+}
+
+/**
+ * Upload screenshots for a tool (multipart/form-data)
+ * @param {number|string} id - Tool ID
+ * @param {FileList|File[]} files - Array or FileList of files
+ */
+export async function uploadToolScreenshots(id, files) {
+  try {
+    const form = new FormData();
+    for (const f of Array.from(files)) {
+      form.append('screenshots[]', f);
+    }
+
+    const res = await fetchWithAuth(`${BASE}/api/tools/${id}/screenshots`, {
+      method: 'POST',
+      body: form
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Upload failed', res.status, errorData.errors);
+    }
+
+    return res;
+  } catch (err) {
+    if (err instanceof ApiError) throw err;
+    throw handleApiError(err);
+  }
+}
+
+export async function deleteToolScreenshot(id, url) {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/tools/${id}/screenshots`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.message || 'Delete screenshot failed', res.status, errorData.errors);
     }
 
     return res;

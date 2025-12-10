@@ -140,6 +140,9 @@ try {
 }
 ```
 
+> **Important:** Always use the centralized API client in `lib/api.js` for backend requests. Do not call `fetch()` directly for `/api/*` endpoints — use the helpers (`getCsrf`, `login`, `getUser`, `getTools`, `getCategories`, `getRoles`, etc.) or `fetchWithAuth` exported by the module. This ensures consistent `credentials: 'include'`, proper `Accept: application/json` headers, and CSRF/XSRF handling required by Laravel Sanctum.
+
+
 ## Constants
 
 Centralized configuration in `lib/constants.js`:

@@ -10,8 +10,16 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         using: function () {
+            // Load web routes
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+
+            // Load API routes under /api with the 'api' middleware group
+            // This application uses manual routing bootstrap so we must
+            // include api routes explicitly here.
+            Route::prefix('api')
+                ->middleware('api')
+                ->group(base_path('routes/api.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

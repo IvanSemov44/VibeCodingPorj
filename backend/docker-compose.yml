@@ -24,7 +24,7 @@ services:
       XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
     depends_on:
       - db
-    command: php artisan serve --host=0.0.0.0 --port=8000
+    command: sh -c "chmod +x /var/www/html/backend/docker-entrypoint.sh && /var/www/html/backend/docker-entrypoint.sh"
 
   db:
     image: mysql:8.0

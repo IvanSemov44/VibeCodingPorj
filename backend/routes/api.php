@@ -12,25 +12,14 @@ Route::get('health', function () {
 });
 Route::get('categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
 Route::get('roles', [\App\Http\Controllers\Api\RoleController::class, 'index']);
+Route::get('tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
 // Public tools read endpoints for discovery (index + show).
 // Keep the index (and show) public so frontend discovery works without auth.
 Route::get('tools', [\App\Http\Controllers\Api\ToolController::class, 'index']);
 Route::get('tools/{tool}', [\App\Http\Controllers\Api\ToolController::class, 'show']);
 
-// (Removed) `/api/public/tools` was redundant; use `/api/tools` (index/show public)
-
-// Protected tool actions (store, update, destroy) live behind Sanctum
-Route::middleware(['auth:sanctum'])->group(function () {
-	// Create, update, delete are protected. Index & show remain public above.
-	Route::apiResource('tools', \App\Http\Controllers\Api\ToolController::class)->except(['index', 'show']);
-
-	// Protected discovery endpoints if needed for admin behavior
-	Route::get('categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
-	Route::get('roles', [\App\Http\Controllers\Api\RoleController::class, 'index']);
-});
-
 // -------------------------
-// Auth + Journal endpoints
+// Auth + All Protected API endpoints (session-based)
 // -------------------------
 // Use explicit middleware for session-supporting API endpoints instead of
 // referring to the group name. This avoids Laravel attempting to resolve
@@ -39,6 +28,7 @@ Route::middleware([
 	\Illuminate\Cookie\Middleware\EncryptCookies::class,
 	\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 	\Illuminate\Session\Middleware\StartSession::class,
+	\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
 	\Illuminate\View\Middleware\ShareErrorsFromSession::class,
 	\Illuminate\Routing\Middleware\SubstituteBindings::class,
 ])->group(function () {
@@ -47,10 +37,23 @@ Route::middleware([
 	Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 	Route::match(['get','post'], 'user', [\App\Http\Controllers\Api\AuthController::class, 'user']);
 
-	// (debug route removed) programmatic login route used during troubleshooting
-
-	// Journal routes - require authentication (session + sanctum)
+	// Protected routes - require authentication (session + sanctum)
 	Route::middleware(['auth:sanctum'])->group(function () {
+		// Tools CRUD (protected)
+		Route::apiResource('tools', \App\Http\Controllers\Api\ToolController::class)->except(['index', 'show']);
+		Route::post('tools/{tool}/screenshots', [\App\Http\Controllers\Api\ToolScreenshotController::class, 'store']);
+		Route::delete('tools/{tool}/screenshots', [\App\Http\Controllers\Api\ToolScreenshotController::class, 'destroy']);
+
+		// Admin: manage categories and tags (protected)
+		Route::post('categories', [\App\Http\Controllers\Api\CategoryController::class, 'store']);
+		Route::put('categories/{category}', [\App\Http\Controllers\Api\CategoryController::class, 'update']);
+		Route::delete('categories/{category}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy']);
+
+		Route::post('tags', [\App\Http\Controllers\Api\TagController::class, 'store']);
+		Route::put('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'update']);
+		Route::delete('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'destroy']);
+
+		// Journal routes
 		Route::get('journal', [\App\Http\Controllers\Api\JournalController::class, 'index']);
 		Route::post('journal', [\App\Http\Controllers\Api\JournalController::class, 'store']);
 		Route::get('journal/stats', [\App\Http\Controllers\Api\JournalController::class, 'stats']);
