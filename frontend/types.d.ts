@@ -52,9 +52,11 @@ export interface CardProps {
 /**
  * Badge component props
  */
+export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'purple';
+
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'error' | 'purple';
+  variant?: BadgeVariant;
   size?: 'sm' | 'md' | 'lg';
 }
 
