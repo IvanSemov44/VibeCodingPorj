@@ -17,9 +17,9 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app:cached
-      - /app/node_modules
-      - /app/.next
-    command: sh -c "npm install && npm run dev"
+      - vibecode-full-stack-starter-kit_frontend_node_modules:/app/node_modules
+      - vibecode-full-stack-starter-kit_frontend_next:/app/.next
+    entrypoint: ["/bin/sh", "/app/docker-entrypoint.sh"]
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:8201/api
@@ -28,7 +28,16 @@ services:
     networks:
       - vibecode-full-stack-starter-kit_network
     depends_on:
-      - backend
+      backend:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
   # Laravel Backend with Nginx
   backend:
@@ -80,8 +89,11 @@ services:
       - APP_URL=http://localhost:8201
       - SESSION_DRIVER=redis
       - CACHE_DRIVER=redis
+      - SESSION_DOMAIN=localhost
+      - SESSION_SECURE_COOKIE=false
       # Ensure Sanctum treats the frontend origin as a first-party SPA
       - SANCTUM_STATEFUL_DOMAINS=localhost:8200,localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1
+      - SESSION_SAME_SITE=None
     restart: unless-stopped
     networks:
       - vibecode-full-stack-starter-kit_network
@@ -111,6 +123,12 @@ services:
     restart: unless-stopped
     networks:
       - vibecode-full-stack-starter-kit_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pvibecode-full-stack-starter-kit_mysql_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # Redis Cache
   redis:
@@ -152,3 +170,7 @@ volumes:
     name: vibecode-full-stack-starter-kit_mysql_data
   vibecode-full-stack-starter-kit_redis_data:
     name: vibecode-full-stack-starter-kit_redis_data
+  vibecode-full-stack-starter-kit_frontend_node_modules:
+    name: vibecode-full-stack-starter-kit_frontend_node_modules
+  vibecode-full-stack-starter-kit_frontend_next:
+    name: vibecode-full-stack-starter-kit_frontend_next

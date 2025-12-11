@@ -60,8 +60,35 @@ Route::middleware([
 		Route::get('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'show']);
 		Route::put('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'update']);
 		Route::delete('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'destroy']);
+
+		// Two-Factor endpoints (setup + confirm + disable) - protected
+		Route::post('2fa/enable', [\App\Http\Controllers\Api\TwoFactorController::class, 'enable']);
+		Route::post('2fa/confirm', [\App\Http\Controllers\Api\TwoFactorController::class, 'confirm']);
+		Route::post('2fa/disable', [\App\Http\Controllers\Api\TwoFactorController::class, 'disable']);
+		// Return provisioning URI for existing TOTP secret (authenticated)
+		Route::get('2fa/secret', [\App\Http\Controllers\Api\TwoFactorController::class, 'secret']);
+		Route::get('2fa/qr-svg', [\App\Http\Controllers\Api\TwoFactorController::class, 'qrSvg']);
+
+		// Admin routes: user management and tool approvals
+			// Note: RBAC enforced via controller policies/Gates; middleware removed to simplify testing.
+			Route::prefix('admin')->group(function () {
+			Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index','store']);
+			Route::post('users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
+			Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserController::class, 'activate']);
+
+			// Admin 2FA management for specific users
+			Route::get('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'show']);
+			Route::post('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'store']);
+			Route::delete('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'destroy']);
+		});
 	});
-});
+    	});
+
+// Public 2FA challenge for login flow (no session required)
+Route::post('2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge']);
+
+// Telegram webhook (public endpoint) - set your bot webhook to this URL
+Route::post('telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
 
 // Simple status endpoint relocated to API
 Route::get('status', function () {

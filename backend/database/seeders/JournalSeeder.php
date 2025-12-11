@@ -44,6 +44,18 @@ class JournalSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
 
+        // Journey Day 3 - Stability & State
+        JournalEntry::create([
+            'user_id' => $user->id,
+            'title' => '🌄 Journey — Day 3: Stability & State Wins',
+            'content' => "Day 3 focused on hardening the frontend state and eliminating noisy fetch churn across the app:\n\n🔁 **RTK Query Stabilization**: Migrated more journal data flows to RTK Query. Ensured query args are stable (memoized params) so automatic re-fetching doesn't trigger on every render.\n\n🛠️ **Refetch Loop Fixes**: Removed redundant manual `refetch()` calls and tuned RTK Query options (`refetchOnFocus`, `refetchOnReconnect`, `refetchOnMountOrArgChange`) to avoid frequent background requests during development.\n\n📈 **Instrumentation Prep**: Added lightweight console hooks while debugging to trace mounts and fetches; next step is Sentry/metrics integration for production monitoring.\n\n✅ **Outcome**: The journal dashboard now fetches predictably, and developer noise is reduced — ready for further UX polish and E2E tests.",
+            'mood' => 'productive',
+            'tags' => ['Frontend', 'State', 'RTK Query', 'Debugging'],
+            'xp' => 30,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
         $this->command->info('Journal entry seeded successfully for user: ' . $user->name);
     }
 }

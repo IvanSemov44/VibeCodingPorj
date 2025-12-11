@@ -23,8 +23,8 @@ class UserSeeder extends Seeder
         foreach ($users as $u) {
             $user = User::firstOrCreate(
                 ['email' => $u['email']],
-                // Use environment-configurable demo password or a random value to avoid hardcoding secrets
-                ['name' => $u['name'], 'password' => Hash::make(env('DEMO_USER_PASSWORD', \Illuminate\Support\Str::random(12)))]
+                // Use environment-configurable demo password (defaults to P@ssw0rd! for dev)
+                ['name' => $u['name'], 'password' => Hash::make(env('DEMO_USER_PASSWORD', 'P@ssw0rd!'))]
             );
             if (method_exists($user, 'assignRole')) {
                 $user->assignRole($u['role']);

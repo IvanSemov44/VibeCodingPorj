@@ -15,7 +15,7 @@ class TestUserSeeder extends Seeder
             ['email' => $email],
             [
                 'name' => 'CLI Test User',
-                'password' => Hash::make('P@ssw0rd!'),
+                'password' => Hash::make(env('DEMO_USER_PASSWORD', 'P@ssw0rd!')),
             ]
         );
         if (method_exists($user, 'assignRole')) {

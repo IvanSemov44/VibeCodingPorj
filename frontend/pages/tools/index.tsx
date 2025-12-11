@@ -79,35 +79,36 @@ export default function ToolsIndex(): React.ReactElement {
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: '24px auto' }}>
+    <div style={{ maxWidth: 900, margin: '24px auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>AI Tools</h1>
-        <Link href="/tools/new"><button style={{ padding: '8px 12px', borderRadius: 6, background: '#2563eb', color: '#fff' }}>Add Tool</button></Link>
+        <h1 style={{ marginBottom: 16 }}>AI Tools</h1>
+        <Link href="/tools/new">
+          <button style={{ padding: '8px 12px', borderRadius: 6, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>Add Tool</button>
+        </Link>
       </div>
 
       <div style={{ marginTop: 12, marginBottom: 12 }}>
-        <input placeholder="Search by name..." value={q} onChange={e => setQ(e.target.value)} style={{ width: '100%', padding: 8 }} />
+        <input placeholder="Search by name..." value={q} onChange={e => setQ(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 6, border: '1px solid #e5e7eb', boxSizing: 'border-box' }} />
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
-        <select value={selectedCategory} onChange={e => { setSelectedCategory(e.target.value); setPage(1); load(1); }}>
+        <select value={selectedCategory} onChange={e => { setSelectedCategory(e.target.value); setPage(1); load(1); }} style={{ padding: 8, borderRadius: 6, border: '1px solid #e5e7eb' }}>
           <option value="">All categories</option>
           {categories.map(c => <option key={c.id} value={c.slug || c.name}>{c.name}</option>)}
         </select>
-        <select value={selectedRole} onChange={e => { setSelectedRole(e.target.value); setPage(1); load(1); }}>
+        <select value={selectedRole} onChange={e => { setSelectedRole(e.target.value); setPage(1); load(1); }} style={{ padding: 8, borderRadius: 6, border: '1px solid #e5e7eb' }}>
           <option value="">All roles</option>
           {roles.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
         </select>
         <div style={{ minWidth: 240, maxWidth: 360 }}>
-          <label style={{ display: 'block', fontSize: 12 }}>Tags</label>
-          <div style={{ marginTop: 6, width: '100%' }}>
-              <div style={{ width: '100%' }}>
-                <TagMultiSelect value={selectedTags} onChange={(vals) => { setSelectedTags(vals); setPage(1); load(1); }} allowCreate={false} placeholder="Filter tags..." options={tags} />
-              </div>
+          <div style={{ marginTop: 0, width: '100%' }}>
+            <div style={{ width: '100%' }}>
+              <TagMultiSelect value={selectedTags} onChange={(vals) => { setSelectedTags(vals); setPage(1); load(1); }} allowCreate={false} placeholder="Filter tags..." options={tags} />
+            </div>
           </div>
         </div>
         <div style={{ marginLeft: 'auto' }}>
-          <button onClick={clearFilters} style={{ padding: '6px 10px', borderRadius: 6, background: '#f3f4f6' }}>Clear filters</button>
+          <button onClick={clearFilters} style={{ padding: '6px 10px', borderRadius: 6, background: '#f3f4f6', border: '1px solid #e5e7eb' }}>Clear filters</button>
         </div>
       </div>
 
@@ -120,7 +121,7 @@ export default function ToolsIndex(): React.ReactElement {
           {tools.length === 0 ? (
             <div>No tools yet.</div>
           ) : (
-            <div style={{ display: 'grid', gap: 12 }}>
+            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
               {tools.map(t => (
                 <ToolEntry key={t.id} tool={t} onDeleted={() => load()} />
               ))}
@@ -129,11 +130,11 @@ export default function ToolsIndex(): React.ReactElement {
 
           {meta && meta.last_page > 1 && (
             <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center' }}>
-              <button onClick={() => load(Math.max(1, (meta.current_page || page) - 1))} disabled={!((meta.current_page || page) > 1)}>Prev</button>
+              <button onClick={() => load(Math.max(1, (meta.current_page || page) - 1))} disabled={!((meta.current_page || page) > 1)} style={{ padding: '6px 10px', borderRadius: 6 }}>Prev</button>
               {Array.from({ length: meta.last_page }, (_, i) => i + 1).map(pn => (
-                <button key={pn} onClick={() => load(pn)} style={{ fontWeight: (meta.current_page || page) === pn ? '700' : '400' }}>{pn}</button>
+                <button key={pn} onClick={() => load(pn)} style={{ padding: '6px 8px', borderRadius: 6, fontWeight: (meta.current_page || page) === pn ? 700 : 400 }}>{pn}</button>
               ))}
-              <button onClick={() => load(Math.min(meta.last_page, (meta.current_page || page) + 1))} disabled={!((meta.current_page || page) < meta.last_page)}>Next</button>
+              <button onClick={() => load(Math.min(meta.last_page, (meta.current_page || page) + 1))} disabled={!((meta.current_page || page) < meta.last_page)} style={{ padding: '6px 10px', borderRadius: 6 }}>Next</button>
             </div>
           )}
         </div>

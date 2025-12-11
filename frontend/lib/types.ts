@@ -4,6 +4,8 @@ export type ID = number;
 
 export type Theme = 'light' | 'dark';
 
+export type BadgeVariant = 'primary' | 'success' | 'error' | 'warning' | 'purple' | 'default';
+
 export interface User {
   id: ID;
   name: string;

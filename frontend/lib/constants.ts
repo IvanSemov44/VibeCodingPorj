@@ -40,3 +40,7 @@ export const THEME = {
 export const STORAGE_KEYS = {
   THEME: 'theme'
 } as const;
+
+// Re-export feature-specific constants for backward compatibility
+export * from './constants/journal';
+export * from './constants/dashboard';

@@ -1,6 +1,6 @@
 import { ZodTypeAny } from 'zod';
 
-function setPath(obj: Record<string, unknown>, path: Array<string | number>, value: unknown) {
+function setPath(obj: Record<string, unknown>, path: Array<PropertyKey>, value: unknown) {
   let cur: Record<string, unknown> = obj;
   for (let i = 0; i < path.length - 1; i += 1) {
     const key = String(path[i]);

@@ -25,6 +25,12 @@ Location: /home/softart/scripts/vibecode-full-stack-starter-kit
 
 ## 📚 Documentation
 
+### Getting Started
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - ⭐ **START HERE** - Quick deployment & verification
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide with troubleshooting
+- **[CHANGES.md](CHANGES.md)** - Recent fixes and breaking changes
+
+### Development
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Component & hook examples
 - **[DOCUMENTATION.md](DOCUMENTATION.md)** - JSDoc/PHPDoc guide
 - **[CODE_STRUCTURE.md](frontend/CODE_STRUCTURE.md)** - Architecture overview
@@ -33,20 +39,31 @@ Location: /home/softart/scripts/vibecode-full-stack-starter-kit
 
 ## 📋 Quick Start
 
-1. **Start the environment:**
-   ```bash
-   ./start.sh
-   ```
+### Windows (Recommended)
+```powershell
+.\deploy.ps1 -Clean
+```
 
-2. **Access your applications:**
-   - Frontend: http://localhost:8200
-   - Backend: http://localhost:8201
-   - API Status: http://localhost:8201/api/status
+### Linux / macOS
+```bash
+./start.sh
+```
 
-3. **Stop the environment:**
-   ```bash
-   ./stop.sh
-   ```
+### Access Your Applications
+- **Frontend**: http://localhost:8200
+- **Backend**: http://localhost:8201
+- **API Status**: http://localhost:8201/api/status
+
+### Demo Login Credentials
+- **Email**: `cli@local` or `ivan@admin.local`
+- **Password**: `P@ssw0rd!`
+
+### Stop the Environment
+```bash
+docker compose down
+```
+
+**📖 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)**
 
 ## 🔧 Management Scripts
 
