@@ -1,0 +1,54 @@
+/* Base badge */
+.badge {
+  display: inline-block;
+  border-radius: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Variant styles */
+.badge_default {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.badge_primary {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge_success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge_warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge_error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge_purple {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+/* Size variants */
+.badge_sm {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.badge_md {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.badge_lg {
+  padding: 6px 12px;
+  font-size: 13px;
+}

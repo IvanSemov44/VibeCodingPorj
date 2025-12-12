@@ -1,4 +1,6 @@
 import React from 'react';
+import styles from './Input.module.css';
+import { cx } from '../lib/classNames';
 
 type BaseInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>;
 
@@ -23,12 +25,17 @@ export default function Input({
   helperText,
   ...rest
 }: InputProps): React.ReactElement {
+  const inputClassName = cx(
+    styles.input,
+    error && styles.input_error
+  );
+
   return (
-    <div>
+    <div className={styles.wrapper}>
       {label && (
-        <label style={{ display: 'block', marginBottom: 8, fontWeight: 500, fontSize: 14, color: 'var(--text-primary)' }}>
+        <label className={styles.label}>
           {label}
-          {required && <span style={{ color: '#ef4444', marginLeft: 4 }}>*</span>}
+          {required && <span className={styles.requiredIndicator}>*</span>}
         </label>
       )}
       <input
@@ -37,27 +44,14 @@ export default function Input({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder={placeholder}
-        style={{
-          width: '100%',
-          padding: '10px 14px',
-          borderRadius: 8,
-          border: `1px solid ${error ? '#ef4444' : 'var(--border-color)'}`,
-          fontSize: 14,
-          boxSizing: 'border-box',
-          background: disabled ? 'var(--bg-tertiary)' : 'var(--card-bg)',
-          color: 'var(--text-primary)',
-          transition: 'all 0.2s',
-          outline: 'none'
-        }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = error ? '#ef4444' : 'var(--accent-primary)')}
-        onBlur={(e) => (e.currentTarget.style.borderColor = error ? '#ef4444' : 'var(--border-color)')}
+        className={inputClassName}
         {...rest}
       />
       {error && (
-        <div style={{ color: '#ef4444', fontSize: 13, marginTop: 4 }}>{error}</div>
+        <div className={styles.errorMessage}>{error}</div>
       )}
       {!error && helperText && (
-        <div style={{ color: 'var(--text-tertiary)', fontSize: 12, marginTop: 4 }}>{helperText}</div>
+        <div className={styles.helperText}>{helperText}</div>
       )}
     </div>
   );

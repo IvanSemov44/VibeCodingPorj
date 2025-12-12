@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTags } from '../lib/api';
+import styles from './TagMultiSelect.module.css';
+import { cx } from '../lib/classNames';
 
 type ExternalOption = string | { name?: string };
 
@@ -109,16 +111,16 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
   }, [input, options, value]);
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} className={styles.root}>
       <div
-        style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', padding: 8, border: '1px solid #e5e7eb', borderRadius: 6 }}
+        className={styles.container}
         onClick={() => { setOpen(true); inputRef.current?.focus(); }}
         aria-haspopup="listbox"
       >
         {value.map(tag => (
-          <div key={tag} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', background: '#f3f4f6', borderRadius: 20 }}>
-            <span style={{ fontSize: 13 }}>{tag}</span>
-            <button type="button" aria-label={`Remove ${tag}`} onClick={(e) => { e.stopPropagation(); removeTag(tag); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>×</button>
+          <div key={tag} className={styles.pill}>
+            <span className={styles.pillText}>{tag}</span>
+            <button type="button" aria-label={`Remove ${tag}`} onClick={(e) => { e.stopPropagation(); removeTag(tag); }} className={styles.pillRemove}>×</button>
           </div>
         ))}
 
@@ -132,12 +134,12 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
           aria-controls={listId}
           aria-autocomplete="list"
           role="combobox"
-          style={{ flex: 1, minWidth: 140, border: 'none', outline: 'none' }}
+          className={styles.input}
         />
       </div>
 
       {open && (filtered().length > 0 || (allowCreate && input.trim() !== '')) && (
-        <div role="listbox" id={listId} style={{ position: 'absolute', left: 0, right: 0, background: 'white', border: '1px solid #e5e7eb', borderRadius: 6, marginTop: 6, zIndex: 40, maxHeight: 220, overflow: 'auto' }}>
+        <div role="listbox" id={listId} className={styles.dropdown}>
           {filtered().map((s, idx) => (
             <div
               key={s}
@@ -147,7 +149,7 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
               onMouseEnter={() => setActiveIndex(idx)}
               onMouseDown={(e) => { e.preventDefault(); /* prevent blur before click */ }}
               onClick={() => addTag(s)}
-              style={{ padding: '8px 12px', cursor: 'pointer', background: activeIndex === idx ? '#eef2ff' : 'transparent' }}
+              className={cx(styles.option, activeIndex === idx ? styles.optionActive : '')}
             >
               {s}
             </div>
@@ -159,7 +161,7 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
               onMouseEnter={() => setActiveIndex(filtered().length)}
               onMouseDown={(e) => { e.preventDefault(); }}
               onClick={() => addTag(input.trim())}
-              style={{ padding: '8px 12px', cursor: 'pointer', borderTop: '1px dashed #e5e7eb', background: activeIndex === filtered().length ? '#eef2ff' : 'transparent' }}
+              className={styles.createOption}
             >
               {`Create "${input.trim()}"`}
             </div>

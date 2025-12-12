@@ -18,6 +18,8 @@ import ScreenshotManager from './tools/ScreenshotManager';
 import type { Category, Tag, Tool, ToolCreatePayload, ToolUpdatePayload } from '../lib/types';
 import { ToolCreatePayloadSchema } from '../lib/schemas';
 import { zodToFormikValidate } from '../lib/formikZod';
+import styles from './ToolForm.module.css';
+import { cx } from '../lib/classNames';
 
 type Role = { id: number; name: string };
 
@@ -74,7 +76,7 @@ export default function ToolForm({
   };
 
   return (
-    <div style={{ maxWidth: 800 }}>
+    <div className={styles.wrapper}>
       <Formik
         initialValues={initialValues}
         validate={zodToFormikValidate(ToolCreatePayloadSchema)}
@@ -113,7 +115,7 @@ export default function ToolForm({
       >
         {({ values, setFieldValue, isSubmitting }) => (
           <Form>
-            {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
+            {error && <div className={styles.error}>{error}</div>}
 
             <NameField />
 
@@ -190,18 +192,11 @@ export default function ToolForm({
               fileInputRef={fileRef}
             />
 
-            <div style={{ marginTop: 16 }}>
+            <div className={styles.submit}>
               <button
                 type="submit"
                 disabled={saving || isSubmitting}
-                style={{
-                  padding: '10px 16px',
-                  background: '#2563eb',
-                  color: 'white',
-                  borderRadius: 6,
-                  border: 'none',
-                  cursor: saving || isSubmitting ? 'not-allowed' : 'pointer'
-                }}
+                className={cx(styles.submitButton, (saving || isSubmitting) ? styles.submitButtonDisabled : '')}
               >
                 {saving || isSubmitting ? 'Saving...' : 'Save Tool'}
               </button>

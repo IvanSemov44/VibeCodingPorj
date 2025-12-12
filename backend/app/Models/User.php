@@ -26,6 +26,11 @@ class User extends Authenticatable
         'name',
         'email',
         self::PASSWORD_FIELD,
+        'last_login_at',
+        'last_login_ip',
+        'failed_login_attempts',
+        'locked_until',
+        'is_active',
     ];
 
     /**
@@ -47,6 +52,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'locked_until' => 'datetime',
             self::PASSWORD_FIELD => 'hashed',
         ];
     }

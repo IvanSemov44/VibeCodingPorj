@@ -1,30 +1,30 @@
 import React from 'react';
+import styles from './Loading.module.css';
+import { cx } from '../lib/classNames';
 
 export type LoadingSize = 'sm' | 'md' | 'lg' | 'xl';
 
-export default function LoadingSpinner({ size = 'md', color = 'var(--accent-primary)' }: { size?: LoadingSize; color?: string }): React.ReactElement {
-  const sizes: Record<LoadingSize, number> = { sm: 16, md: 24, lg: 32, xl: 48 };
-  const spinnerSize = sizes[size] || sizes.md;
-
-  return (
-    <div style={{
-      width: spinnerSize,
-      height: spinnerSize,
-      border: `3px solid ${color}20`,
-      borderTopColor: color,
-      borderRadius: '50%',
-      animation: 'spin 0.8s linear infinite'
-    }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
+export default function LoadingSpinner({ size = 'md', color }: { size?: LoadingSize; color?: string }): React.ReactElement {
+  const className = cx(
+    styles.spinner,
+    styles[`spinner_${size}`],
+    !color && styles.spinner_default
   );
+
+  // Use inline style for custom color override
+  const style = color ? {
+    borderColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+    borderTopColor: color
+  } : undefined;
+
+  return <div className={className} style={style} />;
 }
 
 export function LoadingPage({ message = 'Loading...' }: { message?: string }): React.ReactElement {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: 16 }}>
+    <div className={styles.loadingPage}>
       <LoadingSpinner size="lg" />
-      <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>{message}</p>
+      <p className={styles.loadingMessage}>{message}</p>
     </div>
   );
 }

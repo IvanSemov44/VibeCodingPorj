@@ -146,9 +146,7 @@ class ToolService
     public function approve(Tool $tool, $user): Tool
     {
         $tool->update([
-            'approved' => true,
-            'approved_at' => now(),
-            'approved_by' => $user->id,
+            'status' => 'approved',
         ]);
 
         activity()

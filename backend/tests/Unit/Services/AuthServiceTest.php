@@ -119,9 +119,11 @@ class AuthServiceTest extends TestCase
 
         $this->authService->handleFailedLogin('test@example.com');
 
-        $user->refresh();
-        $this->assertEquals(5, $user->failed_login_attempts);
-        $this->assertNotNull($user->locked_until);
-        $this->assertTrue($user->locked_until->isFuture());
+        // Reload from database to get updated values
+        $updatedUser = User::where('email', 'test@example.com')->first();
+        
+        $this->assertEquals(5, $updatedUser->failed_login_attempts);
+        $this->assertNotNull($updatedUser->locked_until);
+        $this->assertTrue($updatedUser->locked_until->isFuture());
     }
 }

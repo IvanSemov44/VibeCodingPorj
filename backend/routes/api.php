@@ -3,6 +3,7 @@
 // API routes intentionally left minimal. Use web routes for session-based SPA auth.
 
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 // Tools API (protected - authenticated users can create)
 // Public discovery endpoints for categories and roles (useful for frontend filters)
@@ -100,4 +101,17 @@ Route::get('status', function () {
         'status' => 'ok',
         'time' => now()->toDateTimeString(),
     ]);
+});
+
+// Temporary debug route: returns a personal access token for the seeded admin user
+Route::get('debug/token', function () {
+    $user = User::where('email', 'ivan@admin.local')->first();
+    if (! $user) {
+        return response()->json(['message' => 'test user not found'], 404);
+    }
+    $token = $user->createToken('debug-token')->plainTextToken;
+    return response()->json(['token' => $token]);
+});
+Route::get('debug/users', function () {
+    return response()->json(['emails' => User::pluck('email')]);
 });

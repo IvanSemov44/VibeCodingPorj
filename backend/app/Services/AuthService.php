@@ -104,6 +104,7 @@ class AuthService
         }
 
         $user->increment('failed_login_attempts');
+        $user->refresh(); // Reload to get updated count
 
         // Lock account after 5 failed attempts for 15 minutes
         if ($user->failed_login_attempts >= 5) {

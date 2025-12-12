@@ -89,13 +89,11 @@ class ToolServiceTest extends TestCase
     public function test_approve_tool_sets_approval_fields(): void
     {
         $user = User::factory()->create();
-        $tool = Tool::factory()->create(['approved' => false]);
+        $tool = Tool::factory()->create();
 
         $approved = $this->toolService->approve($tool, $user);
 
-        $this->assertTrue($approved->approved);
-        $this->assertNotNull($approved->approved_at);
-        $this->assertEquals($user->id, $approved->approved_by);
+        $this->assertEquals('approved', $approved->status);
     }
 
     public function test_create_tool_logs_activity(): void

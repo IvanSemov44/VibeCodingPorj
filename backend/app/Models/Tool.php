@@ -10,7 +10,7 @@ class Tool extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'url', 'docs_url', 'description', 'usage', 'examples', 'difficulty', 'screenshots',
+        'name', 'slug', 'url', 'docs_url', 'description', 'usage', 'examples', 'difficulty', 'screenshots', 'status',
     ];
 
     protected $casts = [

@@ -125,7 +125,7 @@ class ToolManagementTest extends TestCase
         $response = $this->actingAs($user)
             ->deleteJson("/api/tools/{$tool->id}");
 
-        $response->assertStatus(200);
+        $response->assertStatus(204);
 
         $this->assertDatabaseMissing('tools', [
             'id' => $tool->id,

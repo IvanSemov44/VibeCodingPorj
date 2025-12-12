@@ -106,6 +106,36 @@ services:
       retries: 3
       start_period: 30s
 
+  # Laravel Queue Worker
+  queue:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.php
+    image: vibecode-full-stack-starter-kit_php_laravel:latest
+    container_name: vibecode-full-stack-starter-kit_queue
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html:cached
+    command: php artisan queue:work --tries=3 --timeout=60
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=vibecode-full-stack-starter-kit_app
+      - DB_USERNAME=root
+      - DB_PASSWORD=vibecode-full-stack-starter-kit_mysql_pass
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=vibecode-full-stack-starter-kit_redis_pass
+      - APP_ENV=local
+      - QUEUE_CONNECTION=database
+    restart: unless-stopped
+    networks:
+      - vibecode-full-stack-starter-kit_network
+    depends_on:
+      - mysql
+      - redis
+
   # (db_init one-shot removed) seeding is handled by Laravel DatabaseSeeder
 
   # MySQL Database

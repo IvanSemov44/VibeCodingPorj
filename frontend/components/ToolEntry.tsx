@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { deleteTool } from '../lib/api';
 import type { Tool } from '../lib/types';
+import { cx } from '../lib/classNames';
+import styles from './ToolEntry.module.css';
 
 interface Props {
   tool: Tool;
@@ -26,27 +28,28 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
   };
 
   return (
-    <div style={{ padding: 12, border: '1px solid #e5e7eb', borderRadius: 8 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-        <div style={{ display: 'flex', gap: 12 }}>
+    <div className={styles.container}>
+      <div className={styles.row}>
+        <div className={styles.left}>
           {tool.screenshots && tool.screenshots[0] ? (
-            <Image src={tool.screenshots[0]} alt="thumb" width={96} height={64} style={{ objectFit: 'cover', borderRadius: 6 }} />
+            // next/image accepts className for styling
+            <Image src={tool.screenshots[0]} alt="thumb" width={96} height={64} className={styles.thumb} />
           ) : null}
-          <div>
-            <div style={{ fontWeight: 700 }}>
+          <div className={styles.meta}>
+            <div className={styles.title}>
               <Link href={`/tools/${tool.id}`}>{tool.name ?? `Tool ${tool.id}`}</Link>
             </div>
-            <div style={{ fontSize: 13, color: '#6b7280' }}>{tool.description ?? ''}</div>
+            <div className={styles.desc}>{tool.description ?? ''}</div>
           </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className={styles.actions}>
           {tool.url ? (
-            <a href={tool.url} target="_blank" rel="noreferrer">Visit</a>
+            <a className={styles.visitLink} href={tool.url} target="_blank" rel="noreferrer">Visit</a>
           ) : (
             <span style={{ color: 'var(--text-tertiary)' }}>Visit</span>
           )}
-          <Link href={`/tools/${tool.id}/edit`}><button style={{ padding: '6px 10px' }}>Edit</button></Link>
-          <button onClick={handleDelete} style={{ padding: '6px 10px', background: '#ef4444', color: 'white', borderRadius: 6 }}>Delete</button>
+          <Link href={`/tools/${tool.id}/edit`}><button className={styles.button}>Edit</button></Link>
+          <button onClick={handleDelete} className={cx(styles.button, styles.delete)}>Delete</button>
         </div>
       </div>
     </div>

@@ -1,4 +1,6 @@
 import React from 'react';
+import styles from './Card.module.css';
+import { cx } from '../lib/classNames';
 
 export interface CardProps {
   title?: React.ReactNode;
@@ -7,46 +9,20 @@ export interface CardProps {
   className?: string;
 }
 
-export default function Card({ title, children, footer, className = '' }: CardProps): React.ReactElement {
+export default function Card({ title, children, footer, className }: CardProps): React.ReactElement {
   return (
-    <div style={{
-      background: 'var(--card-bg)',
-      borderRadius: 8,
-      boxShadow: 'var(--shadow-md)',
-      overflow: 'hidden',
-      border: '1px solid var(--border-color)',
-      transition: 'all 0.3s ease',
-      ...parseClassName(className)
-    }}>
+    <div className={cx(styles.card, className)}>
       {title && (
-        <div style={{
-          padding: '16px 20px',
-          borderBottom: '1px solid var(--border-color)',
-          fontWeight: 600,
-          fontSize: 16,
-          color: 'var(--text-primary)'
-        }}>
+        <div className={styles.header}>
           {title}
         </div>
       )}
-      <div style={{ padding: 20 }}>{children}</div>
+      <div className={styles.body}>{children}</div>
       {footer && (
-        <div style={{
-          padding: '12px 20px',
-          borderTop: '1px solid var(--border-color)',
-          background: 'var(--bg-secondary)',
-          fontSize: 14,
-          color: 'var(--text-secondary)'
-        }}>
+        <div className={styles.footer}>
           {footer}
         </div>
       )}
     </div>
   );
-}
-
-function parseClassName(className: string): React.CSSProperties {
-  // Keep for future extension; currently we don't translate class names
-  if (className && typeof className === 'string') return {};
-  return {};
 }

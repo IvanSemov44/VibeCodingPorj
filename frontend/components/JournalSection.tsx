@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import styles from './JournalSection.module.css';
 import { LoadingPage } from './Loading';
 import { useJournal } from '../hooks/useJournal';
 import { useToast } from './Toast';
@@ -82,7 +83,7 @@ export default function JournalSection(): React.ReactElement {
   }
 
   return (
-    <div style={{ marginTop: 32 }}>
+    <div className={styles.container}>
       <JournalHeader onNewEntry={() => setShowForm(!showForm)} showForm={showForm} />
 
       <JournalStats stats={stats} />

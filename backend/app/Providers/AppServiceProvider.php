@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use App\Observers\ModelActivityObserver;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register model observer for activity logging on key models
         \App\Models\User::observe(ModelActivityObserver::class);
+
+        // Ensure login rate limiter exists for Fortify/login routes
+        RateLimiter::for('login', function (Request $request) {
+            $throttleKey = Str::transliterate(Str::lower($request->input('email', '')) . '|' . $request->ip());
+
+            return Limit::perMinute(5)->by($throttleKey);
+        });
 
         if (class_exists(\App\Models\Tool::class)) {
             \App\Models\Tool::observe(ModelActivityObserver::class);

@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\CategorySeeder::class);
         $this->call(\Database\Seeders\TagSeeder::class);
         $this->call(\Database\Seeders\ToolSeeder::class);
+        // Seed journal entries for the first user
+        $this->call(\Database\Seeders\JournalSeeder::class);
         // Seed a CLI test user for automated checks
         $this->call(\Database\Seeders\TestUserSeeder::class);
     }
