@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\JournalEntry;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class JournalSeeder extends Seeder
 {
@@ -16,8 +16,9 @@ class JournalSeeder extends Seeder
     {
         $user = User::first();
 
-        if (!$user) {
+        if (! $user) {
             $this->command->warn('No users found. Please create a user first.');
+
             return;
         }
 
@@ -35,8 +36,8 @@ class JournalSeeder extends Seeder
         // Additional journal entry for today
         JournalEntry::create([
             'user_id' => $user->id,
-            'title' => '📆 Daily Log — ' . Carbon::now()->toDateString(),
-            'content' => "Today continued polishing the tools workflow: improved validation feedback, fixed pagination behavior, and cleaned up the screenshot upload flow. Also adjusted middleware ordering to stabilize session-based auth for SPA clients. Small refactors and a couple of seeder updates were added to keep dev data useful.",
+            'title' => '📆 Daily Log — '.Carbon::now()->toDateString(),
+            'content' => 'Today continued polishing the tools workflow: improved validation feedback, fixed pagination behavior, and cleaned up the screenshot upload flow. Also adjusted middleware ordering to stabilize session-based auth for SPA clients. Small refactors and a couple of seeder updates were added to keep dev data useful.',
             'mood' => 'happy',
             'tags' => ['DevOps', 'Bugfix', 'UX'],
             'xp' => 20,
@@ -56,6 +57,6 @@ class JournalSeeder extends Seeder
             'updated_at' => Carbon::now(),
         ]);
 
-        $this->command->info('Journal entry seeded successfully for user: ' . $user->name);
+        $this->command->info('Journal entry seeded successfully for user: '.$user->name);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Tool;
+use App\Models\User;
 
 class ToolPolicy
 {
@@ -36,12 +36,14 @@ class ToolPolicy
      */
     public function update(User $user, Tool $tool): bool
     {
-        if ($user->hasRole('owner')) return true;
+        if ($user->hasRole('owner')) {
+            return true;
+        }
 
         $userRoles = $user->getRoleNames()->toArray();
         $toolRoles = $tool->roles()->pluck('name')->toArray();
 
-        return (count(array_intersect($userRoles, $toolRoles)) > 0);
+        return count(array_intersect($userRoles, $toolRoles)) > 0;
     }
 
     /**

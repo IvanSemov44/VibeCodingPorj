@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ToolResource;
+use App\Models\Tag;
 use App\Models\Tool;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\Tag;
 
 class ToolController extends Controller
 {
@@ -20,22 +20,22 @@ class ToolController extends Controller
         }
 
         if ($category = $request->query('category')) {
-            $query->whereHas('categories', fn($q2) => $q2->where('slug', $category)->orWhere('name', $category));
+            $query->whereHas('categories', fn ($q2) => $q2->where('slug', $category)->orWhere('name', $category));
         }
 
         if ($role = $request->query('role')) {
-            $query->whereHas('roles', fn($r) => $r->where('name', $role));
+            $query->whereHas('roles', fn ($r) => $r->where('name', $role));
         }
 
         // Support single `tag` or comma-separated `tags` parameter for filtering
         if ($tag = $request->query('tag')) {
-            $query->whereHas('tags', fn($t) => $t->where('slug', $tag)->orWhere('name', $tag));
+            $query->whereHas('tags', fn ($t) => $t->where('slug', $tag)->orWhere('name', $tag));
         }
 
         if ($tags = $request->query('tags')) {
             $arr = array_filter(array_map('trim', explode(',', $tags)));
-            if (!empty($arr)) {
-                $query->whereHas('tags', function($q) use ($arr) {
+            if (! empty($arr)) {
+                $query->whereHas('tags', function ($q) use ($arr) {
                     $q->whereIn('slug', $arr)->orWhereIn('name', $arr);
                 });
             }
@@ -43,16 +43,20 @@ class ToolController extends Controller
 
         // Allow client to request larger pages for listing (cap at 100)
         $perPage = (int) $request->query('per_page', 20);
-        if ($perPage < 1) $perPage = 20;
+        if ($perPage < 1) {
+            $perPage = 20;
+        }
         $perPage = min(100, $perPage);
 
         $tools = $query->orderBy('name')->paginate($perPage);
+
         return ToolResource::collection($tools);
     }
 
     public function show(Tool $tool)
     {
         $tool->load(['categories', 'tags', 'roles']);
+
         return new ToolResource($tool);
     }
 
@@ -91,23 +95,23 @@ class ToolController extends Controller
         $data['slug'] = Str::slug($data['name']);
         $tool = Tool::create($data);
 
-        if (!empty($data['categories'])) {
+        if (! empty($data['categories'])) {
             $tool->categories()->sync($data['categories']);
         }
-        if (!empty($data['tags'])) {
+        if (! empty($data['tags'])) {
             $tool->tags()->sync($this->resolveTagIds($data['tags']));
         }
-        if (!empty($data['roles'])) {
+        if (! empty($data['roles'])) {
             $tool->roles()->sync($data['roles']);
         }
 
-        return new ToolResource($tool->load(['categories','tags','roles']));
+        return new ToolResource($tool->load(['categories', 'tags', 'roles']));
     }
 
     public function update(Request $request, Tool $tool)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:255|unique:tools,name,' . $tool->id,
+            'name' => 'required|string|max:255|unique:tools,name,'.$tool->id,
             'url' => 'nullable|url|max:500',
             'docs_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:2000',
@@ -149,19 +153,19 @@ class ToolController extends Controller
             $tool->roles()->sync($data['roles'] ?? []);
         }
 
-        return new ToolResource($tool->load(['categories','tags','roles']));
+        return new ToolResource($tool->load(['categories', 'tags', 'roles']));
     }
 
     public function destroy(Tool $tool)
     {
         $tool->delete();
+
         return response()->noContent();
     }
+
     /**
      * Resolve an array of tag identifiers or names into tag IDs.
      * Accepts numeric IDs or tag name strings; creates tags when needed.
-     * @param array $tags
-     * @return array
      */
     private function resolveTagIds(array $tags): array
     {
@@ -169,10 +173,13 @@ class ToolController extends Controller
         foreach ($tags as $t) {
             if (is_numeric($t)) {
                 $ids[] = (int) $t;
+
                 continue;
             }
             $name = trim($t);
-            if ($name === '') continue;
+            if ($name === '') {
+                continue;
+            }
             $tag = Tag::firstOrCreate([
                 'slug' => Str::slug($name),
             ], [
@@ -183,5 +190,4 @@ class ToolController extends Controller
 
         return array_values(array_unique($ids));
     }
-
 }

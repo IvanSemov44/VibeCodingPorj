@@ -29,7 +29,7 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
     return match ? decodeURIComponent(match[1]) : null;
   }
 
-  async function load() {
+  const load = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -76,20 +76,21 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
 
       const j = await res.json();
       setStatus(j);
-    } catch (e: any) {
-      console.error('UserTwoFactorManager.load error:', e);
-      setError(e.message || 'Error');
+    } catch (err: unknown) {
+      console.error('UserTwoFactorManager.load error:', err);
+      const message = err instanceof Error ? err.message : String(err ?? 'Error');
+      setError(message);
     } finally {
       setLoading(false);
     }
-  }
+  }, [userId, base]);
 
-  useEffect(() => { load(); }, [userId]);
+  React.useEffect(() => { void load(); }, [load]);
 
   // render provisioning QR when available
   useEffect(() => {
     if (!status || !status.provisioning_uri || !canvasRef.current) return;
-    QRCode.toCanvas(canvasRef.current, status.provisioning_uri, { width: 300 }).catch((err) => {
+    QRCode.toCanvas(canvasRef.current, status.provisioning_uri, { width: 300 }).catch((err: unknown) => {
       console.error('Failed to render provisioning QR:', err);
     });
   }, [status]);
@@ -124,8 +125,9 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
       setMessage(j.message || 'OK');
       // refresh status — if totp, API returns provisioning_uri
       await load();
-    } catch (e: any) {
-      setError(e.message || 'Error');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err ?? 'Error');
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -147,8 +149,9 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
       }
       setMessage('2FA disabled');
       await load();
-    } catch (e: any) {
-      setError(e.message || 'Error');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err ?? 'Error');
+      setError(message);
     } finally {
       setLoading(false);
     }

@@ -12,10 +12,10 @@ class CheckPermission
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
-        if (!$user->can($permission)) {
+        if (! $user->can($permission)) {
             // Log the forbidden permission attempt using Laravel's Log facade to avoid
             // calling a global helper that may not be defined in all environments.
             Log::warning('forbidden_permission_attempt', [

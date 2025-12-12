@@ -1,11 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { api } from './api';
 
+// Minimal store: this project primarily uses react-query for remote data.
 export const store = configureStore({
-  reducer: {
-    [api.reducerPath]: api.reducer,
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
+  reducer: {},
 });
 
 export type RootState = ReturnType<typeof store.getState>;

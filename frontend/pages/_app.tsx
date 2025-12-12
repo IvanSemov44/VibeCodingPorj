@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import Layout from '../components/Layout';
 import { ToastProvider } from '../components/Toast';
 import { ThemeProvider } from '../context/ThemeContext';
+import ErrorBoundary from '../components/ErrorBoundary';
 import '../styles/globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'react-redux';
@@ -12,16 +13,18 @@ const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps): React.ReactElement {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <ThemeProvider>
-          <ToastProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ToastProvider>
-        </ThemeProvider>
-      </Provider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <ThemeProvider>
+            <ToastProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ToastProvider>
+          </ThemeProvider>
+        </Provider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

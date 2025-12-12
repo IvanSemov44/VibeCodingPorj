@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Tool;
+use Illuminate\Database\Seeder;
 
 class ToolSeeder extends Seeder
 {
@@ -55,27 +55,27 @@ class ToolSeeder extends Seeder
             $t['screenshots'] = [
                 "https://picsum.photos/seed/{$slug}-1/800/480",
             ];
-            if (rand(0,1) === 1) {
+            if (rand(0, 1) === 1) {
                 $t['screenshots'][] = "https://picsum.photos/seed/{$slug}-2/800/480";
             }
 
             $tool = Tool::firstOrCreate(['name' => $t['name']], $t);
 
             // Attach a random category (or none)
-            if (!empty($categoryIds)) {
+            if (! empty($categoryIds)) {
                 $randCat = [$categoryIds[array_rand($categoryIds)]];
                 $tool->categories()->sync($randCat);
             }
 
             // Attach 0-3 random tags
-            if (!empty($tagIds)) {
+            if (! empty($tagIds)) {
                 shuffle($tagIds);
                 $take = rand(0, min(3, count($tagIds)));
                 $tool->tags()->sync(array_slice($tagIds, 0, $take));
             }
 
             // Attach 0-2 random roles
-            if (!empty($roleIds)) {
+            if (! empty($roleIds)) {
                 shuffle($roleIds);
                 $rTake = rand(0, min(2, count($roleIds)));
                 $tool->roles()->sync(array_slice($roleIds, 0, $rTake));

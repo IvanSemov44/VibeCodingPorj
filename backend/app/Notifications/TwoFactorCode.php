@@ -3,8 +3,8 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class TwoFactorCode extends Notification
 {
@@ -22,7 +22,7 @@ class TwoFactorCode extends Notification
         return (new MailMessage)
             ->subject('Your verification code')
             ->line('Your two-factor verification code is:')
-            ->line('**' . $this->code . '**')
+            ->line('**'.$this->code.'**')
             ->line('This code expires in 5 minutes.')
             ->line('If you did not request this code, please secure your account.');
     }

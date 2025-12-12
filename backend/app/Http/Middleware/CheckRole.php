@@ -4,8 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckRole
 {
@@ -16,7 +16,7 @@ class CheckRole
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
         // Shortcut: check database pivot directly for 'owner' role to avoid
@@ -37,7 +37,7 @@ class CheckRole
             // ignore DB errors and fall back to trait check
         }
 
-        if (!$user->hasAnyRole($roles)) {
+        if (! $user->hasAnyRole($roles)) {
             // Record attempted unauthorized access: prefer Spatie Activity facade if available, otherwise log via Laravel's logger
             if (class_exists('Spatie\Activitylog\Facades\Activity')) {
                 $activityFacade = 'Spatie\Activitylog\Facades\Activity';

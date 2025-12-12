@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::orderBy('name')->get(['id','name','slug']);
+        $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+
         return response()->json($categories);
     }
 
@@ -24,7 +24,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if (!($user instanceof User) || !$user->hasRole('owner')) {
+        if (! ($user instanceof User) || ! $user->hasRole('owner')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
@@ -51,7 +51,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $user = Auth::user();
-        if (!($user instanceof User) || !$user->hasRole('owner')) {
+        if (! ($user instanceof User) || ! $user->hasRole('owner')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
@@ -74,11 +74,12 @@ class CategoryController extends Controller
     public function destroy(Request $request, Category $category)
     {
         $user = Auth::user();
-        if (!($user instanceof User) || !$user->hasRole('owner')) {
+        if (! ($user instanceof User) || ! $user->hasRole('owner')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
         $category->delete();
+
         return response()->noContent();
     }
 
@@ -93,9 +94,11 @@ class CategoryController extends Controller
         $i = 1;
 
         while (Category::where('slug', $slug)
-            ->when($exceptId, function ($q) use ($exceptId) { return $q->where('id', '!=', $exceptId); })
+            ->when($exceptId, function ($q) use ($exceptId) {
+                return $q->where('id', '!=', $exceptId);
+            })
             ->exists()) {
-            $slug = $original . '-' . $i;
+            $slug = $original.'-'.$i;
             $i++;
         }
 

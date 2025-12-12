@@ -2,11 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
+use App\Models\JournalEntry;
+use App\Models\Tag;
+use App\Models\Tool;
+use App\Models\User;
+use App\Policies\CategoryPolicy;
+use App\Policies\JournalEntryPolicy;
+use App\Policies\TagPolicy;
+use App\Policies\ToolPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use App\Models\Tool;
-use App\Policies\ToolPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -16,7 +24,11 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
+        User::class => UserPolicy::class,
         Tool::class => ToolPolicy::class,
+        Category::class => CategoryPolicy::class,
+        Tag::class => TagPolicy::class,
+        JournalEntry::class => JournalEntryPolicy::class,
     ];
 
     /**

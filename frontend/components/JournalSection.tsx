@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { LoadingPage } from './Loading';
 import { useJournal } from '../hooks/useJournal';
+import { useToast } from './Toast';
 import JournalHeader from './journal/JournalHeader';
 import JournalStats from './journal/JournalStats';
 import JournalForm from './journal/JournalForm';
@@ -20,6 +21,7 @@ export default function JournalSection(): React.ReactElement {
   const [moodFilter, setMoodFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('');
   const [formError, setFormError] = useState('');
+  const { addToast } = useToast();
 
   const { entries, stats, loading, createEntry, deleteEntry } = useJournal({
     search,
@@ -32,10 +34,12 @@ export default function JournalSection(): React.ReactElement {
 
     if (!data.title.trim()) {
       setFormError('Title is required');
+      addToast('Title is required', 'error');
       return;
     }
     if (!data.content.trim()) {
       setFormError('Content is required');
+      addToast('Content is required', 'error');
       return;
     }
 
@@ -43,11 +47,25 @@ export default function JournalSection(): React.ReactElement {
       await createEntry(data);
       setShowForm(false);
       setFormError('');
+      addToast(`Journal entry created! +${data.xp} XP earned! 🎉`, 'success');
     } catch (err: unknown) {
       const message = (err && typeof err === 'object' && 'message' in err)
         ? String(err.message)
         : 'Failed to create entry. Please try again.';
       setFormError(message);
+      addToast(message, 'error');
+    }
+  };
+
+  const handleDelete = async (id: number | string): Promise<void> => {
+    try {
+      await deleteEntry(id);
+      addToast('Journal entry deleted successfully', 'success');
+    } catch (err: unknown) {
+      const message = (err && typeof err === 'object' && 'message' in err)
+        ? String(err.message)
+        : 'Failed to delete entry. Please try again.';
+      addToast(message, 'error');
     }
   };
 
@@ -93,7 +111,7 @@ export default function JournalSection(): React.ReactElement {
         entries={entries}
         loading={loading}
         hasFilters={hasActiveFilters}
-        onDelete={deleteEntry}
+        onDelete={handleDelete}
       />
     </div>
   );

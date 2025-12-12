@@ -19,9 +19,9 @@ class ToolResource extends JsonResource
             'examples' => $this->examples,
             'difficulty' => $this->difficulty,
             'screenshots' => $this->screenshots,
-            'categories' => $this->whenLoaded('categories', fn() => $this->categories->map->only(['id','name','slug'])),
-            'tags' => $this->whenLoaded('tags', fn() => $this->tags->map->only(['id','name','slug'])),
-            'roles' => $this->whenLoaded('roles', fn() => $this->roles->map->only(['id','name'])),
+            'categories' => $this->whenLoaded('categories', fn () => $this->categories->map->only(['id', 'name', 'slug'])),
+            'tags' => $this->whenLoaded('tags', fn () => $this->tags->map->only(['id', 'name', 'slug'])),
+            'roles' => $this->whenLoaded('roles', fn () => $this->roles->map->only(['id', 'name'])),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

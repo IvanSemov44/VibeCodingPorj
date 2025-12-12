@@ -58,10 +58,10 @@ export function useJournal(filters: JournalFilters = {}, autoLoad: boolean = tru
   const [createEntryMutation, createResult] = useCreateEntryMutation();
   const [deleteEntryMutation, deleteResult] = useDeleteEntryMutation();
 
-  const entries = entriesQuery.data ?? [];
-  const stats = statsQuery.data ?? null;
-  const loading = entriesQuery.isLoading || createResult.isLoading || deleteResult.isLoading;
-  const error = (entriesQuery.error as any)?.message ?? (createResult.error as any)?.message ?? (deleteResult.error as any)?.message ?? null;
+  const entries = (entriesQuery.data as JournalEntry[]) ?? [];
+  const stats = (statsQuery.data as JournalStats) ?? null;
+  const loading = entriesQuery.isLoading || (createResult as any).isLoading || (deleteResult as any).isLoading;
+  const error = (entriesQuery.error as any)?.message ?? (createResult as any)?.error?.message ?? (deleteResult as any)?.error?.message ?? null;
 
   /**
    * Load journal entries and stats from the API

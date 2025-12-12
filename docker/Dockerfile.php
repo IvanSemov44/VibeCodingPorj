@@ -36,6 +36,13 @@ RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy composer files and install PHP dependencies into the image so doctrine/dbal
+# and other packages are available at image-build time. Note: in development the
+# project directory may later be bind-mounted over `/var/www/html`, but installing
+# here speeds up CI/builds and avoids runtime installs on clean images.
+COPY backend/composer.json /var/www/html/composer.json
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader || true
+
 # Create laravel user
 RUN addgroup -g 1000 laravel && adduser -u 1000 -G laravel -s /bin/sh -D laravel
 

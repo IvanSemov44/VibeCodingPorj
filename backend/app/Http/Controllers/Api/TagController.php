@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class TagController extends Controller
 {
@@ -17,13 +17,14 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::orderBy('name')->get();
+
         return response()->json($tags);
     }
 
     public function store(Request $request)
     {
         $user = Auth::user();
-        if (!($user instanceof User) || !$user->hasRole('owner')) {
+        if (! ($user instanceof User) || ! $user->hasRole('owner')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
@@ -43,7 +44,7 @@ class TagController extends Controller
     public function update(Request $request, Tag $tag)
     {
         $user = Auth::user();
-        if (!($user instanceof User) || !$user->hasRole('owner')) {
+        if (! ($user instanceof User) || ! $user->hasRole('owner')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
@@ -62,11 +63,12 @@ class TagController extends Controller
     public function destroy(Request $request, Tag $tag)
     {
         $user = Auth::user();
-        if (!($user instanceof User) || !$user->hasRole('owner')) {
+        if (! ($user instanceof User) || ! $user->hasRole('owner')) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
         $tag->delete();
+
         return response()->noContent();
     }
 }

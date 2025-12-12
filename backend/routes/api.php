@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 // Public discovery endpoints for categories and roles (useful for frontend filters)
 // Simple health check for quick verification from the frontend or curl
 Route::get('health', function () {
-	return response()->json(['ok' => true]);
+    return response()->json(['ok' => true]);
 });
 Route::get('categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
 Route::get('roles', [\App\Http\Controllers\Api\RoleController::class, 'index']);
@@ -25,76 +25,79 @@ Route::get('tools/{tool}', [\App\Http\Controllers\Api\ToolController::class, 'sh
 // referring to the group name. This avoids Laravel attempting to resolve
 // the group string as a container binding in some environments.
 Route::middleware([
-	\Illuminate\Cookie\Middleware\EncryptCookies::class,
-	\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-	\Illuminate\Session\Middleware\StartSession::class,
-	\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-	\Illuminate\View\Middleware\ShareErrorsFromSession::class,
-	\Illuminate\Routing\Middleware\SubstituteBindings::class,
+    \Illuminate\Cookie\Middleware\EncryptCookies::class,
+    \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Routing\Middleware\SubstituteBindings::class,
 ])->group(function () {
-	Route::post('register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
-	Route::post('login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
-	Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
-	Route::match(['get','post'], 'user', [\App\Http\Controllers\Api\AuthController::class, 'user']);
+    // Auth endpoints with rate limiting
+    Route::post('register', [\App\Http\Controllers\Api\AuthController::class, 'register'])
+        ->middleware('throttle:5,1'); // 5 attempts per minute
+    Route::post('login', [\App\Http\Controllers\Api\AuthController::class, 'login'])
+        ->middleware('throttle:5,1'); // 5 attempts per minute
+    Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
+    Route::match(['get', 'post'], 'user', [\App\Http\Controllers\Api\AuthController::class, 'user']);
 
-	// Protected routes - require authentication (session + sanctum)
-	Route::middleware(['auth:sanctum'])->group(function () {
-		// Tools CRUD (protected)
-		Route::apiResource('tools', \App\Http\Controllers\Api\ToolController::class)->except(['index', 'show']);
-		Route::post('tools/{tool}/screenshots', [\App\Http\Controllers\Api\ToolScreenshotController::class, 'store']);
-		Route::delete('tools/{tool}/screenshots', [\App\Http\Controllers\Api\ToolScreenshotController::class, 'destroy']);
+    // Protected routes - require authentication (session + sanctum)
+    Route::middleware(['auth:sanctum'])->group(function () {
+        // Tools CRUD (protected)
+        Route::apiResource('tools', \App\Http\Controllers\Api\ToolController::class)->except(['index', 'show']);
+        Route::post('tools/{tool}/screenshots', [\App\Http\Controllers\Api\ToolScreenshotController::class, 'store']);
+        Route::delete('tools/{tool}/screenshots', [\App\Http\Controllers\Api\ToolScreenshotController::class, 'destroy']);
 
-		// Admin: manage categories and tags (protected)
-		Route::post('categories', [\App\Http\Controllers\Api\CategoryController::class, 'store']);
-		Route::put('categories/{category}', [\App\Http\Controllers\Api\CategoryController::class, 'update']);
-		Route::delete('categories/{category}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy']);
+        // Admin: manage categories and tags (protected)
+        Route::post('categories', [\App\Http\Controllers\Api\CategoryController::class, 'store']);
+        Route::put('categories/{category}', [\App\Http\Controllers\Api\CategoryController::class, 'update']);
+        Route::delete('categories/{category}', [\App\Http\Controllers\Api\CategoryController::class, 'destroy']);
 
-		Route::post('tags', [\App\Http\Controllers\Api\TagController::class, 'store']);
-		Route::put('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'update']);
-		Route::delete('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'destroy']);
+        Route::post('tags', [\App\Http\Controllers\Api\TagController::class, 'store']);
+        Route::put('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'update']);
+        Route::delete('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'destroy']);
 
-		// Journal routes
-		Route::get('journal', [\App\Http\Controllers\Api\JournalController::class, 'index']);
-		Route::post('journal', [\App\Http\Controllers\Api\JournalController::class, 'store']);
-		Route::get('journal/stats', [\App\Http\Controllers\Api\JournalController::class, 'stats']);
-		Route::get('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'show']);
-		Route::put('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'update']);
-		Route::delete('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'destroy']);
+        // Journal routes
+        Route::get('journal', [\App\Http\Controllers\Api\JournalController::class, 'index']);
+        Route::post('journal', [\App\Http\Controllers\Api\JournalController::class, 'store']);
+        Route::get('journal/stats', [\App\Http\Controllers\Api\JournalController::class, 'stats']);
+        Route::get('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'show']);
+        Route::put('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'update']);
+        Route::delete('journal/{id}', [\App\Http\Controllers\Api\JournalController::class, 'destroy']);
 
-		// Two-Factor endpoints (setup + confirm + disable) - protected
-		Route::post('2fa/enable', [\App\Http\Controllers\Api\TwoFactorController::class, 'enable']);
-		Route::post('2fa/confirm', [\App\Http\Controllers\Api\TwoFactorController::class, 'confirm']);
-		Route::post('2fa/disable', [\App\Http\Controllers\Api\TwoFactorController::class, 'disable']);
-		// Return provisioning URI for existing TOTP secret (authenticated)
-		Route::get('2fa/secret', [\App\Http\Controllers\Api\TwoFactorController::class, 'secret']);
-		Route::get('2fa/qr-svg', [\App\Http\Controllers\Api\TwoFactorController::class, 'qrSvg']);
+        // Two-Factor endpoints (setup + confirm + disable) - protected
+        Route::post('2fa/enable', [\App\Http\Controllers\Api\TwoFactorController::class, 'enable']);
+        Route::post('2fa/confirm', [\App\Http\Controllers\Api\TwoFactorController::class, 'confirm']);
+        Route::post('2fa/disable', [\App\Http\Controllers\Api\TwoFactorController::class, 'disable']);
+        // Return provisioning URI for existing TOTP secret (authenticated)
+        Route::get('2fa/secret', [\App\Http\Controllers\Api\TwoFactorController::class, 'secret']);
+        Route::get('2fa/qr-svg', [\App\Http\Controllers\Api\TwoFactorController::class, 'qrSvg']);
 
-		// Admin routes: user management and tool approvals
-			// Note: RBAC enforced via controller policies/Gates; middleware removed to simplify testing.
-			Route::prefix('admin')->group(function () {
-			Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index','store']);
-			Route::post('users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
-			Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserController::class, 'activate']);
+        // Admin routes: user management and tool approvals
+        // Note: RBAC enforced via controller policies/Gates; middleware removed to simplify testing.
+        Route::prefix('admin')->group(function () {
+            Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store']);
+            Route::post('users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
+            Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserController::class, 'activate']);
 
-			// Admin 2FA management for specific users
-			Route::get('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'show']);
-			Route::post('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'store']);
-			Route::delete('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'destroy']);
-		});
-	});
-    	});
+            // Admin 2FA management for specific users
+            Route::get('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'show']);
+            Route::post('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'store']);
+            Route::delete('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'destroy']);
+        });
+        });
+    });
 
-// Public 2FA challenge for login flow (no session required)
-Route::post('2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge']);
+    // 2FA challenge (public - rate limited)
+Route::post('2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])
+    ->middleware('throttle:10,1'); // 10 attempts per minute
 
 // Telegram webhook (public endpoint) - set your bot webhook to this URL
 Route::post('telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
 
 // Simple status endpoint relocated to API
 Route::get('status', function () {
-	return response()->json([
-		'status' => 'ok',
-		'time' => now()->toDateTimeString(),
-	]);
+    return response()->json([
+        'status' => 'ok',
+        'time' => now()->toDateTimeString(),
+    ]);
 });
-

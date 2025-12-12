@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Tool;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ToolScreenshotController extends Controller
@@ -63,7 +63,7 @@ class ToolScreenshotController extends Controller
         }
 
         $screens = $tool->screenshots ?? [];
-        $screens = array_values(array_filter($screens, fn($s) => $s !== $url));
+        $screens = array_values(array_filter($screens, fn ($s) => $s !== $url));
         $tool->screenshots = $screens;
         $tool->save();
 

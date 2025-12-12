@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class AdminTwoFactorRBACTest extends TestCase
 {
@@ -27,9 +27,9 @@ class AdminTwoFactorRBACTest extends TestCase
                 'owner_roles' => $owner->getRoleNames()->toArray(),
                 'pivot_count' => \Illuminate\Support\Facades\DB::table('model_has_roles')->where('model_id', $owner->id)->count(),
             ];
-            file_put_contents(storage_path('logs/test_role_debug.log'), json_encode($info) . PHP_EOL, FILE_APPEND);
+            file_put_contents(storage_path('logs/test_role_debug.log'), json_encode($info).PHP_EOL, FILE_APPEND);
         } catch (\Exception $e) {
-            file_put_contents(storage_path('logs/test_role_debug.log'), 'debug_error:' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+            file_put_contents(storage_path('logs/test_role_debug.log'), 'debug_error:'.$e->getMessage().PHP_EOL, FILE_APPEND);
         }
 
         $response = $this->actingAs($owner, 'sanctum')->postJson("/api/admin/users/{$target->id}/2fa", [

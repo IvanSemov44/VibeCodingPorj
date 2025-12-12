@@ -7,6 +7,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Formik, Form, ErrorMessage } from 'formik';
 import { createTool, getCsrf, uploadToolScreenshots, updateTool } from '../lib/api';
+import { useToast } from './Toast';
 import TagMultiSelect from './TagMultiSelect';
 import NameField from './tools/NameField';
 import URLFields from './tools/URLFields';
@@ -46,6 +47,7 @@ export default function ToolForm({
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const { addToast } = useToast();
 
   useEffect(() => {
     (async () => {
@@ -81,7 +83,9 @@ export default function ToolForm({
           setSaving(true);
           try {
             let data: Tool;
-            if (initial && initial.id) {
+            const isUpdate = initial && initial.id;
+
+            if (isUpdate) {
               data = await updateTool(initial.id as number, values as ToolUpdatePayload);
             } else {
               data = await createTool(values as unknown as ToolCreatePayload);
@@ -90,11 +94,16 @@ export default function ToolForm({
             const files = fileRef.current?.files && fileRef.current.files.length > 0 ? fileRef.current.files : null;
             if (files && files.length > 0) {
               await uploadToolScreenshots(data.id, Array.from(files));
+              addToast(`Tool ${isUpdate ? 'updated' : 'created'} with ${files.length} screenshot(s)!`, 'success');
+            } else {
+              addToast(`Tool ${isUpdate ? 'updated' : 'created'} successfully! 🎉`, 'success');
             }
+
             if (onSaved) onSaved(data);
           } catch (err: unknown) {
             const message = err instanceof Error ? err.message : String(err || 'Failed to save');
             setError(message);
+            addToast(message, 'error');
             setErrors({ name: message } as unknown as Record<string, string>);
           } finally {
             setSaving(false);

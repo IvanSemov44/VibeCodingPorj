@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\TwoFactorOtp;
 use App\Models\TwoFactorChallenge;
 use App\Models\User;
-use Illuminate\Support\Str;
-use OTPHP\TOTP;
 use Exception;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TwoFactorOtp;
+use Illuminate\Support\Str;
+use OTPHP\TOTP;
 
 class TwoFactorService
 {
@@ -39,13 +39,14 @@ class TwoFactorService
 
     public function verifyTotp(User $user, string $code): bool
     {
-        if (!$user->two_factor_secret) {
+        if (! $user->two_factor_secret) {
             return false;
         }
 
         try {
             $secret = decrypt($user->two_factor_secret);
             $totp = TOTP::create($secret);
+
             return $totp->verify($code);
         } catch (Exception $e) {
             return false;
@@ -58,7 +59,7 @@ class TwoFactorService
      */
     public function getProvisioningUri(User $user): ?array
     {
-        if (!$user->two_factor_secret) {
+        if (! $user->two_factor_secret) {
             return null;
         }
 
@@ -87,12 +88,13 @@ class TwoFactorService
             $rendererStyleClass = \BaconQrCode\Renderer\RendererStyle\RendererStyle::class;
             $rendererStyle = new $rendererStyleClass($size);
             $svgBackEndClass = \BaconQrCode\Renderer\Image\SvgImageBackEnd::class;
-            $svgBackEnd = new $svgBackEndClass();
+            $svgBackEnd = new $svgBackEndClass;
             $imageRendererClass = \BaconQrCode\Renderer\ImageRenderer::class;
             $renderer = new $imageRendererClass($rendererStyle, $svgBackEnd);
             $writer = new \BaconQrCode\Writer($renderer);
 
             $svg = $writer->writeString($provisioningUri);
+
             return $svg;
         } catch (\Throwable $e) {
             return null;
@@ -105,6 +107,7 @@ class TwoFactorService
         for ($i = 0; $i < $count; $i++) {
             $codes[] = strtoupper(Str::random(10));
         }
+
         return $codes;
     }
 
@@ -124,7 +127,7 @@ class TwoFactorService
         ]);
 
         // If telegram and user has chat id, attempt immediate delivery via TelegramService
-        if ($type === 'telegram' && !empty($user->telegram_chat_id)) {
+        if ($type === 'telegram' && ! empty($user->telegram_chat_id)) {
             try {
                 app()->make(\App\Services\TelegramService::class)->sendOtp($user, $code);
             } catch (\Throwable $e) {
@@ -171,11 +174,11 @@ class TwoFactorService
             ->orderByDesc('id')
             ->first();
 
-        if (!$challenge) {
+        if (! $challenge) {
             return false;
         }
 
-        if (!hash_equals($challenge->code, $code)) {
+        if (! hash_equals($challenge->code, $code)) {
             return false;
         }
 

@@ -15,13 +15,15 @@ Location: /home/softart/scripts/vibecode-full-stack-starter-kit
 
 - 🎨 **Dark/Light Mode** with theme persistence
 - 🔐 **Authentication System** (Login/Register with Laravel Sanctum)
-- 📦 **Component Library** - 9 reusable UI components
-- 🪝 **Custom Hooks** - Form validation, auth, async operations
+- 📦 **Component Library** - 20+ reusable UI components (recently refactored!)
+- 🪝 **Custom Hooks** - Form validation, auth, async operations, journal management
 - 📝 **Full JSDoc Documentation** - IntelliSense support for all APIs
 - 🎯 **Type Safety** - Type definitions for IDE autocomplete
-- 🔄 **Error Handling** - Structured API error management
+- 🔄 **Error Handling** - ErrorBoundary component + structured API error management
+- 🎉 **Toast Notifications** - User-friendly feedback for all actions
 - 📱 **Responsive Design** - Mobile-first approach
 - ⚡ **Optimized DX** - Minimal boilerplate, maximum productivity
+- 🏗️ **Modular Architecture** - Feature-based component organization
 
 ## 📚 Documentation
 
@@ -36,6 +38,11 @@ Location: /home/softart/scripts/vibecode-full-stack-starter-kit
 - **[CODE_STRUCTURE.md](frontend/CODE_STRUCTURE.md)** - Architecture overview
 - **[ENVIRONMENT.md](ENVIRONMENT.md)** - Environment setup
 - **[DOCUMENTATION_SUMMARY.md](DOCUMENTATION_SUMMARY.md)** - What's documented
+
+### Architecture & Refactoring
+- **[frontend/ARCHITECTURE.md](frontend/ARCHITECTURE.md)** - 🏗️ Frontend architecture guide & patterns
+- **[COMPONENT_REFACTORING_COMPLETE.md](COMPONENT_REFACTORING_COMPLETE.md)** - ✅ Component refactoring completion report
+- **[frontend/ERROR_HANDLING_AND_NOTIFICATIONS.md](frontend/ERROR_HANDLING_AND_NOTIFICATIONS.md)** - 🚨 Error boundaries & toast notifications
 
 ## 📋 Quick Start
 

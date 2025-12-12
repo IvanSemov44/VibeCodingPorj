@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\TwoFactorService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TwoFactorController extends Controller
 {
@@ -24,7 +23,7 @@ class TwoFactorController extends Controller
         $data = [
             'two_factor_type' => $user->two_factor_type,
             'two_factor_confirmed_at' => $user->two_factor_confirmed_at,
-            'has_secret' => !empty($user->two_factor_secret),
+            'has_secret' => ! empty($user->two_factor_secret),
         ];
 
         if ($user->two_factor_type === 'totp' && $user->two_factor_secret) {
@@ -46,7 +45,7 @@ class TwoFactorController extends Controller
             if (method_exists($actor, 'hasRole') && $actor->hasRole('owner')) {
                 $allowed = true;
             }
-            if (!$allowed && method_exists($actor, 'hasPermissionTo')) {
+            if (! $allowed && method_exists($actor, 'hasPermissionTo')) {
                 try {
                     if ($actor->hasPermissionTo('users.edit')) {
                         $allowed = true;
@@ -57,7 +56,7 @@ class TwoFactorController extends Controller
             }
         }
 
-        if (!$allowed) {
+        if (! $allowed) {
             return response()->json(['message' => 'Insufficient privileges'], 403);
         }
 
@@ -77,6 +76,7 @@ class TwoFactorController extends Controller
             ]);
 
             activity()->performedOn($user)->causedBy($request->user())->log('2fa_disabled_by_admin');
+
             return response()->json(['message' => '2FA disabled for user']);
         }
 
@@ -113,12 +113,12 @@ class TwoFactorController extends Controller
             if (method_exists($actor, 'hasRole') && $actor->hasRole('owner')) {
                 $allowed = true;
             }
-            if (!$allowed && method_exists($actor, 'hasPermissionTo') && $actor->hasPermissionTo('users.edit')) {
+            if (! $allowed && method_exists($actor, 'hasPermissionTo') && $actor->hasPermissionTo('users.edit')) {
                 $allowed = true;
             }
         }
 
-        if (!$allowed) {
+        if (! $allowed) {
             return response()->json(['message' => 'Insufficient privileges'], 403);
         }
 

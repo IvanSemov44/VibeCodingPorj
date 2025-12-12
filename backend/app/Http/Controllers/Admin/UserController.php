@@ -10,21 +10,18 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:sanctum', \App\Http\Middleware\CheckRole::class . ':owner,pm']);
+        $this->middleware(['auth:sanctum', \App\Http\Middleware\CheckRole::class.':owner,pm']);
     }
 
     public function index(Request $request)
     {
         $query = User::with('roles')
-            ->when($request->search, fn($q, $search) =>
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
+            ->when($request->search, fn ($q, $search) => $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
             )
-            ->when($request->role, fn($q, $role) =>
-                $q->whereHas('roles', fn($q) => $q->where('name', $role))
+            ->when($request->role, fn ($q, $role) => $q->whereHas('roles', fn ($q) => $q->where('name', $role))
             )
-            ->when($request->status, fn($q, $status) =>
-                $q->where('is_active', $status === 'active')
+            ->when($request->status, fn ($q, $status) => $q->where('is_active', $status === 'active')
             );
 
         return $query->paginate($request->per_page ?? 20);
@@ -71,6 +68,7 @@ class UserController extends Controller
         $this->authorize('users.edit');
         $user->update(['is_active' => true]);
         activity()->performedOn($user)->log('user_activated');
+
         return response()->json(['message' => 'User activated']);
     }
 }

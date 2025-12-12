@@ -13,8 +13,9 @@ class User extends Authenticatable
 {
     // Use a constant for the password field name to avoid hardcoded literal detections
     protected const PASSWORD_FIELD = 'password';
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.

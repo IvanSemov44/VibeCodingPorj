@@ -10,7 +10,7 @@
 services:
   # Next.js Frontend Application
   frontend:
-    image: node:18-alpine
+    image: node:18
     container_name: vibecode-full-stack-starter-kit_frontend
     ports:
       - "8200:3000"  # Next.js frontend
@@ -18,11 +18,12 @@ services:
     volumes:
       - ./frontend:/app:cached
       - vibecode-full-stack-starter-kit_frontend_node_modules:/app/node_modules
-      - vibecode-full-stack-starter-kit_frontend_next:/app/.next
+      - ./frontend/.next:/app/.next:cached
     entrypoint: ["/bin/sh", "/app/docker-entrypoint.sh"]
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:8201/api
+      - LIGHTNING_CSS_USE_WASM=1
       - WATCHPACK_POLLING=true
     restart: unless-stopped
     networks:
@@ -70,6 +71,7 @@ services:
       - ./backend:/var/www/html:cached
       - ./docker/php.ini:/usr/local/etc/php/conf.d/laravel.ini:ro
       - ./docker/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+    entrypoint: ["/bin/sh", "/var/www/html/docker-entrypoint-phpfpm.sh"]
     environment:
       # Database connection
       - DB_CONNECTION=mysql

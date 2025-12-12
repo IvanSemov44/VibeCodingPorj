@@ -10,7 +10,8 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = Role::orderBy('name')->get(['id','name']);
+        $roles = Role::orderBy('name')->get(['id', 'name']);
+
         return response()->json($roles);
     }
 }

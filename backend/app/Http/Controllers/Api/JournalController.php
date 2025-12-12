@@ -55,7 +55,7 @@ class JournalController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -77,6 +77,7 @@ class JournalController extends Controller
     public function show($id)
     {
         $entry = JournalEntry::where('user_id', Auth::id())->findOrFail($id);
+
         return response()->json($entry);
     }
 
@@ -99,7 +100,7 @@ class JournalController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -146,7 +147,7 @@ class JournalController extends Controller
         $recentEntries = JournalEntry::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy(fn($entry) => $entry->created_at->format('Y-m-d'));
+            ->groupBy(fn ($entry) => $entry->created_at->format('Y-m-d'));
 
         $streak = 0;
         $currentDate = now()->startOfDay();

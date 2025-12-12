@@ -20,7 +20,7 @@ class TwoFactorOtp extends Mailable
     public function build()
     {
         return $this->subject('Your verification code')
-                    ->view('emails.two_factor_otp')
-                    ->with(['code' => $this->code]);
+            ->view('emails.two_factor_otp')
+            ->with(['code' => $this->code]);
     }
 }

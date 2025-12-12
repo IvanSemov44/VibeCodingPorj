@@ -25,7 +25,7 @@ export default function TwoFactorSetup() {
         try {
           const csrfUrl = base ? `${base.replace(/\/api$/, '')}/sanctum/csrf-cookie` : '/sanctum/csrf-cookie';
           await fetch(csrfUrl, { credentials: 'include' });
-        } catch (e) {
+        } catch {
           // ignore CSRF fetch failures; we'll handle auth errors below
         }
 
@@ -44,8 +44,9 @@ export default function TwoFactorSetup() {
         if (!res.ok) throw new Error('No secret configured');
         const j: SecretResp = await res.json();
         setData(j);
-      } catch (e: any) {
-        setError(e.message || 'Failed to fetch secret');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err ?? 'Failed to fetch secret');
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -75,8 +76,9 @@ export default function TwoFactorSetup() {
       // response contains provisioning_uri and recovery_codes
       setData({ provisioning_uri: json.provisioning_uri ?? null, secret_mask: null });
       setRecoveryCodes(json.recovery_codes ?? null);
-    } catch (e: any) {
-      setError(e.message || 'Failed to enable 2FA');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err ?? 'Failed to enable 2FA');
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -84,7 +86,7 @@ export default function TwoFactorSetup() {
 
   useEffect(() => {
     if (!data || !data.provisioning_uri || !canvasRef.current) return;
-    QRCode.toCanvas(canvasRef.current, data.provisioning_uri, { width: 300 }, (err) => {
+    QRCode.toCanvas(canvasRef.current, data.provisioning_uri, { width: 300 }, (err: unknown) => {
       if (err) setError('Failed to render QR');
     });
   }, [data]);

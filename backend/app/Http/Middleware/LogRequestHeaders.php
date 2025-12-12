@@ -29,7 +29,7 @@ class LogRequestHeaders
                 'x-requested-with' => $request->header('x-requested-with'),
             ];
 
-            Log::info('RequestHeaderDump: ' . json_encode($dump));
+            Log::info('RequestHeaderDump: '.json_encode($dump));
         }
 
         return $next($request);

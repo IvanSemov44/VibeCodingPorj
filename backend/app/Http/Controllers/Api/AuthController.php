@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,15 +14,12 @@ use Illuminate\Validation\ValidationException;
 /**
  * Authentication controller for user registration, login, logout
  * Handles SPA authentication with session-based auth (Sanctum)
- *
- * @package App\Http\Controllers\Api
  */
 class AuthController extends Controller
 {
     /**
      * Register a new user account
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -33,13 +32,9 @@ class AuthController extends Controller
      * @response 201 {"id": 1, "name": "John Doe", "email": "john@example.com", "roles": []}
      * @response 422 {"message": "The given data was invalid.", "errors": {"email": ["The email has already been taken."]}}
      */
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -55,7 +50,6 @@ class AuthController extends Controller
     /**
      * Login user with email and password
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -66,14 +60,11 @@ class AuthController extends Controller
      * @response 200 {"id": 1, "name": "John Doe", "email": "john@example.com", "roles": []}
      * @response 422 {"message": "The given data was invalid.", "errors": {"email": ["The provided credentials are incorrect."]}}
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $request->validated();
 
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -88,7 +79,6 @@ class AuthController extends Controller
     /**
      * Logout current user and invalidate session
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @response 200 {"message": "Successfully logged out"}
@@ -105,7 +95,6 @@ class AuthController extends Controller
     /**
      * Get currently authenticated user with roles
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      *
      * @response 200 {"id": 1, "name": "John Doe", "email": "john@example.com", "roles": []}
@@ -113,7 +102,7 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 

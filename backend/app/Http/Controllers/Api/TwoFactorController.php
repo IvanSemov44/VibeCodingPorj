@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Notifications\TwoFactorCode;
 use App\Services\TwoFactorService;
-use App\Models\TwoFactorChallenge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -22,18 +21,21 @@ class TwoFactorController extends Controller
 
         if ($request->type === 'totp') {
             $data = $this->twoFactorService->generateTotpSecret($user);
+
             return response()->json(['provisioning_uri' => $data['provisioning_uri'], 'recovery_codes' => $data['recovery_codes']]);
         }
 
         if ($request->type === 'email') {
             $challenge = $this->twoFactorService->createOtpChallenge($user, 'email');
             $user->notify(new TwoFactorCode($challenge->code));
+
             return response()->json(['message' => 'OTP sent to email']);
         }
 
         if ($request->type === 'telegram') {
             // Create a short-lived link code that user will send to the bot
             $challenge = $this->twoFactorService->createLinkChallenge($user);
+
             return response()->json([
                 'message' => 'Send the following code to the Telegram bot to link your account',
                 'link_code' => $challenge->code,
@@ -54,7 +56,7 @@ class TwoFactorController extends Controller
             $ok = $this->twoFactorService->verifyOtpChallenge($user, $request->code, $user->two_factor_type ?? 'email');
         }
 
-        if (!$ok) {
+        if (! $ok) {
             return response()->json(['message' => 'Invalid code'], 422);
         }
 
@@ -76,7 +78,9 @@ class TwoFactorController extends Controller
         $request->validate(['email' => 'required|email', 'code' => 'required']);
 
         $user = \App\Models\User::where('email', $request->email)->first();
-        if (!$user) return response()->json(['message' => 'User not found'], 404);
+        if (! $user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
         $ok = false;
         if ($user->two_factor_type === 'totp') {
@@ -85,7 +89,7 @@ class TwoFactorController extends Controller
             $ok = $this->twoFactorService->verifyOtpChallenge($user, $request->code, $user->two_factor_type ?? 'email');
         }
 
-        if (!$ok) {
+        if (! $ok) {
             return response()->json(['message' => 'Invalid or expired code'], 422);
         }
 
@@ -120,7 +124,7 @@ class TwoFactorController extends Controller
         $user = $request->user();
         $data = $this->twoFactorService->getProvisioningUri($user);
 
-        if (!$data) {
+        if (! $data) {
             return response()->json(['message' => 'No two-factor secret configured'], 404);
         }
 
@@ -129,7 +133,7 @@ class TwoFactorController extends Controller
         $masked = null;
         if ($secret) {
             $len = strlen($secret);
-            $masked = substr($secret, 0, 4) . '...' . substr($secret, max(0, $len - 4));
+            $masked = substr($secret, 0, 4).'...'.substr($secret, max(0, $len - 4));
         }
 
         return new \App\Http\Resources\TwoFactorSecretResource([
@@ -146,12 +150,12 @@ class TwoFactorController extends Controller
     {
         $user = $request->user();
         $data = $this->twoFactorService->getProvisioningUri($user);
-        if (!$data || empty($data['provisioning_uri'])) {
+        if (! $data || empty($data['provisioning_uri'])) {
             return response()->json(['message' => 'No two-factor secret configured'], 404);
         }
 
         $svg = $this->twoFactorService->generateQrSvg($data['provisioning_uri'], 300);
-        if (!$svg) {
+        if (! $svg) {
             return response()->json(['message' => 'Failed to generate QR'], 500);
         }
 
