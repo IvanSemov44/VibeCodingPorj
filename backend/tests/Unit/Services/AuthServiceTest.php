@@ -121,7 +121,7 @@ class AuthServiceTest extends TestCase
 
         // Reload from database to get updated values
         $updatedUser = User::where('email', 'test@example.com')->first();
-        
+
         $this->assertEquals(5, $updatedUser->failed_login_attempts);
         $this->assertNotNull($updatedUser->locked_until);
         $this->assertTrue($updatedUser->locked_until->isFuture());
