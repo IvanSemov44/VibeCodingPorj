@@ -1,5 +1,6 @@
-import React from 'react';
 import { renderWithProviders, screen, userEvent, waitFor } from '../../tests/test-utils';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
+
 const pushMock = vi.fn();
 vi.mock('next/router', () => ({ useRouter: () => ({ push: pushMock }) }));
 vi.mock('../../lib/api', () => ({ getCsrf: vi.fn().mockResolvedValue({ ok: true }), login: vi.fn().mockResolvedValue({ user: { id: 1 } }) }));

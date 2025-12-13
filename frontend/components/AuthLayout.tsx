@@ -12,21 +12,21 @@ export interface AuthLayoutProps {
 
 export default function AuthLayout({ children, title, subtitle, footerText, footerLink, footerLinkText }: AuthLayoutProps): React.ReactElement {
   return (
-    <div style={{ maxWidth: 480, margin: '60px auto', padding: '0 20px' }}>
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <h1 style={{ margin: 0, marginBottom: 8, fontSize: 32, fontWeight: 700, color: 'var(--text-primary)' }}>
+    <div className="max-w-[480px] my-[60px] mx-auto px-5">
+      <div className="text-center mb-8">
+        <h1 className="m-0 mb-2 text-[32px] font-bold text-primary-text">
           {title}
         </h1>
-        <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 16 }}>{subtitle}</p>
+        <p className="m-0 text-secondary-text text-base">{subtitle}</p>
       </div>
 
       {children}
 
       {footerText && (
-        <div style={{ textAlign: 'center', marginTop: 24, color: 'var(--text-secondary)', fontSize: 14 }}>
+        <div className="text-center mt-6 text-secondary-text text-sm">
           {footerText}{' '}
           {footerLink && (
-            <Link href={footerLink} style={{ color: 'var(--accent-primary)', fontWeight: 500, textDecoration: 'none' }}>
+            <Link href={footerLink} className="text-accent font-medium no-underline hover:text-accent-hover transition-colors">
               {footerLinkText}
             </Link>
           )}

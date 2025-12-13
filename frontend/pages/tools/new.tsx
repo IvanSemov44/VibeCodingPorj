@@ -25,8 +25,8 @@ export default function NewToolPage(): React.ReactElement {
   }, []);
 
   return (
-    <div style={{ maxWidth: 900, margin: '24px auto' }}>
-      <h1 style={{ marginBottom: 16 }}>Add New AI Tool</h1>
+    <div className="max-w-[900px] my-6 mx-auto">
+      <h1 className="mb-4">Add New AI Tool</h1>
       <ToolForm
         categories={categories}
         roles={roles}

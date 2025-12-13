@@ -70,35 +70,35 @@ export default function AdminTags(): React.ReactElement {
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="p-5">
       <h1>Admin — Tags</h1>
-      <form onSubmit={handleCreate} style={{ marginBottom: 20 }}>
+      <form onSubmit={handleCreate} className="mb-5">
         <div>
           <label>Name</label>
           <br />
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <input value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 p-2 border border-gray-200 rounded-md" />
         </div>
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-2">
           <label>Slug (optional)</label>
           <br />
-          <input value={slug} onChange={(e) => setSlug(e.target.value)} />
+          <input value={slug} onChange={(e) => setSlug(e.target.value)} className="mt-1 p-2 border border-gray-200 rounded-md" />
         </div>
-        <div style={{ marginTop: 12 }}>
-          <button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Create'}</button>
+        <div className="mt-3">
+          <button type="submit" disabled={saving} className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors">{saving ? 'Saving...' : 'Create'}</button>
         </div>
       </form>
 
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div className="text-red-600">{error}</div>}
 
       {loading ? (
         <div>Loading...</div>
       ) : (
-        <table border={0} cellPadding={8}>
+        <table className="border-0 w-full">
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Actions</th>
+            <tr className="text-left">
+              <th className="p-2 border-b border-gray-200">Name</th>
+              <th className="p-2 border-b border-gray-200">Slug</th>
+              <th className="p-2 border-b border-gray-200">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -126,19 +126,19 @@ function TagRow({ tag, onUpdate, onDelete }: { tag: Tag; onUpdate: (id: number, 
   }
 
   return (
-    <tr>
-      <td>{editing ? <input value={name} onChange={(e) => setName(e.target.value)} /> : tag.name}</td>
-      <td>{editing ? <input value={slug} onChange={(e) => setSlug(e.target.value)} /> : tag.slug}</td>
-      <td>
+    <tr className="border-b border-gray-100">
+      <td className="p-2">{editing ? <input value={name} onChange={(e) => setName(e.target.value)} className="p-1 border border-gray-200 rounded" /> : tag.name}</td>
+      <td className="p-2">{editing ? <input value={slug} onChange={(e) => setSlug(e.target.value)} className="p-1 border border-gray-200 rounded" /> : tag.slug}</td>
+      <td className="p-2">
         {editing ? (
           <>
-            <button onClick={save} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
-            <button onClick={() => setEditing(false)} style={{ marginLeft: 8 }}>Cancel</button>
+            <button onClick={save} disabled={saving} className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors">{saving ? 'Saving...' : 'Save'}</button>
+            <button onClick={() => setEditing(false)} className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors">Cancel</button>
           </>
         ) : (
           <>
-            <button onClick={() => setEditing(true)}>Edit</button>
-            <button onClick={() => onDelete(tag.id)} style={{ marginLeft: 8 }}>Delete</button>
+            <button onClick={() => setEditing(true)} className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors">Edit</button>
+            <button onClick={() => onDelete(tag.id)} className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors">Delete</button>
           </>
         )}
       </td>

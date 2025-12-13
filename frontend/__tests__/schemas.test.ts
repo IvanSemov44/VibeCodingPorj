@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest';
 import { ToolCreatePayloadSchema, ToolSchema } from '../lib/schemas';
 
 describe('schemas', () => {

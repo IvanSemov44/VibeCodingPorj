@@ -1,3 +1,4 @@
+import { describe, beforeEach, test, vi, expect } from 'vitest';
 import { getCsrf, login, uploadToolScreenshots } from '../lib/api';
 import { API_BASE_URL, API_ENDPOINTS } from '../lib/constants';
 
@@ -15,7 +16,7 @@ describe('lib/api basic smoke tests', () => {
     document.cookie = 'XSRF-TOKEN=test-token-123';
 
     const res = await getCsrf();
-    const g = (global as unknown as { fetch?: jest.Mock });
+    const g = (global as unknown as { fetch?: ReturnType<typeof vi.fn> });
     expect(g.fetch).toHaveBeenCalled();
     const calledUrl = g.fetch!.mock.calls[0][0];
     expect(String(calledUrl)).toContain(API_BASE_URL.replace(/\/api\/?$/, '') + API_ENDPOINTS.CSRF);
@@ -26,7 +27,7 @@ describe('lib/api basic smoke tests', () => {
     // login returns an AuthResponse { user: { id } }
     (global as unknown as { fetch?: ReturnType<typeof vi.fn> }).fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ user: { id: 1 } }) });
     const auth = await login({ email: 'a@example.com', password: 'secret' });
-    const g2 = (global as unknown as { fetch?: jest.Mock });
+    const g2 = (global as unknown as { fetch?: ReturnType<typeof vi.fn> });
     expect(g2.fetch).toHaveBeenCalled();
     // find the POST call (login may call getCsrf first)
     const calls = g2.fetch!.mock.calls as unknown[];

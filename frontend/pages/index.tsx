@@ -5,25 +5,25 @@ type FeatureProps = { title: string; desc: string };
 
 export default function Home(): React.ReactElement {
   return (
-    <section style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
-      <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-        <div style={{ flex: 1 }}>
-          <h2 style={{ fontSize: 38, margin: '0 0 12px', color: 'var(--text-primary)' }}>Build faster. Ship smarter.</h2>
-          <p style={{ margin: '0 0 20px', color: 'var(--text-secondary)', maxWidth: 680 }}>A minimal full-stack starter kit with Laravel API and Next.js frontend — authentication, permissions, and a lightweight developer experience.</p>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <Link href="/register" style={{ padding: '12px 18px', background: 'var(--accent-primary)', color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600, transition: 'background 0.2s' }}>Get Started</Link>
-            <Link href="/login" style={{ padding: '12px 18px', background: 'transparent', color: 'var(--text-primary)', borderRadius: 8, textDecoration: 'none', fontWeight: 600, border: '1px solid var(--border-color)', transition: 'all 0.2s' }}>Sign In</Link>
+    <section className="grid grid-cols-1 gap-6">
+      <div className="flex gap-6 items-center flex-wrap lg:flex-nowrap">
+        <div className="flex-1">
+          <h2 className="text-[38px] m-0 mb-3 text-primary-text">Build faster. Ship smarter.</h2>
+          <p className="m-0 mb-5 text-secondary-text max-w-[680px]">A minimal full-stack starter kit with Laravel API and Next.js frontend — authentication, permissions, and a lightweight developer experience.</p>
+          <div className="flex gap-3">
+            <Link href="/register" className="py-3 px-[18px] bg-accent text-white rounded-lg no-underline font-semibold transition-colors hover:bg-accent-hover">Get Started</Link>
+            <Link href="/login" className="py-3 px-[18px] bg-transparent text-primary-text rounded-lg no-underline font-semibold border border-border transition-all hover:border-accent hover:text-accent">Sign In</Link>
           </div>
         </div>
-        <div style={{ width: 360, height: 220, borderRadius: 12, background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border-color)', transition: 'all 0.3s ease' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 40, fontWeight: 700, color: 'var(--text-primary)' }}>VC</div>
-            <div style={{ color: 'var(--text-secondary)', marginTop: 8 }}>Starter Kit</div>
+        <div className="w-full lg:w-[360px] h-[220px] rounded-xl bg-secondary-bg flex items-center justify-center shadow-lg border border-border transition-all duration-300 hover:shadow-xl">
+          <div className="text-center">
+            <div className="text-[40px] font-bold text-primary-text">VC</div>
+            <div className="text-secondary-text mt-2">Starter Kit</div>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
         <Feature title="Auth + Roles" desc="Cookie-based SPA auth (Laravel Sanctum) and role-based access with Spatie." />
         <Feature title="Next.js Frontend" desc="Pages router scaffolded, login and dashboard pages ready." />
         <Feature title="Local Dev" desc="Docker Compose stack with MySQL, Redis and PHP-FPM for quick iteration." />
@@ -34,9 +34,9 @@ export default function Home(): React.ReactElement {
 
 function Feature({ title, desc }: FeatureProps): React.ReactElement {
   return (
-    <div style={{ padding: 18, borderRadius: 10, background: 'var(--card-bg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--border-color)', transition: 'all 0.3s ease' }}>
-      <h3 style={{ margin: 0, fontSize: 16, color: 'var(--text-primary)' }}>{title}</h3>
-      <p style={{ marginTop: 8, color: 'var(--text-secondary)', fontSize: 14 }}>{desc}</p>
+    <div className="p-[18px] rounded-[10px] bg-[var(--card-bg)] shadow-md border border-border transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <h3 className="m-0 text-base text-primary-text">{title}</h3>
+      <p className="mt-2 text-secondary-text text-sm">{desc}</p>
     </div>
   );
 }

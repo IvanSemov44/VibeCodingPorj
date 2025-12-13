@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getUser, getCsrf, logout } from '../lib/api';
-import { useTheme } from '../context/ThemeContext';
+import { useAppTheme } from '../hooks/useAppTheme';
 import type { User } from '../lib/types';
 
 export default function Layout({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useAppTheme();
 
   useEffect(() => {
     let mounted = true;

@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import journalReducer from './journalSlice';
+import themeReducer from './themeSlice';
 
-// Minimal store: include the journal reducer so SSR/prerender sees a valid reducer.
+// Redux store with journal and theme reducers
 export const store = configureStore({
   reducer: {
     journal: journalReducer,
+    theme: themeReducer,
   },
 });
 

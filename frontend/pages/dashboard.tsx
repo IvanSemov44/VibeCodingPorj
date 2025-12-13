@@ -26,12 +26,12 @@ export default function DashboardPage(): React.ReactElement | null {
   if (!user) return null;
 
   return (
-    <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
+    <div className="p-8 max-w-[1200px] mx-auto">
       <WelcomeHeader userName={user.name} />
 
       <StatsGrid stats={MOCK_STATS} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ProfileCard user={user} />
         <QuickActions />
         <ActivityFeed />

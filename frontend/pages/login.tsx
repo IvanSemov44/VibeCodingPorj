@@ -70,7 +70,7 @@ export default function LoginPage(): React.ReactElement {
       footerLinkText="Create one"
     >
       <Card>
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <form onSubmit={handleLogin} className="flex flex-col gap-5">
           {error && (
             <Alert type="error" message={error} onClose={() => setError(null)} />
           )}
@@ -87,12 +87,12 @@ export default function LoginPage(): React.ReactElement {
           />
 
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <label style={{ fontWeight: 500, fontSize: 14, color: 'var(--text-primary)' }}>
+            <div className="flex justify-between items-center mb-2">
+              <label className="font-medium text-sm text-primary-text">
                 Password
-                <span style={{ color: '#ef4444', marginLeft: 4 }}>*</span>
+                <span className="text-red-500 ml-1">*</span>
               </label>
-              <a href="#" style={{ fontSize: 13, color: 'var(--accent-primary)', textDecoration: 'none' }}>
+              <a href="#" className="text-[13px] text-accent no-underline hover:text-accent-hover transition-colors">
                 Forgot?
               </a>
             </div>

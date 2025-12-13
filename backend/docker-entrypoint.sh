@@ -1,25 +1,23 @@
 #!/bin/sh
 set -e
 
-echo "Starting backend entrypoint: waiting for database..."
+echo "Starting backend entrypoint: waiting for migrations to finish..."
 
-MAX_RETRIES=30
-COUNT=0
+# Wait until migrator creates the marker file
+WAIT_MAX=0
+WAIT_COUNT=0
+SLEEP=2
+MARKER=/var/www/html/.migrations_done
 
-while ! php -r "try { new PDO(sprintf('mysql:host=%s;dbname=%s;port=%s', getenv('DB_HOST'), getenv('DB_DATABASE'), getenv('DB_PORT')), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); echo 'connected'; } catch (Exception \$e) { exit(1); }" >/dev/null 2>&1; do
-  COUNT=$((COUNT+1))
-  if [ $COUNT -ge $MAX_RETRIES ]; then
-    echo "Database did not become available after ${MAX_RETRIES} attempts"
-    break
-  fi
-  echo "Waiting for database... (${COUNT}/${MAX_RETRIES})"
-  sleep 2
+if [ -n "$WAIT_MAX" ] && [ "$WAIT_MAX" -gt 0 ]; then
+  echo "Will wait up to ${WAIT_MAX} seconds for migrations marker"
+fi
+
+while [ ! -f "$MARKER" ]; do
+  WAIT_COUNT=$((WAIT_COUNT+1))
+  echo "Waiting for migrations marker... (wait loop ${WAIT_COUNT})"
+  sleep $SLEEP
 done
 
-echo "Running migrations and seeders (if any)..."
-# Run migrations and seeders; continue even if they fail initially
-php artisan migrate --force || true
-php artisan db:seed --force || true
-
-echo "Starting artisan server"
+echo "Migrations marker found; starting artisan server"
 exec php artisan serve --host=0.0.0.0 --port=8000

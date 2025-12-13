@@ -101,7 +101,7 @@ export default function RegisterPage(): React.ReactElement {
       footerLinkText="Sign in"
     >
       <Card>
-        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <form onSubmit={handleRegister} className="flex flex-col gap-5">
           {generalError && (
             <Alert type="error" message={generalError} onClose={() => setGeneralError(null)} />
           )}

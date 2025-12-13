@@ -79,49 +79,45 @@ export default function ToolsIndex(): React.ReactElement {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '24px auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ marginBottom: 16 }}>AI Tools</h1>
+    <div className="max-w-[900px] my-6 mx-auto">
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <h1 className="mb-4">AI Tools</h1>
         <Link href="/tools/new">
-          <button style={{ padding: '8px 12px', borderRadius: 6, background: '#2563eb', color: '#fff', border: 'none', cursor: 'pointer' }}>Add Tool</button>
+          <button className="py-2 px-3 rounded-md bg-blue-600 text-white border-none cursor-pointer hover:bg-blue-700 transition-colors">Add Tool</button>
         </Link>
       </div>
 
-      <div style={{ marginTop: 12, marginBottom: 12 }}>
-        <input placeholder="Search by name..." value={q} onChange={e => setQ(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 6, border: '1px solid #e5e7eb', boxSizing: 'border-box' }} />
+      <div className="my-3">
+        <input placeholder="Search by name..." value={q} onChange={e => setQ(e.target.value)} className="w-full p-2.5 rounded-md border border-gray-200 box-border" />
       </div>
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'center' }}>
-        <select value={selectedCategory} onChange={e => { setSelectedCategory(e.target.value); setPage(1); load(1); }} style={{ padding: 8, borderRadius: 6, border: '1px solid #e5e7eb' }}>
+      <div className="flex gap-3 mb-3 items-center flex-wrap">
+        <select value={selectedCategory} onChange={e => { setSelectedCategory(e.target.value); setPage(1); load(1); }} className="p-2 rounded-md border border-gray-200">
           <option value="">All categories</option>
           {categories.map(c => <option key={c.id} value={c.slug || c.name}>{c.name}</option>)}
         </select>
-        <select value={selectedRole} onChange={e => { setSelectedRole(e.target.value); setPage(1); load(1); }} style={{ padding: 8, borderRadius: 6, border: '1px solid #e5e7eb' }}>
+        <select value={selectedRole} onChange={e => { setSelectedRole(e.target.value); setPage(1); load(1); }} className="p-2 rounded-md border border-gray-200">
           <option value="">All roles</option>
           {roles.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
         </select>
-        <div style={{ minWidth: 240, maxWidth: 360 }}>
-          <div style={{ marginTop: 0, width: '100%' }}>
-            <div style={{ width: '100%' }}>
-              <TagMultiSelect value={selectedTags} onChange={(vals) => { setSelectedTags(vals); setPage(1); load(1); }} allowCreate={false} placeholder="Filter tags..." options={tags} />
-            </div>
-          </div>
+        <div className="min-w-[240px] max-w-[360px] flex-1">
+          <TagMultiSelect value={selectedTags} onChange={(vals) => { setSelectedTags(vals); setPage(1); load(1); }} allowCreate={false} placeholder="Filter tags..." options={tags} />
         </div>
-        <div style={{ marginLeft: 'auto' }}>
-          <button onClick={clearFilters} style={{ padding: '6px 10px', borderRadius: 6, background: '#f3f4f6', border: '1px solid #e5e7eb' }}>Clear filters</button>
+        <div className="ml-auto">
+          <button onClick={clearFilters} className="py-1.5 px-2.5 rounded-md bg-gray-100 border border-gray-200 cursor-pointer hover:bg-gray-200 transition-colors">Clear filters</button>
         </div>
       </div>
 
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
-        <div style={{ padding: 12, background: '#fee2e2', color: '#b91c1c', borderRadius: 6 }}>Unable to load tools. {error}</div>
+        <div className="p-3 bg-red-100 text-red-700 rounded-md">Unable to load tools. {error}</div>
       ) : (
         <div>
           {tools.length === 0 ? (
             <div>No tools yet.</div>
           ) : (
-            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+            <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
               {tools.map(t => (
                 <ToolEntry key={t.id} tool={t} onDeleted={() => load()} />
               ))}
@@ -129,12 +125,12 @@ export default function ToolsIndex(): React.ReactElement {
           )}
 
           {meta && meta.last_page > 1 && (
-            <div style={{ display: 'flex', gap: 8, marginTop: 12, alignItems: 'center' }}>
-              <button onClick={() => load(Math.max(1, (meta.current_page || page) - 1))} disabled={!((meta.current_page || page) > 1)} style={{ padding: '6px 10px', borderRadius: 6 }}>Prev</button>
+            <div className="flex gap-2 mt-3 items-center flex-wrap">
+              <button onClick={() => load(Math.max(1, (meta.current_page || page) - 1))} disabled={!((meta.current_page || page) > 1)} className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">Prev</button>
               {Array.from({ length: meta.last_page }, (_, i) => i + 1).map(pn => (
-                <button key={pn} onClick={() => load(pn)} style={{ padding: '6px 8px', borderRadius: 6, fontWeight: (meta.current_page || page) === pn ? 700 : 400 }}>{pn}</button>
+                <button key={pn} onClick={() => load(pn)} className={`py-1.5 px-2 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors ${(meta.current_page || page) === pn ? 'font-bold' : 'font-normal'}`}>{pn}</button>
               ))}
-              <button onClick={() => load(Math.min(meta.last_page, (meta.current_page || page) + 1))} disabled={!((meta.current_page || page) < meta.last_page)} style={{ padding: '6px 10px', borderRadius: 6 }}>Next</button>
+              <button onClick={() => load(Math.min(meta.last_page, (meta.current_page || page) + 1))} disabled={!((meta.current_page || page) < meta.last_page)} className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">Next</button>
             </div>
           )}
         </div>

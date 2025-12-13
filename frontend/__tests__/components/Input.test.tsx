@@ -1,6 +1,7 @@
 import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import Input from '../../components/Input';
+import { describe, test, vi, expect } from 'vitest';
 
 describe('Input component', () => {
   test('renders label and required marker', () => {
@@ -12,24 +13,31 @@ describe('Input component', () => {
   });
 
   test('calls onChange when typing and shows helperText / error', async () => {
-    const onChange = vi.fn();
-    renderWithProviders(
-      <Input placeholder="Enter name" helperText="This is helper" onChange={onChange} />
-    );
+    const spy = vi.fn();
+
+    function Controlled() {
+      const [val, setVal] = React.useState('');
+      const handler = (v: string) => {
+        spy(v);
+        setVal(v);
+      };
+      return <Input placeholder="Enter name" helperText="This is helper" value={val} onChange={handler} />;
+    }
+
+    renderWithProviders(<Controlled />);
 
     const input = screen.getByPlaceholderText('Enter name');
     await userEvent.type(input, 'Alice');
 
-    // onChange will be called for each keystroke; ensure final value reached
-    const calls = (onChange as unknown as ReturnType<typeof vi.fn>).mock.calls;
-    expect(calls.length).toBeGreaterThan(0);
-    expect(calls[calls.length - 1][0]).toBe('Alice');
+    // with a controlled wrapper the input value should update
+    expect((input as HTMLInputElement).value).toBe('Alice');
+    expect(spy).toHaveBeenCalled();
 
     // helper text visible when no error
     expect(screen.getByText(/this is helper/i)).toBeInTheDocument();
 
-    // rerender with error
-    renderWithProviders(<Input placeholder="Enter name" error="Bad" onChange={onChange} />);
+    // rerender with error (uncontrolled for error snapshot)
+    renderWithProviders(<Input placeholder="Enter name" error="Bad" onChange={() => {}} />);
     expect(screen.getByText(/bad/i)).toBeInTheDocument();
   });
 });

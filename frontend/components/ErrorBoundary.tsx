@@ -52,61 +52,23 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
       // Default error UI
       return (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '400px',
-          padding: '32px',
-          textAlign: 'center'
-        }}>
-          <div style={{
-            fontSize: 64,
-            marginBottom: 16
-          }}>
+        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+          <div className="text-[64px] mb-4">
             ⚠️
           </div>
-          <h2 style={{
-            margin: '0 0 8px 0',
-            fontSize: 24,
-            fontWeight: 700,
-            color: 'var(--text-primary)'
-          }}>
+          <h2 className="m-0 mb-2 text-2xl font-bold text-primary-text">
             Something went wrong
           </h2>
-          <p style={{
-            margin: '0 0 24px 0',
-            fontSize: 14,
-            color: 'var(--text-secondary)',
-            maxWidth: 500
-          }}>
+          <p className="m-0 mb-6 text-sm text-secondary-text max-w-[500px]">
             We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
           </p>
 
           {process.env.NODE_ENV === 'development' && this.state.error && (
-            <details style={{
-              marginBottom: 24,
-              padding: 16,
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 8,
-              textAlign: 'left',
-              maxWidth: 600,
-              width: '100%'
-            }}>
-              <summary style={{
-                cursor: 'pointer',
-                fontWeight: 600,
-                marginBottom: 8
-              }}>
+            <details className="mb-6 p-4 bg-secondary-bg border border-border rounded-lg text-left max-w-[600px] w-full">
+              <summary className="cursor-pointer font-semibold mb-2">
                 Error Details (Development Only)
               </summary>
-              <pre style={{
-                fontSize: 12,
-                overflow: 'auto',
-                color: '#ef4444'
-              }}>
+              <pre className="text-xs overflow-auto text-red-500">
                 {this.state.error.toString()}
                 {'\n\n'}
                 {this.state.error.stack}
@@ -114,48 +76,16 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             </details>
           )}
 
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div className="flex gap-3">
             <button
               onClick={this.handleReset}
-              style={{
-                padding: '12px 24px',
-                background: 'var(--bg-secondary)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-tertiary)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-secondary)';
-              }}
+              className="py-3 px-6 bg-secondary-bg text-primary-text border border-border rounded-lg text-sm font-semibold cursor-pointer transition-all hover:bg-tertiary-bg"
             >
               Try Again
             </button>
             <button
               onClick={() => window.location.href = '/'}
-              style={{
-                padding: '12px 24px',
-                background: 'var(--accent-primary)',
-                color: 'white',
-                border: 'none',
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.opacity = '0.9';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.opacity = '1';
-              }}
+              className="py-3 px-6 bg-accent text-white border-none rounded-lg text-sm font-semibold cursor-pointer transition-opacity hover:opacity-90"
             >
               Go to Homepage
             </button>

@@ -23,6 +23,16 @@ jobs:
           cd full-stack-starter-kit/frontend
           npm ci
 
+      - name: Run Snyk code scan
+        if: secrets.SNYK_TOKEN != ''
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          cd full-stack-starter-kit/frontend
+          npx snyk auth $SNYK_TOKEN
+          npx snyk test
+          npx snyk monitor
+
       - name: Run tests (Vitest)
         run: |
           cd full-stack-starter-kit/frontend

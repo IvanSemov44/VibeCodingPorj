@@ -1,9 +1,16 @@
 import reducer, { setEntries, addEntry, removeEntry, setLoading, setError } from '../store/journalSlice';
 import type { JournalEntry } from '../lib/types';
+import { describe, it, expect } from 'vitest';
 
 describe('journalSlice reducers', () => {
-  const entry1: JournalEntry = { id: 1, title: 'First', body: 'A', created_at: '', updated_at: '' };
-  const entry2: JournalEntry = { id: 2, title: 'Second', body: 'B', created_at: '', updated_at: '' };
+  const entry1: JournalEntry = {
+    id: 1, title: 'First', created_at: '',
+    content: ''
+  };
+  const entry2: JournalEntry = {
+    id: 2, title: 'Second', created_at: '',
+    content: ''
+  };
 
   it('setEntries replaces entries', () => {
     const state = reducer(undefined, setEntries([entry1, entry2]));

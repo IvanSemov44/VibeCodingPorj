@@ -22,9 +22,12 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-secret}
       XDEBUG_MODE: develop,debug
       XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
+    command: sh -c "chmod +x /var/www/html/docker-entrypoint.sh && /var/www/html/docker-entrypoint.sh"
+    env_file:
+      - .env
     depends_on:
       - db
-    command: sh -c "chmod +x /var/www/html/backend/docker-entrypoint.sh && /var/www/html/backend/docker-entrypoint.sh"
+      - migrator
 
   db:
     image: mysql:8.0
@@ -38,6 +41,23 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    env_file:
+      - .env
+
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fsstarter_backend_migrator
+    volumes:
+      - ./:/var/www/html:cached
+      - ./vendor:/var/www/html/vendor
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: sh -c "chmod +x /var/www/html/docker-migrate-and-seed.sh && /var/www/html/docker-migrate-and-seed.sh"
+    restart: 'no'
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest

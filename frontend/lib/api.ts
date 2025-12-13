@@ -171,6 +171,24 @@ export async function deleteJournalEntry(id: number | string): Promise<void> {
 
 export async function getJournalStats(): Promise<JournalStats> { const res = await fetchWithAuth(`${BASE}/api/journal/stats`); return await parseJson<JournalStats>(res); }
 
+// 2FA endpoints (public)
+export async function get2faSecret(): Promise<{ provisioning_uri: string | null; secret_mask: string | null }> {
+  try {
+    const res = await fetchWithAuth(`${BASE}/api/2fa/secret`);
+    // Normalize 404 -> no secret
+    if (res.status === 404) return { provisioning_uri: null, secret_mask: null };
+    return await parseJson<{ provisioning_uri: string | null; secret_mask: string | null }>(res);
+  } catch (err: unknown) {
+    throw handleApiError(err, undefined);
+  }
+}
+
+export async function enable2faTotp(): Promise<{ provisioning_uri?: string | null; recovery_codes?: string[] } | null> {
+  const res = await fetchWithAuth(`${BASE}/api/2fa/enable`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'totp' }) });
+  if (!res.ok) return await parseJson(res as unknown as Response);
+  return await parseJson(res as unknown as Response);
+}
+
 // Tools API
 export async function getTools(params: Record<string, string | number | boolean> = {}): Promise<ApiListResponse<Tool>> {
   const qs = new URLSearchParams(Object.entries(params).reduce<Record<string,string>>((acc, [k,v]) => ({ ...acc, [k]: String(v) }), {})).toString();
@@ -211,4 +229,21 @@ export async function uploadToolScreenshots(id: number | string, files: FileList
 export async function deleteToolScreenshot(id: number | string, url: string): Promise<{ screenshots: string[] }> {
   const res = await fetchWithAuth(`${BASE}/api/tools/${id}/screenshots`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
   return await parseJson<{ screenshots: string[] }>(res);
+}
+
+// Admin: per-user 2FA management
+export async function getUserTwoFactor(userId: string): Promise<unknown | null> {
+  const res = await fetchWithAuth(`${BASE}/api/admin/users/${userId}/2fa`);
+  if (res.status === 404) return null;
+  return await parseJson<unknown>(res);
+}
+
+export async function setUserTwoFactor(userId: string, type: string): Promise<unknown> {
+  const res = await fetchWithAuth(`${BASE}/api/admin/users/${userId}/2fa`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type }) });
+  return await parseJson<unknown>(res);
+}
+
+export async function disableUserTwoFactor(userId: string): Promise<void> {
+  const res = await fetchWithAuth(`${BASE}/api/admin/users/${userId}/2fa`, { method: 'DELETE' });
+  if (!res.ok) await parseJson(res as unknown as Response);
 }

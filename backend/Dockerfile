@@ -3,7 +3,7 @@ FROM php:8.2-fpm
 # Install system dependencies and PHP extensions
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        libzip-dev zip unzip git curl libpng-dev libonig-dev libxml2-dev default-mysql-client \
+        libzip-dev zip unzip git curl libpng-dev libonig-dev libxml2-dev libsqlite3-dev default-mysql-client \
     && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip xml \
     && rm -rf /var/lib/apt/lists/*
 

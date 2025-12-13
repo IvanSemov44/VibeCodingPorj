@@ -44,51 +44,33 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
   };
 
   return (
-    <div style={{
-      background: 'var(--bg-secondary)',
-      border: '2px solid var(--border-color)',
-      borderRadius: 12,
-      padding: 16,
-      transition: 'all 0.3s',
-      opacity: deleting ? 0.5 : 1,
-      pointerEvents: deleting ? 'none' : 'auto',
-      ...(expanded && {
-        borderColor: mood.color,
-        boxShadow: `0 4px 12px ${mood.color}30`
-      })
-    }}>
-      <div style={{ display: 'flex', alignItems: 'start', gap: 12, marginBottom: 12 }}>
-        <div style={{
-          fontSize: 32,
-          width: 48,
-          height: 48,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: `${mood.color}20`,
-          borderRadius: 10,
-          flexShrink: 0
-        }}>
+    <div
+      className={`bg-secondary-bg border-2 border-border rounded-xl p-4 transition-all duration-300 ${deleting ? 'opacity-50 pointer-events-none' : ''}`}
+      style={expanded ? { borderColor: mood.color, boxShadow: `0 4px 12px ${mood.color}30` } : undefined}
+    >
+      <div className="flex items-start gap-3 mb-3">
+        <div
+          className="text-[32px] w-12 h-12 flex items-center justify-center rounded-[10px] flex-shrink-0"
+          style={{ background: `${mood.color}20` }}
+        >
           {mood.emoji}
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h3 style={{ margin: 0, marginBottom: 4, fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', wordWrap: 'break-word' }}>
+        <div className="flex-1 min-w-0">
+          <h3 className="m-0 mb-1 text-lg font-semibold text-primary-text break-words">
             {entry.title}
           </h3>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12, color: mood.color, fontWeight: 600, textTransform: 'uppercase' }}>{mood.label}</span>
-            <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{formattedDate}</span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: '#f59e0b', background: '#f59e0b20', padding: '2px 8px', borderRadius: 6 }}>+{entry.xp} XP</span>
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-xs font-semibold uppercase" style={{ color: mood.color }}>{mood.label}</span>
+            <span className="text-xs text-tertiary-text">{formattedDate}</span>
+            <span className="text-xs font-semibold text-amber-500 bg-amber-500/10 py-0.5 px-2 rounded-md">+{entry.xp} XP</span>
           </div>
         </div>
 
         <button
           onClick={handleDelete}
           disabled={deleting}
-          style={{ background: 'transparent', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', padding: 4, fontSize: 18, transition: 'color 0.2s', flexShrink: 0 }}
-          onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = '#ef4444'}
-          onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = 'var(--text-tertiary)'}
+          className="bg-transparent border-none text-tertiary-text cursor-pointer p-1 text-lg transition-colors flex-shrink-0 hover:text-red-500"
           title="Delete entry"
         >
           🗑️
@@ -96,22 +78,21 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
       </div>
 
       {entry.tags && entry.tags.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+        <div className="flex gap-1.5 flex-wrap mb-3">
           {entry.tags.map((tag, i) => (
-            <span key={i} style={{ fontSize: 11, padding: '4px 10px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', borderRadius: 6, color: 'var(--text-secondary)', fontWeight: 500 }}>#{tag}</span>
+            <span key={i} className="text-[11px] py-1 px-2.5 bg-tertiary-bg border border-border rounded-md text-secondary-text font-medium">#{tag}</span>
           ))}
         </div>
       )}
 
-      <div style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--text-secondary)', maxHeight: expanded ? 'none' : 60, overflow: 'hidden', marginBottom: 12, whiteSpace: expanded ? 'pre-wrap' : 'nowrap', textOverflow: expanded ? 'clip' : 'ellipsis' }}>
+      <div className={`text-sm leading-relaxed text-secondary-text overflow-hidden mb-3 ${expanded ? 'max-h-none whitespace-pre-wrap' : 'max-h-[60px] whitespace-nowrap text-ellipsis'}`}>
         {entry.content}
       </div>
 
       <button
         onClick={() => setExpanded(!expanded)}
-        style={{ background: 'transparent', border: 'none', color: mood.color, cursor: 'pointer', fontSize: 13, fontWeight: 600, padding: 0, textDecoration: 'underline', transition: 'opacity 0.2s' }}
-        onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.opacity = '0.7'}
-        onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.opacity = '1'}
+        className="bg-transparent border-none cursor-pointer text-[13px] font-semibold p-0 underline transition-opacity hover:opacity-70"
+        style={{ color: mood.color }}
       >
         {expanded ? '▲ Show Less' : '▼ Read More'}
       </button>

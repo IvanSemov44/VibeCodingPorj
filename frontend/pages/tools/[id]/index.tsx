@@ -47,66 +47,65 @@ export default function ToolDetailPage(): React.ReactElement | null {
     })();
   }, [id]);
 
-  if (loading) return <div style={{ maxWidth: 900, margin: '24px auto' }}>Loading...</div>;
-  if (error) return <div style={{ maxWidth: 900, margin: '24px auto' }}>{error}</div>;
+  if (loading) return <div className="max-w-[900px] my-6 mx-auto">Loading...</div>;
+  if (error) return <div className="max-w-[900px] my-6 mx-auto">{error}</div>;
   if (!tool) return null;
 
   return (
-    <div style={{ maxWidth: 900, margin: '24px auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="max-w-[900px] my-6 mx-auto">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h1 style={{ margin: 0 }}>{tool.name}</h1>
-          <div style={{ color: '#6b7280' }}>{tool.description}</div>
+          <h1 className="m-0">{tool.name}</h1>
+          <div className="text-gray-500">{tool.description}</div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="flex gap-2">
           <a href={tool.url} target="_blank" rel="noreferrer">
-            <button style={{ padding: '8px 12px' }}>Visit</button>
+            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">Visit</button>
           </a>
           <Link href={`/tools/${tool.id}/edit`}>
-            <button style={{ padding: '8px 12px' }}>Edit</button>
+            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">Edit</button>
           </Link>
         </div>
       </div>
 
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <strong>Documentation:</strong>{' '}
-        {tool.docs_url ? <a href={tool.docs_url} target="_blank" rel="noreferrer">Open docs</a> : '—'}
+        {tool.docs_url ? <a href={tool.docs_url} target="_blank" rel="noreferrer" className="text-accent hover:text-accent-hover">Open docs</a> : '—'}
       </div>
 
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <strong>Usage</strong>
-        <div style={{ marginTop: 8 }}>{tool.usage || '—'}</div>
+        <div className="mt-2">{tool.usage || '—'}</div>
       </div>
 
       {tool.examples && (
-        <div style={{ marginTop: 16 }}>
+        <div className="mt-4">
           <strong>Examples</strong>
-          <div style={{ marginTop: 8 }}>{tool.examples}</div>
+          <div className="mt-2">{tool.examples}</div>
         </div>
       )}
 
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <strong>Categories</strong>
-        <div style={{ marginTop: 8 }}>{(tool.categories || []).map((c) => c.name).join(', ') || '—'}</div>
+        <div className="mt-2">{(tool.categories || []).map((c) => c.name).join(', ') || '—'}</div>
       </div>
 
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <strong>Roles</strong>
-        <div style={{ marginTop: 8 }}>{(tool.roles || []).map((r) => r.name).join(', ') || '—'}</div>
+        <div className="mt-2">{(tool.roles || []).map((r) => r.name).join(', ') || '—'}</div>
       </div>
 
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <strong>Tags</strong>
-        <div style={{ marginTop: 8 }}>{(tool.tags || []).map((t) => t.name).join(', ') || '—'}</div>
+        <div className="mt-2">{(tool.tags || []).map((t) => t.name).join(', ') || '—'}</div>
       </div>
 
       {tool.screenshots && tool.screenshots.length > 0 && (
-        <div style={{ marginTop: 20 }}>
+        <div className="mt-5">
           <strong>Screenshots</strong>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+          <div className="flex gap-2 mt-2 flex-wrap">
             {tool.screenshots.map((s) => (
-              // `s` is expected to be a URL string
-              <Image key={s} src={s} alt="screenshot" width={240} height={160} style={{ objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }} />
+              <Image key={s} src={s} alt="screenshot" width={240} height={160} className="object-cover rounded-md border border-gray-200" />
             ))}
           </div>
         </div>

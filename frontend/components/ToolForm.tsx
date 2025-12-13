@@ -170,8 +170,8 @@ export default function ToolForm({
               }
             />
 
-            <div style={{ marginTop: 12 }}>
-              <div style={{ marginTop: 8 }}>
+            <div className="mt-3">
+              <div className="mt-2">
                 <TagMultiSelect
                   value={values.tags}
                   onChange={(newTags: string[]) => setFieldValue('tags', newTags)}

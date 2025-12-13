@@ -35,7 +35,7 @@ export default function EditToolPage(): React.ReactElement | null {
   if (!tool) return <div>Loading...</div>;
 
   return (
-    <div style={{ maxWidth: 900, margin: '24px auto' }}>
+    <div className="max-w-[900px] my-6 mx-auto">
       <h1>Edit Tool</h1>
       <ToolForm
         categories={categories}

@@ -6,7 +6,7 @@ const TwoFactorSetup = dynamic(() => import('../components/TwoFactorSetup'), { s
 
 export default function TwoFactorSetupPage() {
   return (
-    <main style={{ padding: 24 }}>
+    <main className="p-6">
       <h1>Two-Factor Setup</h1>
       <TwoFactorSetup />
     </main>

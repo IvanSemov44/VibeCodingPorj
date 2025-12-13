@@ -1,28 +1,47 @@
+/**
+ * Next.js App Component
+ *
+ * Entry point for the application that wraps all pages with providers.
+ * Sets up global state management, data fetching, theming, and error handling.
+ */
+
 import React from 'react';
 import type { AppProps } from 'next/app';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { Provider } from 'react-redux';
+
+// Global styles
+import '../styles/globals.css';
+
+// Components
 import Layout from '../components/Layout';
 import { ToastProvider } from '../components/Toast';
-import { ThemeProvider } from '../context/ThemeContext';
 import ErrorBoundary from '../components/ErrorBoundary';
-import '../styles/globals.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Provider } from 'react-redux';
-import { store } from '../store';
+import { ThemeInitializer } from '../components/ThemeInitializer';
 
-const queryClient = new QueryClient();
+// Configuration
+import { queryClient } from '../lib/queryClient';
+import { store } from '../store';
 
 export default function App({ Component, pageProps }: AppProps): React.ReactElement {
   return (
+    // 1. ErrorBoundary - Catches all React errors (outermost layer)
     <ErrorBoundary>
+      {/* 2. React Query - Server state management & caching */}
       <QueryClientProvider client={queryClient}>
+        {/* 3. Redux - Client state management (theme, journal, etc.) */}
         <Provider store={store}>
-          <ThemeProvider>
+          {/* 4. ThemeInitializer - Load theme from localStorage */}
+          <ThemeInitializer>
+            {/* 5. ToastProvider - Global notifications */}
             <ToastProvider>
+              {/* 6. Layout - App structure (header, footer, nav) */}
               <Layout>
+                {/* 7. Page Component - Your actual page content */}
                 <Component {...pageProps} />
               </Layout>
             </ToastProvider>
-          </ThemeProvider>
+          </ThemeInitializer>
         </Provider>
       </QueryClientProvider>
     </ErrorBoundary>
