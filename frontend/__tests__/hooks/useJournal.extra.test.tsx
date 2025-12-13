@@ -8,13 +8,26 @@ import { vi, describe, beforeEach, test, expect } from 'vitest';
 // Provide mocks we can reconfigure per-test
 vi.mock('../../store/api', () => ({
   useGetEntriesQuery: vi.fn((arg: any) => ({ data: [], isLoading: false, refetch: vi.fn() })),
-  useGetStatsQuery: vi.fn(() => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: vi.fn() })),
-  useCreateEntryMutation: vi.fn(() => [vi.fn((d: any) => ({ unwrap: () => Promise.resolve({ ...d, id: 1 }) })), { isLoading: false }]),
-  useDeleteEntryMutation: vi.fn(() => [vi.fn((id: number | string) => ({ unwrap: () => Promise.resolve() })), { isLoading: false }]),
+  useGetStatsQuery: vi.fn(() => ({
+    data: { total: 0, xp: 0 },
+    isLoading: false,
+    refetch: vi.fn(),
+  })),
+  useCreateEntryMutation: vi.fn(() => [
+    vi.fn((d: any) => ({ unwrap: () => Promise.resolve({ ...d, id: 1 }) })),
+    { isLoading: false },
+  ]),
+  useDeleteEntryMutation: vi.fn(() => [
+    vi.fn((id: number | string) => ({ unwrap: () => Promise.resolve() })),
+    { isLoading: false },
+  ]),
 }));
 
 function Consumer(props: any) {
-  const { entries, stats, loading, loadData, createEntry, deleteEntry, refreshStats } = useJournal(props.filters, props.autoLoad ?? true);
+  const { entries, stats, loading, loadData, createEntry, deleteEntry, refreshStats } = useJournal(
+    props.filters,
+    props.autoLoad ?? true,
+  );
   React.useEffect(() => {
     const handlers = (global as any).__TEST_HANDLERS || ((global as any).__TEST_HANDLERS = {});
     handlers.loadData = loadData;
@@ -35,7 +48,9 @@ function Consumer(props: any) {
       <div>stats:{(stats as any)?.total ?? 'nil'}</div>
       <div>loading:{loading ? 'y' : 'n'}</div>
       <button onClick={() => loadData()}>load</button>
-      <button onClick={() => createEntry({ title: 't', content: 'c', xp: 1 } as any)}>create</button>
+      <button onClick={() => createEntry({ title: 't', content: 'c', xp: 1 } as any)}>
+        create
+      </button>
       <button onClick={() => deleteEntry(5)}>del</button>
       <button onClick={() => refreshStats()}>refresh</button>
     </div>
@@ -49,10 +64,26 @@ describe('useJournal extra', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // restore default mock implementations so hook destructuring works
-    vi.mocked(api.useGetEntriesQuery).mockImplementation((arg: any) => ({ data: [], isLoading: false, refetch: vi.fn() } as any));
-    vi.mocked(api.useGetStatsQuery).mockImplementation(() => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: vi.fn() } as any));
-    vi.mocked(api.useCreateEntryMutation).mockImplementation(() => [vi.fn((d: any) => ({ unwrap: () => Promise.resolve({ ...d, id: 1 }) })), { isLoading: false }] as any);
-    vi.mocked(api.useDeleteEntryMutation).mockImplementation(() => [vi.fn((id: number | string) => ({ unwrap: () => Promise.resolve() })), { isLoading: false }] as any);
+    vi.mocked(api.useGetEntriesQuery).mockImplementation(
+      (arg: any) => ({ data: [], isLoading: false, refetch: vi.fn() } as any),
+    );
+    vi.mocked(api.useGetStatsQuery).mockImplementation(
+      () => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: vi.fn() } as any),
+    );
+    vi.mocked(api.useCreateEntryMutation).mockImplementation(
+      () =>
+        [
+          vi.fn((d: any) => ({ unwrap: () => Promise.resolve({ ...d, id: 1 }) })),
+          { isLoading: false },
+        ] as any,
+    );
+    vi.mocked(api.useDeleteEntryMutation).mockImplementation(
+      () =>
+        [
+          vi.fn((id: number | string) => ({ unwrap: () => Promise.resolve() })),
+          { isLoading: false },
+        ] as any,
+    );
   });
 
   test('memoizes and passes filters to useGetEntriesQuery', () => {
@@ -67,8 +98,12 @@ describe('useJournal extra', () => {
   test('loadData calls refetch on entries and stats', async () => {
     const refetchEntries = vi.fn(() => Promise.resolve());
     const refetchStats = vi.fn(() => Promise.resolve());
-    vi.mocked(api.useGetEntriesQuery).mockImplementation(() => ({ data: [], isLoading: false, refetch: refetchEntries } as any));
-    vi.mocked(api.useGetStatsQuery).mockImplementation(() => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: refetchStats } as any));
+    vi.mocked(api.useGetEntriesQuery).mockImplementation(
+      () => ({ data: [], isLoading: false, refetch: refetchEntries } as any),
+    );
+    vi.mocked(api.useGetStatsQuery).mockImplementation(
+      () => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: refetchStats } as any),
+    );
 
     renderWithProviders(<Consumer />);
     await userEvent.click(screen.getByText('load'));
@@ -78,7 +113,9 @@ describe('useJournal extra', () => {
 
   test('createEntry calls mutation on success', async () => {
     const successFn = vi.fn((d: any) => ({ unwrap: () => Promise.resolve({ ...d, id: 9 }) }));
-    vi.mocked(api.useCreateEntryMutation).mockImplementation(() => [successFn, { isLoading: false }] as any);
+    vi.mocked(api.useCreateEntryMutation).mockImplementation(
+      () => [successFn, { isLoading: false }] as any,
+    );
     const { unmount } = renderWithProviders(<Consumer />);
     await userEvent.click(screen.getByText('create'));
     expect(successFn).toHaveBeenCalled();
@@ -87,7 +124,9 @@ describe('useJournal extra', () => {
 
   test('createEntry calls mutation on failure', async () => {
     const failFn = vi.fn((d: any) => ({ unwrap: () => Promise.reject(new Error('create-fail')) }));
-    vi.mocked(api.useCreateEntryMutation).mockImplementation(() => [failFn, { isLoading: false }] as any);
+    vi.mocked(api.useCreateEntryMutation).mockImplementation(
+      () => [failFn, { isLoading: false }] as any,
+    );
     const { unmount } = renderWithProviders(<Consumer />);
     const handlers = (global as any).__TEST_HANDLERS;
     if (handlers && handlers.createEntry) {
@@ -99,7 +138,9 @@ describe('useJournal extra', () => {
 
   test('deleteEntry calls mutation on success', async () => {
     const okFn = vi.fn((id: any) => ({ unwrap: () => Promise.resolve() }));
-    vi.mocked(api.useDeleteEntryMutation).mockImplementation(() => [okFn, { isLoading: false }] as any);
+    vi.mocked(api.useDeleteEntryMutation).mockImplementation(
+      () => [okFn, { isLoading: false }] as any,
+    );
     const { unmount } = renderWithProviders(<Consumer />);
     await userEvent.click(screen.getByText('del'));
     expect(okFn).toHaveBeenCalled();
@@ -108,7 +149,9 @@ describe('useJournal extra', () => {
 
   test('deleteEntry calls mutation on failure', async () => {
     const errFn = vi.fn((id: any) => ({ unwrap: () => Promise.reject(new Error('del-fail')) }));
-    vi.mocked(api.useDeleteEntryMutation).mockImplementation(() => [errFn, { isLoading: false }] as any);
+    vi.mocked(api.useDeleteEntryMutation).mockImplementation(
+      () => [errFn, { isLoading: false }] as any,
+    );
     const { unmount } = renderWithProviders(<Consumer />);
     const handlers = (global as any).__TEST_HANDLERS;
     if (handlers && handlers.deleteEntry) {
@@ -120,7 +163,9 @@ describe('useJournal extra', () => {
 
   test('refreshStats calls stats refetch and swallows errors', async () => {
     const refetchStats = vi.fn(() => Promise.reject(new Error('stat-err')));
-    vi.mocked(api.useGetStatsQuery).mockImplementation(() => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: refetchStats } as any));
+    vi.mocked(api.useGetStatsQuery).mockImplementation(
+      () => ({ data: { total: 0, xp: 0 }, isLoading: false, refetch: refetchStats } as any),
+    );
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     renderWithProviders(<Consumer />);

@@ -1,13 +1,33 @@
+import React from 'react';
 import { renderWithProviders, screen } from '../../tests/test-utils';
 import { useJournal } from '../../hooks/useJournal';
 import { vi, describe, test, expect } from 'vitest';
 
 // We'll test the hook by mocking the RTK Query hooks it relies on
 vi.mock('../../store/api', () => ({
-  useGetEntriesQuery: (arg: any) => ({ data: [{ id: 9, title: 'Hooked', content: 'ok', xp: 3, mood: 'neutral', created_at: new Date().toISOString() }], isLoading: false, refetch: vi.fn() }),
+  useGetEntriesQuery: (arg: any) => ({
+    data: [
+      {
+        id: 9,
+        title: 'Hooked',
+        content: 'ok',
+        xp: 3,
+        mood: 'neutral',
+        created_at: new Date().toISOString(),
+      },
+    ],
+    isLoading: false,
+    refetch: vi.fn(),
+  }),
   useGetStatsQuery: () => ({ data: { total: 1, xp: 3 }, refetch: vi.fn(), isLoading: false }),
-  useCreateEntryMutation: () => [ (data: any) => ({ unwrap: () => Promise.resolve({ ...data, id: 100 }) }), { isLoading: false } ],
-  useDeleteEntryMutation: () => [ (id: number|string) => ({ unwrap: () => Promise.resolve() }), { isLoading: false } ],
+  useCreateEntryMutation: () => [
+    (data: any) => ({ unwrap: () => Promise.resolve({ ...data, id: 100 }) }),
+    { isLoading: false },
+  ],
+  useDeleteEntryMutation: () => [
+    (id: number | string) => ({ unwrap: () => Promise.resolve() }),
+    { isLoading: false },
+  ],
 }));
 
 function Consumer() {
@@ -16,7 +36,9 @@ function Consumer() {
     <div>
       <div>entries:{entries.length}</div>
       <div>stats:{(stats as any)?.total}</div>
-      <button onClick={() => createEntry({ title: 'x', content: 'y', xp: 1 } as any)}>create</button>
+      <button onClick={() => createEntry({ title: 'x', content: 'y', xp: 1 } as any)}>
+        create
+      </button>
       <button onClick={() => deleteEntry(9)}>del</button>
     </div>
   );

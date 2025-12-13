@@ -33,12 +33,11 @@ export default function ToolDetailPage(): React.ReactElement | null {
     if (!id) return;
     (async () => {
       setLoading(true);
-            try {
-            const toolObj = await getTool(String(id));
-            setTool(toolObj as Tool);
-            setError('');
+      try {
+        const toolObj = await getTool(String(id));
+        setTool(toolObj as Tool);
+        setError('');
       } catch (err) {
-         
         console.error(err);
         setError('Network error');
       } finally {
@@ -60,17 +59,32 @@ export default function ToolDetailPage(): React.ReactElement | null {
         </div>
         <div className="flex gap-2">
           <a href={tool.url} target="_blank" rel="noreferrer">
-            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">Visit</button>
+            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+              Visit
+            </button>
           </a>
           <Link href={`/tools/${tool.id}/edit`}>
-            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">Edit</button>
+            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+              Edit
+            </button>
           </Link>
         </div>
       </div>
 
       <div className="mt-4">
         <strong>Documentation:</strong>{' '}
-        {tool.docs_url ? <a href={tool.docs_url} target="_blank" rel="noreferrer" className="text-accent hover:text-accent-hover">Open docs</a> : '—'}
+        {tool.docs_url ? (
+          <a
+            href={tool.docs_url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-accent hover:text-accent-hover"
+          >
+            Open docs
+          </a>
+        ) : (
+          '—'
+        )}
       </div>
 
       <div className="mt-4">
@@ -105,7 +119,14 @@ export default function ToolDetailPage(): React.ReactElement | null {
           <strong>Screenshots</strong>
           <div className="flex gap-2 mt-2 flex-wrap">
             {tool.screenshots.map((s) => (
-              <Image key={s} src={s} alt="screenshot" width={240} height={160} className="object-cover rounded-md border border-gray-200" />
+              <Image
+                key={s}
+                src={s}
+                alt="screenshot"
+                width={240}
+                height={160}
+                className="object-cover rounded-md border border-gray-200"
+              />
             ))}
           </div>
         </div>

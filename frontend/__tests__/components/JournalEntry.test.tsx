@@ -10,7 +10,7 @@ const sample = {
   mood: 'happy',
   xp: 12,
   created_at: new Date().toISOString(),
-  tags: ['quest', 'team']
+  tags: ['quest', 'team'],
 };
 
 describe('JournalEntry', () => {

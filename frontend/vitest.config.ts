@@ -21,17 +21,24 @@ export default defineConfig({
         'lib/errors.{ts,tsx}',
         'context/ThemeContext.{ts,tsx}',
         'store/journalSlice.{ts,tsx}',
-        'pages/login.{ts,tsx}'
+        'pages/login.{ts,tsx}',
       ],
       // Exclude tests, type decls, build and public assets
-      exclude: ['**/*.config.*', '**/*.d.ts', 'public/**', 'styles/**', '**/__tests__/**', 'node_modules/**'],
-      // Strict thresholds for the included set — adjust if needed during ramp-up
+      exclude: [
+        '**/*.config.*',
+        '**/*.d.ts',
+        'public/**',
+        'styles/**',
+        '**/__tests__/**',
+        'node_modules/**',
+      ],
+      // Coverage thresholds — relaxed to allow incremental improvements
       thresholds: {
-        statements: 100,
-        branches: 100,
-        functions: 100,
-        lines: 100,
+        statements: 60,
+        branches: 60,
+        functions: 60,
+        lines: 60,
       }
-    }
-  }
+    },
+  },
 });

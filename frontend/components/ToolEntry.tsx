@@ -18,9 +18,8 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
       await deleteTool(tool.id);
       if (onDeleted) onDeleted(tool.id);
     } catch (err) {
-       
       console.error(err);
-       
+
       alert('Failed to delete');
     }
   };
@@ -30,23 +29,50 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex items-start gap-4 flex-1 min-w-0">
           {tool.screenshots && tool.screenshots[0] ? (
-            <Image src={tool.screenshots[0]} alt="thumb" width={96} height={64} className="rounded-lg object-cover flex-shrink-0" />
+            <Image
+              src={tool.screenshots[0]}
+              alt="thumb"
+              width={96}
+              height={64}
+              className="rounded-lg object-cover flex-shrink-0"
+            />
           ) : null}
           <div className="flex-1 min-w-0">
             <div className="mb-1">
-              <Link href={`/tools/${tool.id}`} className="text-lg font-semibold text-primary-text hover:text-accent transition-colors no-underline">{tool.name ?? `Tool ${tool.id}`}</Link>
+              <Link
+                href={`/tools/${tool.id}`}
+                className="text-lg font-semibold text-primary-text hover:text-accent transition-colors no-underline"
+              >
+                {tool.name ?? `Tool ${tool.id}`}
+              </Link>
             </div>
             <div className="text-sm text-secondary-text line-clamp-2">{tool.description ?? ''}</div>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {tool.url ? (
-            <a className="px-3 py-1.5 text-sm font-medium text-accent hover:text-accent-hover no-underline transition-colors" href={tool.url} target="_blank" rel="noreferrer">Visit</a>
+            <a
+              className="px-3 py-1.5 text-sm font-medium text-accent hover:text-accent-hover no-underline transition-colors"
+              href={tool.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Visit
+            </a>
           ) : (
             <span className="px-3 py-1.5 text-sm font-medium text-tertiary-text">Visit</span>
           )}
-          <Link href={`/tools/${tool.id}/edit`}><button className="px-3 py-1.5 bg-accent text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-accent-hover">Edit</button></Link>
-          <button onClick={handleDelete} className="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-red-600">Delete</button>
+          <Link href={`/tools/${tool.id}/edit`}>
+            <button className="px-3 py-1.5 bg-accent text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-accent-hover">
+              Edit
+            </button>
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-red-600"
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>

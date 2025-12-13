@@ -53,14 +53,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       // Default error UI
       return (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-          <div className="text-[64px] mb-4">
-            ⚠️
-          </div>
-          <h2 className="m-0 mb-2 text-2xl font-bold text-primary-text">
-            Something went wrong
-          </h2>
+          <div className="text-[64px] mb-4">⚠️</div>
+          <h2 className="m-0 mb-2 text-2xl font-bold text-primary-text">Something went wrong</h2>
           <p className="m-0 mb-6 text-sm text-secondary-text max-w-[500px]">
-            We encountered an unexpected error. Please try refreshing the page or contact support if the problem persists.
+            We encountered an unexpected error. Please try refreshing the page or contact support if
+            the problem persists.
           </p>
 
           {process.env.NODE_ENV === 'development' && this.state.error && (
@@ -84,7 +81,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               Try Again
             </button>
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = '/')}
               className="py-3 px-6 bg-accent text-white border-none rounded-lg text-sm font-semibold cursor-pointer transition-opacity hover:opacity-90"
             >
               Go to Homepage

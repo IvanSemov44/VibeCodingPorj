@@ -64,14 +64,23 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
           </div>
 
           <nav className="flex items-center gap-4">
-            <Link href="/" className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg">
+            <Link
+              href="/"
+              className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
+            >
               Home
             </Link>
-            <Link href="/tools" className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg">
+            <Link
+              href="/tools"
+              className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
+            >
               Tools
             </Link>
             {!loading && user && (
-              <Link href="/dashboard" className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg">
+              <Link
+                href="/dashboard"
+                className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
+              >
                 Dashboard
               </Link>
             )}
@@ -85,12 +94,18 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
             </button>
 
             {!loading && !user && (
-              <Link href="/login" className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg no-underline transition-all hover:bg-accent-hover">
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg no-underline transition-all hover:bg-accent-hover"
+              >
                 Login
               </Link>
             )}
             {!loading && user && (
-              <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white text-sm font-semibold border-none rounded-lg cursor-pointer transition-all hover:bg-red-600">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-500 text-white text-sm font-semibold border-none rounded-lg cursor-pointer transition-all hover:bg-red-600"
+              >
                 Logout
               </button>
             )}

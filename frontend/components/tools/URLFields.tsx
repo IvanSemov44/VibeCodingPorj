@@ -21,7 +21,9 @@ export default function URLFields(): React.ReactElement {
         <ErrorMessage name="url" component="div" className="error" />
       </div>
       <div>
-        <label className="block font-semibold mb-1 text-sm text-primary-text">Documentation (link)</label>
+        <label className="block font-semibold mb-1 text-sm text-primary-text">
+          Documentation (link)
+        </label>
         <Field
           name="docs_url"
           type="url"

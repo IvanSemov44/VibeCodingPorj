@@ -18,12 +18,8 @@ export default function StatsGrid({ stats }: StatsGridProps): React.ReactElement
         <Card key={i}>
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm text-secondary-text mb-1">
-                {stat.label}
-              </div>
-              <div className="text-4xl font-bold text-primary-text">
-                {stat.value}
-              </div>
+              <div className="text-sm text-secondary-text mb-1">{stat.label}</div>
+              <div className="text-4xl font-bold text-primary-text">{stat.value}</div>
             </div>
             <div
               className="text-4xl w-16 h-16 flex items-center justify-center rounded-xl"

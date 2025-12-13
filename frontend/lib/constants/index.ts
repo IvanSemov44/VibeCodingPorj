@@ -10,4 +10,12 @@ export * from './journal';
 export * from './dashboard';
 
 // Re-export existing constants from lib/constants.ts for backward compatibility
-export { ROUTES, API_ENDPOINTS, VALIDATION, UI, THEME, STORAGE_KEYS, API_BASE_URL } from '../constants';
+export {
+  ROUTES,
+  API_ENDPOINTS,
+  VALIDATION,
+  UI,
+  THEME,
+  STORAGE_KEYS,
+  API_BASE_URL,
+} from '../constants';

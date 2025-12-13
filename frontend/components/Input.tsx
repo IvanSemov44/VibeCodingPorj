@@ -33,7 +33,7 @@ export default function Input({
       )}
       <input
         type={type}
-        value={typeof value === 'number' ? String(value) : (value ?? '')}
+        value={typeof value === 'number' ? String(value) : value ?? ''}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder={placeholder}
@@ -42,12 +42,8 @@ export default function Input({
         }`}
         {...rest}
       />
-      {error && (
-        <div className="mt-1 text-xs text-red-600">{error}</div>
-      )}
-      {!error && helperText && (
-        <div className="mt-1 text-xs text-secondary-text">{helperText}</div>
-      )}
+      {error && <div className="mt-1 text-xs text-red-600">{error}</div>}
+      {!error && helperText && <div className="mt-1 text-xs text-secondary-text">{helperText}</div>}
     </div>
   );
 }

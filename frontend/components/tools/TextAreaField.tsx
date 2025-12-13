@@ -21,7 +21,7 @@ export default function TextAreaField({
   maxLength,
   rows,
   value,
-  optional = false
+  optional = false,
 }: TextAreaFieldProps): React.ReactElement {
   return (
     <div className="mt-3">

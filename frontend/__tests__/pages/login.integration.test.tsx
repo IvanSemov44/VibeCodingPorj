@@ -1,9 +1,13 @@
+import React from 'react';
 import { renderWithProviders, screen, userEvent, waitFor } from '../../tests/test-utils';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 
 const pushMock = vi.fn();
 vi.mock('next/router', () => ({ useRouter: () => ({ push: pushMock }) }));
-vi.mock('../../lib/api', () => ({ getCsrf: vi.fn().mockResolvedValue({ ok: true }), login: vi.fn().mockResolvedValue({ user: { id: 1 } }) }));
+vi.mock('../../lib/api', () => ({
+  getCsrf: vi.fn().mockResolvedValue({ ok: true }),
+  login: vi.fn().mockResolvedValue({ user: { id: 1 } }),
+}));
 
 describe('Login page (integration)', () => {
   beforeEach(() => {
@@ -15,7 +19,9 @@ describe('Login page (integration)', () => {
     renderWithProviders(<LoginPage />);
 
     const email = screen.getByPlaceholderText(/john@example.com/i);
-    const password = screen.getByPlaceholderText(/\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022/);
+    const password = screen.getByPlaceholderText(
+      /\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022/,
+    );
     const button = screen.getByRole('button', { name: /sign in/i });
 
     await userEvent.clear(email);

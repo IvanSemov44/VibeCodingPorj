@@ -10,7 +10,7 @@ describe('ErrorBoundary', () => {
     const { rerender, unmount } = renderWithProviders(
       <ErrorBoundary>
         <div>ok</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     expect(screen.getByText(/ok/)).toBeInTheDocument();
 
@@ -18,7 +18,7 @@ describe('ErrorBoundary', () => {
     rerender(
       <ErrorBoundary>
         <Bomb />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('ErrorBoundary', () => {
     renderWithProviders(
       <ErrorBoundary>
         <div>safe</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
     expect(await screen.findByText(/safe/)).toBeInTheDocument();
   });

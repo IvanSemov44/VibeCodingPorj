@@ -14,43 +14,37 @@ export default function RegisterPage(): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const {
-    values,
-    errors,
-    handleChange,
-    validate,
-    setFieldError
-  } = useForm(
+  const { values, errors, handleChange, validate, setFieldError } = useForm(
     {
       name: '',
       email: '',
       password: '',
-      passwordConfirmation: ''
+      passwordConfirmation: '',
     },
     {
       name: {
         required: true,
-        requiredMessage: 'Name is required'
+        requiredMessage: 'Name is required',
       },
       email: {
         required: true,
         requiredMessage: 'Email is required',
         pattern: VALIDATION.EMAIL_PATTERN,
-        patternMessage: 'Please enter a valid email'
+        patternMessage: 'Please enter a valid email',
       },
       password: {
         required: true,
         minLength: VALIDATION.PASSWORD_MIN_LENGTH,
         requiredMessage: 'Password is required',
-        minLengthMessage: `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+        minLengthMessage: `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`,
       },
       passwordConfirmation: {
         required: true,
         match: 'password',
         requiredMessage: 'Please confirm your password',
-        matchMessage: 'Passwords do not match'
-      }
-    }
+        matchMessage: 'Passwords do not match',
+      },
+    },
   );
 
   async function handleRegister(e: React.FormEvent) {
@@ -69,7 +63,7 @@ export default function RegisterPage(): React.ReactElement {
         name: values.name,
         email: values.email,
         password: values.password,
-        password_confirmation: values.passwordConfirmation
+        password_confirmation: values.passwordConfirmation,
       });
 
       // Successful registration - redirect to dashboard
@@ -80,7 +74,7 @@ export default function RegisterPage(): React.ReactElement {
     } catch (err: unknown) {
       // Handle Laravel validation errors
       const message = err instanceof Error ? err.message : String(err || 'Registration failed');
-      
+
       if (String(message).includes('email')) {
         setFieldError('email', 'This email is already registered');
       } else if (String(message).includes('password')) {
@@ -151,13 +145,7 @@ export default function RegisterPage(): React.ReactElement {
             required
           />
 
-          <Button
-            type="submit"
-            loading={loading}
-            disabled={loading}
-            fullWidth
-            size="lg"
-          >
+          <Button type="submit" loading={loading} disabled={loading} fullWidth size="lg">
             {loading ? 'Creating Account...' : 'Create Account'}
           </Button>
         </form>

@@ -27,7 +27,7 @@ export interface UseFileUploadReturn {
 export function useFileUpload(
   maxFiles: number = 10,
   accept: string = 'image/*',
-  maxSizeMB: number = 5
+  maxSizeMB: number = 5,
 ): UseFileUploadReturn {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -38,61 +38,67 @@ export function useFileUpload(
   /**
    * Validate file size
    */
-  const validateFileSize = useCallback((file: File): boolean => {
-    const maxSizeBytes = maxSizeMB * 1024 * 1024;
-    return file.size <= maxSizeBytes;
-  }, [maxSizeMB]);
+  const validateFileSize = useCallback(
+    (file: File): boolean => {
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      return file.size <= maxSizeBytes;
+    },
+    [maxSizeMB],
+  );
 
   /**
    * Handle file selection from input
    */
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (!selectedFiles || selectedFiles.length === 0) return;
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFiles = e.target.files;
+      if (!selectedFiles || selectedFiles.length === 0) return;
 
-    setError(null);
-    const fileArray = Array.from(selectedFiles);
+      setError(null);
+      const fileArray = Array.from(selectedFiles);
 
-    // Check max files limit
-    if (files.length + fileArray.length > maxFiles) {
-      setError(`Maximum ${maxFiles} files allowed`);
-      return;
-    }
-
-    // Validate each file
-    const invalidFiles = fileArray.filter(file => !validateFileSize(file));
-    if (invalidFiles.length > 0) {
-      setError(`Some files exceed the maximum size of ${maxSizeMB}MB`);
-      return;
-    }
-
-    // Add files
-    setFiles(prev => [...prev, ...fileArray]);
-
-    // Generate previews for images
-    fileArray.forEach(file => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviews(prev => [...prev, reader.result as string]);
-        };
-        reader.onerror = () => {
-          setError('Failed to generate preview for some files');
-        };
-        reader.readAsDataURL(file);
-      } else {
-        // For non-image files, use a placeholder
-        setPreviews(prev => [...prev, '']);
+      // Check max files limit
+      if (files.length + fileArray.length > maxFiles) {
+        setError(`Maximum ${maxFiles} files allowed`);
+        return;
       }
-    });
-  }, [files.length, maxFiles, maxSizeMB, validateFileSize]);
+
+      // Validate each file
+      const invalidFiles = fileArray.filter((file) => !validateFileSize(file));
+      if (invalidFiles.length > 0) {
+        setError(`Some files exceed the maximum size of ${maxSizeMB}MB`);
+        return;
+      }
+
+      // Add files
+      setFiles((prev) => [...prev, ...fileArray]);
+
+      // Generate previews for images
+      fileArray.forEach((file) => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviews((prev) => [...prev, reader.result as string]);
+          };
+          reader.onerror = () => {
+            setError('Failed to generate preview for some files');
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // For non-image files, use a placeholder
+          setPreviews((prev) => [...prev, '']);
+        }
+      });
+    },
+    [files.length, maxFiles, maxSizeMB, validateFileSize],
+  );
 
   /**
    * Remove a file by index
    */
   const removeFile = useCallback((index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-    setPreviews(prev => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
     setError(null);
   }, []);
 
@@ -112,28 +118,29 @@ export function useFileUpload(
   /**
    * Upload files using provided function
    */
-  const uploadFiles = useCallback(async (
-    uploadFn: (files: File[]) => Promise<void>
-  ): Promise<void> => {
-    if (files.length === 0) {
-      setError('No files selected');
-      return;
-    }
+  const uploadFiles = useCallback(
+    async (uploadFn: (files: File[]) => Promise<void>): Promise<void> => {
+      if (files.length === 0) {
+        setError('No files selected');
+        return;
+      }
 
-    setUploading(true);
-    setError(null);
+      setUploading(true);
+      setError(null);
 
-    try {
-      await uploadFn(files);
-      reset();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Upload failed';
-      setError(message);
-      throw err;
-    } finally {
-      setUploading(false);
-    }
-  }, [files, reset]);
+      try {
+        await uploadFn(files);
+        reset();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Upload failed';
+        setError(message);
+        throw err;
+      } finally {
+        setUploading(false);
+      }
+    },
+    [files, reset],
+  );
 
   return {
     fileInputRef,
@@ -144,6 +151,6 @@ export function useFileUpload(
     handleFileSelect,
     removeFile,
     reset,
-    uploadFiles
+    uploadFiles,
   };
 }

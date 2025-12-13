@@ -31,7 +31,13 @@ const handlers = [
 
   // Journal list
   rest.get(`${API_BASE}/api/journal`, (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json([{ id: 1, title: 'Entry 1' }, { id: 2, title: 'Entry 2' }]));
+    return res(
+      ctx.status(200),
+      ctx.json([
+        { id: 1, title: 'Entry 1' },
+        { id: 2, title: 'Entry 2' },
+      ]),
+    );
   }),
 
   // Tools list and create
@@ -45,14 +51,21 @@ const handlers = [
   }),
 
   // Categories/tags
-  rest.get(`${API_BASE}/api/categories`, (req, res, ctx) => res(ctx.status(200), ctx.json([{ id: 1, name: 'Cat' }]))),
-  rest.get(`${API_BASE}/api/tags`, (req, res, ctx) => res(ctx.status(200), ctx.json([{ id: 1, name: 'Tag' }]))),
+  rest.get(`${API_BASE}/api/categories`, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json([{ id: 1, name: 'Cat' }])),
+  ),
+  rest.get(`${API_BASE}/api/tags`, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json([{ id: 1, name: 'Tag' }])),
+  ),
 
   // Generic fallback for unknown API calls to help debugging
   rest.all(`${API_BASE}/api/:path*`, (req, res, ctx) => {
     // Return 404 for unhandled endpoints so tests fail explicitly
-    return res(ctx.status(404), ctx.json({ message: 'No mock handler for this endpoint', path: req.params.path }));
-  })
+    return res(
+      ctx.status(404),
+      ctx.json({ message: 'No mock handler for this endpoint', path: req.params.path }),
+    );
+  }),
 ];
 
 export const server = setupServer(...handlers);

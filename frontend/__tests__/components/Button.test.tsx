@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import Button from '../../components/Button';
 import { describe, test, vi, expect } from 'vitest';
@@ -19,7 +20,7 @@ describe('Button component', () => {
     renderWithProviders(
       <Button onClick={onClick} loading>
         Loading
-      </Button>
+      </Button>,
     );
 
     const btn = screen.getByRole('button', { name: /loading/i });

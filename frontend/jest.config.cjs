@@ -5,6 +5,6 @@ module.exports = {
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   setupFilesAfterEnv: ['./jest.setup.ts', './tests/setupTests.ts'],
   transform: {
-    '^.+\\.(ts|tsx|js|jsx)$': 'ts-jest'
-  }
+    '^.+\\.(ts|tsx|js|jsx)$': 'ts-jest',
+  },
 };

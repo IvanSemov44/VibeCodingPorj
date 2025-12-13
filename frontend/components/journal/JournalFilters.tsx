@@ -26,7 +26,7 @@ export default function JournalFilters({
   onMoodChange,
   onTagChange,
   onClearFilters,
-  hasActiveFilters
+  hasActiveFilters,
 }: JournalFiltersProps): React.ReactElement {
   return (
     <div className="flex gap-3 mb-5 flex-wrap items-center">

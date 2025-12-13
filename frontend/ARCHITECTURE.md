@@ -128,6 +128,7 @@ components/
 ```
 
 **Benefits:**
+
 - Easy to locate feature code
 - Clear boundaries between features
 - Supports code splitting by feature
@@ -138,6 +139,7 @@ components/
 Components are split into containers (smart) and presentational (dumb):
 
 **Container Components:**
+
 ```typescript
 // components/journal/JournalSection.tsx
 export default function JournalSection() {
@@ -157,6 +159,7 @@ export default function JournalSection() {
 ```
 
 **Presentational Components:**
+
 ```typescript
 // components/journal/JournalHeader.tsx
 export default function JournalHeader({ onNewEntry, showForm }) {
@@ -164,9 +167,7 @@ export default function JournalHeader({ onNewEntry, showForm }) {
   return (
     <div>
       <h2>Adventure Journal</h2>
-      <button onClick={onNewEntry}>
-        {showForm ? 'Cancel' : 'New Entry'}
-      </button>
+      <button onClick={onNewEntry}>{showForm ? 'Cancel' : 'New Entry'}</button>
     </div>
   );
 }
@@ -189,7 +190,7 @@ export function useJournal(filters, autoLoad = true) {
 
   const createEntry = useCallback(async (payload) => {
     const newEntry = await createJournalEntry(payload);
-    setEntries(prev => [newEntry, ...prev]);
+    setEntries((prev) => [newEntry, ...prev]);
     return newEntry;
   }, []);
 
@@ -202,6 +203,7 @@ export function useJournal(filters, autoLoad = true) {
 ```
 
 **Usage in Component:**
+
 ```typescript
 function JournalSection() {
   const { entries, loading, createEntry } = useJournal({ mood: 'happy' });
@@ -221,11 +223,12 @@ export const MOOD_OPTIONS = [
   // ...
 ] as const;
 
-export type MoodValue = typeof MOOD_OPTIONS[number]['value'];
+export type MoodValue = (typeof MOOD_OPTIONS)[number]['value'];
 // Type: 'excited' | 'happy' | ...
 ```
 
 **Benefits:**
+
 - Single source of truth
 - Type-safe configuration
 - Easy to update
@@ -237,26 +240,26 @@ export type MoodValue = typeof MOOD_OPTIONS[number]['value'];
 
 ### **Component Size Guidelines**
 
-| Component Type | Max Lines | Typical Lines | Example |
-|---------------|-----------|---------------|---------|
-| **Page Component** | 100 | 40-60 | `pages/dashboard.tsx` |
-| **Feature Container** | 120 | 80-100 | `JournalSection.tsx` |
-| **Sub-Component** | 80 | 40-60 | `JournalForm.tsx` |
-| **Small Component** | 50 | 20-40 | `JournalHeader.tsx` |
-| **Micro Component** | 30 | 15-25 | `MoodSelector.tsx` |
+| Component Type        | Max Lines | Typical Lines | Example               |
+| --------------------- | --------- | ------------- | --------------------- |
+| **Page Component**    | 100       | 40-60         | `pages/dashboard.tsx` |
+| **Feature Container** | 120       | 80-100        | `JournalSection.tsx`  |
+| **Sub-Component**     | 80        | 40-60         | `JournalForm.tsx`     |
+| **Small Component**   | 50        | 20-40         | `JournalHeader.tsx`   |
+| **Micro Component**   | 30        | 15-25         | `MoodSelector.tsx`    |
 
 ### **Component Naming Conventions**
 
 ```typescript
 // ✅ GOOD: Clear, descriptive names
-JournalSection.tsx       // Feature container
-JournalForm.tsx         // Sub-component
-MoodSelector.tsx        // Small component
+JournalSection.tsx; // Feature container
+JournalForm.tsx; // Sub-component
+MoodSelector.tsx; // Small component
 
 // ❌ BAD: Vague or too generic
-Section.tsx             // What section?
-Form.tsx                // What form?
-Selector.tsx            // What selector?
+Section.tsx; // What section?
+Form.tsx; // What form?
+Selector.tsx; // What selector?
 ```
 
 ### **Component Structure Template**
@@ -279,7 +282,7 @@ interface ComponentNameProps {
 export default function ComponentName({
   prop1,
   prop2 = 0,
-  onAction
+  onAction,
 }: ComponentNameProps): React.ReactElement {
   // Hooks first
   const [state, setState] = useState();
@@ -293,11 +296,7 @@ export default function ComponentName({
   if (!prop1) return null;
 
   // Main render
-  return (
-    <div>
-      {/* Component JSX */}
-    </div>
-  );
+  return <div>{/* Component JSX */}</div>;
 }
 ```
 
@@ -308,16 +307,19 @@ export default function ComponentName({
 ### **State Hierarchy**
 
 1. **Local State** (`useState`)
+
    - Form inputs
    - UI toggles (modals, dropdowns)
    - Temporary data
 
 2. **Custom Hooks** (`useJournal`, `useAuth`)
+
    - Feature-specific state
    - Data fetching
    - Business logic
 
 3. **Context** (`useAuth`)
+
    - Global user authentication
    - Theme settings
    - Shared configuration
@@ -351,11 +353,13 @@ function App() {
 // ❌ BAD: Prop drilling through many levels
 function App() {
   const [user, setUser] = useState();
-  return <Layout user={user}>
-    <Header user={user}>
-      <UserMenu user={user} />  {/* Too deep! */}
-    </Header>
-  </Layout>;
+  return (
+    <Layout user={user}>
+      <Header user={user}>
+        <UserMenu user={user} /> {/* Too deep! */}
+      </Header>
+    </Layout>
+  );
 }
 ```
 
@@ -402,10 +406,10 @@ export const MOOD_OPTIONS = [
 ] as const;
 
 // Inferred types
-export type MoodOption = typeof MOOD_OPTIONS[number];
+export type MoodOption = (typeof MOOD_OPTIONS)[number];
 // { value: string; emoji: string; label: string }
 
-export type MoodValue = typeof MOOD_OPTIONS[number]['value'];
+export type MoodValue = (typeof MOOD_OPTIONS)[number]['value'];
 // 'excited' | 'happy' | 'neutral' | ...
 ```
 
@@ -414,16 +418,16 @@ export type MoodValue = typeof MOOD_OPTIONS[number]['value'];
 ```typescript
 // ✅ GOOD: Strict types
 interface Props {
-  status: 'pending' | 'completed' | 'failed';  // Union type
-  count: number;  // Specific type
-  onSave: (data: FormData) => void;  // Function signature
+  status: 'pending' | 'completed' | 'failed'; // Union type
+  count: number; // Specific type
+  onSave: (data: FormData) => void; // Function signature
 }
 
 // ❌ BAD: Loose types
 interface Props {
-  status: string;  // Too broad
-  count: any;  // No type safety
-  onSave: Function;  // No signature
+  status: string; // Too broad
+  count: any; // No type safety
+  onSave: Function; // No signature
 }
 ```
 
@@ -443,11 +447,13 @@ interface Props {
 ```
 
 **Pros:**
+
 - Scoped to component
 - No CSS file needed
 - Dynamic values easy
 
 **Cons:**
+
 - No pseudo-selectors (`:hover`)
 - No media queries
 - Verbose for complex styles
@@ -492,7 +498,7 @@ Global design tokens defined in `app/globals.css`:
   --border-hover: #d1d5db;
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg-primary: #1f2937;
   --text-primary: #f9fafb;
   /* ... */
@@ -506,6 +512,7 @@ Global design tokens defined in `app/globals.css`:
 ### **1. Component Design**
 
 ✅ **DO:**
+
 - Keep components under 100 lines
 - One component, one responsibility
 - Use TypeScript interfaces for props
@@ -513,6 +520,7 @@ Global design tokens defined in `app/globals.css`:
 - Use descriptive names
 
 ❌ **DON'T:**
+
 - Mix data fetching with UI
 - Hardcode configuration
 - Create god components
@@ -522,6 +530,7 @@ Global design tokens defined in `app/globals.css`:
 ### **2. Custom Hooks**
 
 ✅ **DO:**
+
 ```typescript
 // Extract complex logic
 function useJournal(filters) {
@@ -540,6 +549,7 @@ function useJournal(filters) {
 ```
 
 ❌ **DON'T:**
+
 ```typescript
 // Keep all logic in component
 function JournalPage() {
@@ -553,6 +563,7 @@ function JournalPage() {
 ### **3. Constants**
 
 ✅ **DO:**
+
 ```typescript
 // lib/constants/journal.ts
 export const MOOD_OPTIONS = [...] as const;
@@ -563,6 +574,7 @@ import { MOOD_OPTIONS } from '../lib/constants';
 ```
 
 ❌ **DON'T:**
+
 ```typescript
 // Component
 const MOOD_OPTIONS = [...];  // Duplicated everywhere
@@ -571,6 +583,7 @@ const MOOD_OPTIONS = [...];  // Duplicated everywhere
 ### **4. File Organization**
 
 ✅ **DO:**
+
 ```
 components/journal/
 ├── JournalSection.tsx       # Container
@@ -580,6 +593,7 @@ components/journal/
 ```
 
 ❌ **DON'T:**
+
 ```
 components/
 ├── Journal.tsx              # All in one file
@@ -589,11 +603,11 @@ components/
 
 ```typescript
 // ✅ GOOD: Organized imports
-import React, { useState, useCallback } from 'react';  // React first
-import { useRouter } from 'next/router';               // Framework
-import Card from '../components/Card';                 // Internal
-import { User } from '../lib/types';                   // Types
-import { CONSTANTS } from '../lib/constants';          // Constants
+import React, { useState, useCallback } from 'react'; // React first
+import { useRouter } from 'next/router'; // Framework
+import Card from '../components/Card'; // Internal
+import { User } from '../lib/types'; // Types
+import { CONSTANTS } from '../lib/constants'; // Constants
 
 // ❌ BAD: Random order
 import { CONSTANTS } from '../lib/constants';
@@ -673,10 +687,16 @@ function UserProfile({ user }) {
 // ❌ BAD: Nested ternaries
 function UserProfile({ user }) {
   return user ? (
-    user.loading ? <Loading /> : (
-      user.error ? <Error /> : <ProfileContent />
+    user.loading ? (
+      <Loading />
+    ) : user.error ? (
+      <Error />
+    ) : (
+      <ProfileContent />
     )
-  ) : <Login />;
+  ) : (
+    <Login />
+  );
 }
 ```
 

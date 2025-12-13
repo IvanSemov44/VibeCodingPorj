@@ -18,13 +18,13 @@ const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-accent text-white hover:bg-accent-hover',
   secondary: 'bg-secondary-bg text-primary-text hover:bg-tertiary-bg',
   danger: 'bg-red-500 text-white hover:bg-red-600',
-  ghost: 'bg-transparent text-primary-text border border-border hover:bg-secondary-bg'
+  ghost: 'bg-transparent text-primary-text border border-border hover:bg-secondary-bg',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
   sm: 'px-3 py-2 text-sm',
   md: 'px-4 py-2.5 text-sm',
-  lg: 'px-5 py-3 text-base'
+  lg: 'px-5 py-3 text-base',
 };
 
 export default function Button({
@@ -38,8 +38,9 @@ export default function Button({
   fullWidth = false,
   ...rest
 }: ButtonProps): React.ReactElement {
-  const baseClasses = 'border-none rounded-lg cursor-pointer font-semibold flex items-center justify-center gap-2 font-[inherit] transition-all duration-200';
-  const disabledClasses = (disabled || loading) ? 'bg-tertiary-bg cursor-not-allowed opacity-60' : '';
+  const baseClasses =
+    'border-none rounded-lg cursor-pointer font-semibold flex items-center justify-center gap-2 font-[inherit] transition-all duration-200';
+  const disabledClasses = disabled || loading ? 'bg-tertiary-bg cursor-not-allowed opacity-60' : '';
   const loadingClasses = loading ? 'cursor-wait' : '';
   const widthClasses = fullWidth ? 'w-full' : '';
 

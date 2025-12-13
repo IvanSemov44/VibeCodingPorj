@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getCsrf, getCategories, createCategory, updateCategory, deleteCategory } from '../../lib/api';
+import {
+  getCsrf,
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from '../../lib/api';
 import { Category } from '../../lib/types';
 
 export default function AdminCategories(): React.ReactElement {
@@ -70,15 +76,30 @@ export default function AdminCategories(): React.ReactElement {
         <div>
           <label>Name</label>
           <br />
-          <input value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 p-2 border border-gray-200 rounded-md" />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="mt-1 p-2 border border-gray-200 rounded-md"
+          />
         </div>
         <div className="mt-2">
           <label>Slug (optional)</label>
           <br />
-          <input value={slug} onChange={(e) => setSlug(e.target.value)} className="mt-1 p-2 border border-gray-200 rounded-md" />
+          <input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className="mt-1 p-2 border border-gray-200 rounded-md"
+          />
         </div>
         <div className="mt-3">
-          <button type="submit" disabled={saving} className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors">{saving ? 'Saving...' : 'Create'}</button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors"
+          >
+            {saving ? 'Saving...' : 'Create'}
+          </button>
         </div>
       </form>
 
@@ -97,7 +118,12 @@ export default function AdminCategories(): React.ReactElement {
           </thead>
           <tbody>
             {categories.map((c) => (
-              <CategoryRow key={c.id} category={c} onUpdate={handleUpdate} onDelete={handleDelete} />
+              <CategoryRow
+                key={c.id}
+                category={c}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
             ))}
           </tbody>
         </table>
@@ -106,7 +132,15 @@ export default function AdminCategories(): React.ReactElement {
   );
 }
 
-function CategoryRow({ category, onUpdate, onDelete }: { category: Category; onUpdate: (id: number, updated: Partial<Category>) => Promise<void>; onDelete: (id: number) => void; }) {
+function CategoryRow({
+  category,
+  onUpdate,
+  onDelete,
+}: {
+  category: Category;
+  onUpdate: (id: number, updated: Partial<Category>) => Promise<void>;
+  onDelete: (id: number) => void;
+}) {
   const [editing, setEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>(category.name);
   const [slug, setSlug] = useState<string>(category.slug || '');
@@ -121,18 +155,59 @@ function CategoryRow({ category, onUpdate, onDelete }: { category: Category; onU
 
   return (
     <tr className="border-b border-gray-100">
-      <td className="p-2">{editing ? <input value={name} onChange={(e) => setName(e.target.value)} className="p-1 border border-gray-200 rounded" /> : category.name}</td>
-      <td className="p-2">{editing ? <input value={slug} onChange={(e) => setSlug(e.target.value)} className="p-1 border border-gray-200 rounded" /> : category.slug}</td>
+      <td className="p-2">
+        {editing ? (
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="p-1 border border-gray-200 rounded"
+          />
+        ) : (
+          category.name
+        )}
+      </td>
+      <td className="p-2">
+        {editing ? (
+          <input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className="p-1 border border-gray-200 rounded"
+          />
+        ) : (
+          category.slug
+        )}
+      </td>
       <td className="p-2">
         {editing ? (
           <>
-            <button onClick={save} disabled={saving} className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors">{saving ? 'Saving...' : 'Save'}</button>
-            <button onClick={() => setEditing(false)} className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors">Cancel</button>
+            <button
+              onClick={save}
+              disabled={saving}
+              className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors"
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
           </>
         ) : (
           <>
-            <button onClick={() => setEditing(true)} className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors">Edit</button>
-            <button onClick={() => onDelete(category.id)} className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors">Delete</button>
+            <button
+              onClick={() => setEditing(true)}
+              className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(category.id)}
+              className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors"
+            >
+              Delete
+            </button>
           </>
         )}
       </td>

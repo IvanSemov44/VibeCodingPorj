@@ -35,7 +35,10 @@ export interface UseJournalReturn {
  * @param filters - Filter options for journal entries
  * @param autoLoad - Whether to automatically load data on mount (default: true)
  */
-export function useJournal(filters: JournalFilters = {}, autoLoad: boolean = true): UseJournalReturn {
+export function useJournal(
+  filters: JournalFilters = {},
+  autoLoad: boolean = true,
+): UseJournalReturn {
   // Use RTK Query hooks to manage journal data
   // Build and memoize the params object so its identity is stable across renders
   const memoParams = useMemo(() => {
@@ -60,8 +63,13 @@ export function useJournal(filters: JournalFilters = {}, autoLoad: boolean = tru
 
   const entries = (entriesQuery.data as JournalEntry[]) ?? [];
   const stats = (statsQuery.data as JournalStats) ?? null;
-  const loading = entriesQuery.isLoading || (createResult as any).isLoading || (deleteResult as any).isLoading;
-  const error = (entriesQuery.error as any)?.message ?? (createResult as any)?.error?.message ?? (deleteResult as any)?.error?.message ?? null;
+  const loading =
+    entriesQuery.isLoading || (createResult as any).isLoading || (deleteResult as any).isLoading;
+  const error =
+    (entriesQuery.error as any)?.message ??
+    (createResult as any)?.error?.message ??
+    (deleteResult as any)?.error?.message ??
+    null;
 
   /**
    * Load journal entries and stats from the API
@@ -80,26 +88,36 @@ export function useJournal(filters: JournalFilters = {}, autoLoad: boolean = tru
   /**
    * Create a new journal entry
    */
-  const createEntry = useCallback(async (data: JournalCreatePayload): Promise<JournalEntry | null> => {
-    const result = await createEntryMutation(data).unwrap().catch((err) => {
-      // rethrow after logging
-      console.error('Failed to create entry', err);
-      throw err;
-    });
-    // RTK Query invalidates tags and will refetch entries/stats automatically
-    return result ?? null;
-  }, [createEntryMutation]);
+  const createEntry = useCallback(
+    async (data: JournalCreatePayload): Promise<JournalEntry | null> => {
+      const result = await createEntryMutation(data)
+        .unwrap()
+        .catch((err) => {
+          // rethrow after logging
+          console.error('Failed to create entry', err);
+          throw err;
+        });
+      // RTK Query invalidates tags and will refetch entries/stats automatically
+      return result ?? null;
+    },
+    [createEntryMutation],
+  );
 
   /**
    * Delete a journal entry by ID
    */
-  const deleteEntry = useCallback(async (id: number | string): Promise<void> => {
-    await deleteEntryMutation(id).unwrap().catch((err) => {
-      console.error('Failed to delete entry', err);
-      throw err;
-    });
-    // invalidation triggers refetch
-  }, [deleteEntryMutation]);
+  const deleteEntry = useCallback(
+    async (id: number | string): Promise<void> => {
+      await deleteEntryMutation(id)
+        .unwrap()
+        .catch((err) => {
+          console.error('Failed to delete entry', err);
+          throw err;
+        });
+      // invalidation triggers refetch
+    },
+    [deleteEntryMutation],
+  );
 
   /**
    * Refresh stats without reloading all entries

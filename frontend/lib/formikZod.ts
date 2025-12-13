@@ -10,13 +10,15 @@ function setPath(obj: Record<string, unknown>, path: Array<PropertyKey>, value: 
   cur[String(path[path.length - 1])] = value;
 }
 
-export const zodToFormikValidate = <T extends ZodTypeAny>(schema: T) => (values: unknown) => {
-  const res = schema.safeParse(values);
-  if (res.success) return {} as Record<string, unknown>;
-  const errors: Record<string, unknown> = {};
-  for (const issue of res.error.issues) {
-    const path = issue.path.length ? issue.path : ['_'];
-    setPath(errors, path, issue.message);
-  }
-  return errors;
-};
+export const zodToFormikValidate =
+  <T extends ZodTypeAny>(schema: T) =>
+  (values: unknown) => {
+    const res = schema.safeParse(values);
+    if (res.success) return {} as Record<string, unknown>;
+    const errors: Record<string, unknown> = {};
+    for (const issue of res.error.issues) {
+      const path = issue.path.length ? issue.path : ['_'];
+      setPath(errors, path, issue.message);
+    }
+    return errors;
+  };

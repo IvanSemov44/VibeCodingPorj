@@ -17,7 +17,7 @@ interface CategorySelectorProps {
 export default function CategorySelector({
   categories,
   selectedCategories,
-  onToggle
+  onToggle,
 }: CategorySelectorProps): React.ReactElement {
   const toggleCategory = (categoryId: number) => {
     onToggle(categoryId);
@@ -27,7 +27,7 @@ export default function CategorySelector({
     <div className="mt-3">
       <label className="block font-semibold mb-1 text-sm text-primary-text">Categories *</label>
       <div className="flex gap-2 flex-wrap mt-2">
-        {categories.map(c => {
+        {categories.map((c) => {
           const isSelected = selectedCategories.includes(c.id);
           return (
             <button
@@ -35,7 +35,9 @@ export default function CategorySelector({
               type="button"
               onClick={() => toggleCategory(c.id)}
               className={`px-2.5 py-1.5 rounded-md border-none cursor-pointer text-[13px] font-medium transition-all ${
-                isSelected ? 'bg-[#059669] text-white' : 'bg-gray-100 text-inherit hover:bg-gray-200'
+                isSelected
+                  ? 'bg-[#059669] text-white'
+                  : 'bg-gray-100 text-inherit hover:bg-gray-200'
               }`}
             >
               {c.name}

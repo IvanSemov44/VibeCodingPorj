@@ -18,27 +18,17 @@ export default function ProfileCard({ user }: ProfileCardProps): React.ReactElem
     <Card title="Profile Information">
       <div className="flex flex-col gap-4">
         <div>
-          <div className="text-xs text-secondary-text mb-1 uppercase font-semibold">
-            Name
-          </div>
-          <div className="text-base text-primary-text">
-            {user.name}
-          </div>
+          <div className="text-xs text-secondary-text mb-1 uppercase font-semibold">Name</div>
+          <div className="text-base text-primary-text">{user.name}</div>
         </div>
 
         <div>
-          <div className="text-xs text-secondary-text mb-1 uppercase font-semibold">
-            Email
-          </div>
-          <div className="text-base text-primary-text">
-            {user.email}
-          </div>
+          <div className="text-xs text-secondary-text mb-1 uppercase font-semibold">Email</div>
+          <div className="text-base text-primary-text">{user.email}</div>
         </div>
 
         <div>
-          <div className="text-xs text-secondary-text mb-2 uppercase font-semibold">
-            Roles
-          </div>
+          <div className="text-xs text-secondary-text mb-2 uppercase font-semibold">Roles</div>
           <div className="flex gap-2 flex-wrap">
             {user.roles && user.roles.length > 0 ? (
               user.roles.map((roleName: string) => (

@@ -26,7 +26,7 @@ export default function JournalSection(): React.ReactElement {
   const { entries, stats, loading, createEntry, deleteEntry } = useJournal({
     search,
     mood: moodFilter,
-    tag: tagFilter
+    tag: tagFilter,
   });
 
   const handleSubmit = async (data: JournalCreatePayload): Promise<void> => {
@@ -49,9 +49,10 @@ export default function JournalSection(): React.ReactElement {
       setFormError('');
       addToast(`Journal entry created! +${data.xp} XP earned! 🎉`, 'success');
     } catch (err: unknown) {
-      const message = (err && typeof err === 'object' && 'message' in err)
-        ? String(err.message)
-        : 'Failed to create entry. Please try again.';
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : 'Failed to create entry. Please try again.';
       setFormError(message);
       addToast(message, 'error');
     }
@@ -62,9 +63,10 @@ export default function JournalSection(): React.ReactElement {
       await deleteEntry(id);
       addToast('Journal entry deleted successfully', 'success');
     } catch (err: unknown) {
-      const message = (err && typeof err === 'object' && 'message' in err)
-        ? String(err.message)
-        : 'Failed to delete entry. Please try again.';
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String(err.message)
+          : 'Failed to delete entry. Please try again.';
       addToast(message, 'error');
     }
   };

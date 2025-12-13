@@ -25,12 +25,8 @@ function ActivityItem({ icon, text, time, color }: ActivityItemProps): React.Rea
         {icon}
       </div>
       <div className="flex-1">
-        <div className="text-sm text-primary-text mb-0.5">
-          {text}
-        </div>
-        <div className="text-xs text-tertiary-text">
-          {time}
-        </div>
+        <div className="text-sm text-primary-text mb-0.5">{text}</div>
+        <div className="text-xs text-tertiary-text">{time}</div>
       </div>
     </div>
   );

@@ -39,17 +39,25 @@ export function useGetEntriesQuery(params?: Record<string, any>, options?: any) 
   return useQuery({
     queryKey: key,
     queryFn: async () => api.getJournalEntries(params ?? {}),
-    ...(options ? options as any : {}),
+    ...(options ? (options as any) : {}),
   } as any);
 }
 
 export function useGetStatsQuery(_arg?: any, options?: any) {
-  return useQuery({ queryKey: ['stats'], queryFn: async () => api.getJournalStats(), ...(options ? options as any : {}) } as any);
+  return useQuery({
+    queryKey: ['stats'],
+    queryFn: async () => api.getJournalStats(),
+    ...(options ? (options as any) : {}),
+  } as any);
 }
 
 // 2FA hooks (public)
 export function useGet2faSecretQuery(options?: any) {
-  return useQuery({ queryKey: ['2fa','secret'], queryFn: async () => api.get2faSecret(), ...(options || {}) } as any);
+  return useQuery({
+    queryKey: ['2fa', 'secret'],
+    queryFn: async () => api.get2faSecret(),
+    ...(options || {}),
+  } as any);
 }
 
 export function useEnable2faMutation() {
@@ -57,7 +65,7 @@ export function useEnable2faMutation() {
   const m = useMutation<any, Error, void>({
     mutationFn: async () => api.enable2faTotp(),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['2fa','secret'] });
+      qc.invalidateQueries({ queryKey: ['2fa', 'secret'] });
     },
   });
   const trigger = () => ({ unwrap: () => m.mutateAsync() });
@@ -66,7 +74,11 @@ export function useEnable2faMutation() {
 
 // Admin: per-user 2FA hooks
 export function useGetUser2faQuery(userId: string | number, options?: any) {
-  return useQuery({ queryKey: ['admin','user-2fa', String(userId)], queryFn: async () => api.getUserTwoFactor(String(userId)), ...(options || {}) } as any);
+  return useQuery({
+    queryKey: ['admin', 'user-2fa', String(userId)],
+    queryFn: async () => api.getUserTwoFactor(String(userId)),
+    ...(options || {}),
+  } as any);
 }
 
 export function useSetUser2faMutation() {
@@ -74,10 +86,12 @@ export function useSetUser2faMutation() {
   const m = useMutation<any, Error, { userId: string | number; type: string }>({
     mutationFn: async ({ userId, type }) => api.setUserTwoFactor(String(userId), type),
     onSuccess: (_data, vars) => {
-      qc.invalidateQueries({ queryKey: ['admin','user-2fa', String(vars.userId)] });
+      qc.invalidateQueries({ queryKey: ['admin', 'user-2fa', String(vars.userId)] });
     },
   });
-  const trigger = (arg: { userId: string | number; type: string }) => ({ unwrap: () => m.mutateAsync(arg) });
+  const trigger = (arg: { userId: string | number; type: string }) => ({
+    unwrap: () => m.mutateAsync(arg),
+  });
   return [trigger, m as any] as const;
 }
 
@@ -86,7 +100,7 @@ export function useDisableUser2faMutation() {
   const m = useMutation<void, Error, string | number>({
     mutationFn: async (userId) => api.disableUserTwoFactor(String(userId)),
     onSuccess: (_data, userId) => {
-      qc.invalidateQueries({ queryKey: ['admin','user-2fa', String(userId)] });
+      qc.invalidateQueries({ queryKey: ['admin', 'user-2fa', String(userId)] });
     },
   });
   const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
@@ -96,7 +110,8 @@ export function useDisableUser2faMutation() {
 export function useCreateEntryMutation() {
   const qc = useQueryClient();
   const m = useMutation<JournalEntry, Error, JournalCreatePayload>({
-    mutationFn: async (body: JournalCreatePayload) => api.createJournalEntry(body) as Promise<JournalEntry>,
+    mutationFn: async (body: JournalCreatePayload) =>
+      api.createJournalEntry(body) as Promise<JournalEntry>,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['entries'] });
       qc.invalidateQueries({ queryKey: ['stats'] });
@@ -118,4 +133,3 @@ export function useDeleteEntryMutation() {
   const trigger = (arg: number | string) => ({ unwrap: () => m.mutateAsync(arg) });
   return [trigger, m as any] as const;
 }
-

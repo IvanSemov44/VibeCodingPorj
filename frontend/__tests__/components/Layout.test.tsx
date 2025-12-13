@@ -25,7 +25,7 @@ describe('Layout', () => {
         <Layout>
           <div>CONTENT</div>
         </Layout>
-      </ThemeInitializer>
+      </ThemeInitializer>,
     );
 
     expect(screen.getByText('VibeCoding')).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe('Layout', () => {
         <Layout>
           <div>ok</div>
         </Layout>
-      </ThemeInitializer>
+      </ThemeInitializer>,
     );
 
     await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
@@ -55,13 +55,13 @@ describe('Layout', () => {
     (api.getCsrf as unknown as Mock).mockResolvedValue(undefined);
     (api.getUser as unknown as Mock).mockResolvedValue(null);
 
-      renderWithProviders(
-        <ThemeInitializer>
-          <Layout>
-            <div>ok</div>
-          </Layout>
-        </ThemeInitializer>
-      );
+    renderWithProviders(
+      <ThemeInitializer>
+        <Layout>
+          <div>ok</div>
+        </Layout>
+      </ThemeInitializer>,
+    );
 
     const btn = await screen.findByTitle(/Switch to/);
     // initial theme is light -> shows moon
@@ -83,11 +83,11 @@ describe('Layout', () => {
     window.location = { href: '' } as any;
 
     renderWithProviders(
-        <ThemeInitializer>
-          <Layout>
-            <div />
-          </Layout>
-        </ThemeInitializer>
+      <ThemeInitializer>
+        <Layout>
+          <div />
+        </Layout>
+      </ThemeInitializer>,
     );
 
     await waitFor(() => expect(screen.getByText('Logout')).toBeInTheDocument());

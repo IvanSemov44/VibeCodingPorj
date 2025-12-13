@@ -6,28 +6,34 @@ type AsyncOptions<T> = {
   onError?: (err: unknown) => void;
 };
 
-export function useAsync<T = unknown>(asyncFn: (...args: unknown[]) => Promise<T>, options: AsyncOptions<T> = {}) {
+export function useAsync<T = unknown>(
+  asyncFn: (...args: unknown[]) => Promise<T>,
+  options: AsyncOptions<T> = {},
+) {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<unknown>(null);
   const [data, setData] = useState<T | null>(options.initialData ?? null);
 
-  const execute = useCallback(async (...args: unknown[]) => {
-    setLoading(true);
-    setError(null);
+  const execute = useCallback(
+    async (...args: unknown[]) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await asyncFn(...(args as unknown[]));
-      setData(result);
-      options.onSuccess?.(result);
-      return { success: true, data: result } as const;
-    } catch (err: unknown) {
-      setError(err);
-      options.onError?.(err);
-      return { success: false, error: err } as const;
-    } finally {
-      setLoading(false);
-    }
-  }, [asyncFn, options]);
+      try {
+        const result = await asyncFn(...(args as unknown[]));
+        setData(result);
+        options.onSuccess?.(result);
+        return { success: true, data: result } as const;
+      } catch (err: unknown) {
+        setError(err);
+        options.onError?.(err);
+        return { success: false, error: err } as const;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [asyncFn, options],
+  );
 
   const reset = useCallback(() => {
     setLoading(false);
@@ -40,7 +46,7 @@ export function useAsync<T = unknown>(asyncFn: (...args: unknown[]) => Promise<T
     loading,
     error,
     data,
-    reset
+    reset,
   } as const;
 }
 

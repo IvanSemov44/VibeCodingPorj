@@ -1,10 +1,13 @@
 /** Utility helpers used across the frontend */
-export function formatDate(date: Date | string | number, options: Intl.DateTimeFormatOptions = {}): string {
+export function formatDate(
+  date: Date | string | number,
+  options: Intl.DateTimeFormatOptions = {},
+): string {
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-    ...options
+    ...options,
   };
   return new Date(date).toLocaleDateString('en-US', defaultOptions);
 }
@@ -35,7 +38,7 @@ export function truncate(text: string, maxLength = 100, suffix = '...'): string 
 export function capitalize(text: string): string {
   return text
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
 }
 
@@ -46,14 +49,14 @@ export function formatNumber(num: number): string {
 export function getInitials(name: string): string {
   return name
     .split(' ')
-    .map(part => (part && part[0]) || '')
+    .map((part) => (part && part[0]) || '')
     .join('')
     .toUpperCase()
     .substring(0, 2);
 }
 
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function isEmpty(obj: Record<string, unknown>): boolean {
@@ -64,7 +67,10 @@ export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-export function groupBy<T extends Record<string, unknown>>(array: T[], key: string): Record<string, T[]> {
+export function groupBy<T extends Record<string, unknown>>(
+  array: T[],
+  key: string,
+): Record<string, T[]> {
   return array.reduce((result: Record<string, T[]>, item) => {
     const groupKey = String(item[key] as unknown);
     if (!result[groupKey]) result[groupKey] = [];

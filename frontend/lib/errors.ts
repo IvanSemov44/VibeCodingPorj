@@ -24,7 +24,10 @@ export function handleApiError(error: unknown, res?: Response): ApiError {
       return new ApiError('Unauthorized', 401);
     }
     if (res.status === 422) {
-      const errs = (error && typeof error === 'object' && 'errors' in (error as Record<string, unknown>)) ? (error as Record<string, unknown>).errors as Record<string, unknown> : {};
+      const errs =
+        error && typeof error === 'object' && 'errors' in (error as Record<string, unknown>)
+          ? ((error as Record<string, unknown>).errors as Record<string, unknown>)
+          : {};
       return new ApiError('Validation failed', 422, errs || {});
     }
     if (res.status === 419) {
@@ -41,7 +44,7 @@ export function handleApiError(error: unknown, res?: Response): ApiError {
 export function parseValidationErrors(apiError: ApiError): Record<string, string> {
   if (apiError.status === 422 && apiError.errors) {
     const parsed: Record<string, string> = {};
-    Object.keys(apiError.errors).forEach(field => {
+    Object.keys(apiError.errors).forEach((field) => {
       const value = apiError.errors[field];
       if (Array.isArray(value)) parsed[field] = String(value[0]);
       else parsed[field] = String(value ?? '');

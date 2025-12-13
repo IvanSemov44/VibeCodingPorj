@@ -13,13 +13,20 @@ interface TagSelectorProps {
   onToggle: (tag: string) => void;
 }
 
-export default function TagSelector({ selectedTags, onToggle }: TagSelectorProps): React.ReactElement {
-  const { data: tags = [], isLoading, isError } = useQuery<Tag[]>({ queryKey: ['tags'], queryFn: getTags, staleTime: 1000 * 60 * 5 });
+export default function TagSelector({
+  selectedTags,
+  onToggle,
+}: TagSelectorProps): React.ReactElement {
+  const {
+    data: tags = [],
+    isLoading,
+    isError,
+  } = useQuery<Tag[]>({ queryKey: ['tags'], queryFn: getTags, staleTime: 1000 * 60 * 5 });
 
   const display: string[] = React.useMemo(() => {
     if (isLoading) return ['loading...'];
     if (isError) return ['error'];
-    return tags.map(t => t?.name ?? String(t?.id ?? ''));
+    return tags.map((t) => t?.name ?? String(t?.id ?? ''));
   }, [isLoading, isError, tags]);
 
   return (
@@ -28,7 +35,7 @@ export default function TagSelector({ selectedTags, onToggle }: TagSelectorProps
         Tags (optional)
       </label>
       <div className="flex gap-1.5 flex-wrap">
-        {display.map(tag => (
+        {display.map((tag) => (
           <button
             key={tag}
             type="button"

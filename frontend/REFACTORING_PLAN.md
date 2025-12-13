@@ -36,9 +36,13 @@ This document outlines a comprehensive refactoring plan to improve code quality,
 ## Refactoring Strategy
 
 ### Phase 1: Extract Constants & Types ✅ (Quick Win)
+
 ### Phase 2: Create Reusable Hooks 🎯 (Foundation)
+
 ### Phase 3: Split Large Components 🏗️ (Main Work)
+
 ### Phase 4: Improve Styling 🎨 (Architecture)
+
 ### Phase 5: Add Error Handling & Performance 🚀 (Polish)
 
 ---
@@ -48,6 +52,7 @@ This document outlines a comprehensive refactoring plan to improve code quality,
 ### 1.1 Create Constants Files
 
 **File: `lib/constants/journal.ts`**
+
 ```typescript
 export const MOOD_OPTIONS = [
   { value: 'excited', emoji: '🚀', label: 'Excited', color: '#f59e0b' },
@@ -56,12 +61,17 @@ export const MOOD_OPTIONS = [
 ] as const;
 
 export const TAG_OPTIONS = [
-  'Backend', 'Frontend', 'Bug Fix', 'Feature Quest', 'Refactor',
+  'Backend',
+  'Frontend',
+  'Bug Fix',
+  'Feature Quest',
+  'Refactor',
   // ... etc
 ] as const;
 ```
 
 **File: `lib/constants/dashboard.ts`**
+
 ```typescript
 export const ROLE_COLORS = {
   owner: 'error',
@@ -84,6 +94,7 @@ export const ROLE_TITLES = {
 ### 2.1 Journal Hooks
 
 **File: `hooks/useJournal.ts`**
+
 ```typescript
 export function useJournal(filters: JournalFilters) {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -112,6 +123,7 @@ export function useJournal(filters: JournalFilters) {
 ### 2.2 Form Hooks
 
 **File: `hooks/useJournalForm.ts`**
+
 ```typescript
 export function useJournalForm(onSubmit: (data: JournalFormData) => Promise<void>) {
   const [formData, setFormData] = useState(initialFormData);
@@ -135,6 +147,7 @@ export function useJournalForm(onSubmit: (data: JournalFormData) => Promise<void
 ### 2.3 File Upload Hook
 
 **File: `hooks/useFileUpload.ts`**
+
 ```typescript
 export function useFileUpload(maxFiles = 10) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -163,12 +176,13 @@ export function useFileUpload(maxFiles = 10) {
 ### 2.4 Filters Hook
 
 **File: `hooks/useFilters.ts`**
+
 ```typescript
 export function useFilters<T>(initialFilters: T) {
   const [filters, setFilters] = useState<T>(initialFilters);
 
   const updateFilter = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const clearFilters = useCallback(() => {
@@ -176,7 +190,7 @@ export function useFilters<T>(initialFilters: T) {
   }, [initialFilters]);
 
   const hasActiveFilters = useMemo(() => {
-    return Object.values(filters).some(val => val !== '');
+    return Object.values(filters).some((val) => val !== '');
   }, [filters]);
 
   return { filters, updateFilter, clearFilters, hasActiveFilters };
@@ -195,6 +209,7 @@ export function useFilters<T>(initialFilters: T) {
 **Target**: 8 components, 5 files
 
 #### New Structure:
+
 ```
 components/journal/
 ├── JournalSection.tsx         # Main container (50 lines)
@@ -211,6 +226,7 @@ components/journal/
 ```
 
 **Example: JournalSection.tsx** (Container)
+
 ```typescript
 export default function JournalSection() {
   const [showForm, setShowForm] = useState(false);
@@ -243,6 +259,7 @@ export default function JournalSection() {
 ```
 
 **Impact**:
+
 - 280 lines → ~50 lines main component
 - Each sub-component focused on single responsibility
 - Easier testing, maintenance, and reusability
@@ -255,6 +272,7 @@ export default function JournalSection() {
 **Target**: 6 components, 4 files
 
 #### New Structure:
+
 ```
 components/tools/
 ├── ToolForm.tsx               # Main form container (60 lines)
@@ -268,6 +286,7 @@ components/tools/
 ```
 
 **Example: ToolForm.tsx** (Container)
+
 ```typescript
 export default function ToolForm({ categories, roles, tags, onSaved, initial }: ToolFormProps) {
   const { fileInput, screenshots, addScreenshot, removeScreenshot } = useFileUpload();
@@ -282,10 +301,22 @@ export default function ToolForm({ categories, roles, tags, onSaved, initial }: 
         <Form className={styles.form}>
           <ToolBasicFields />
           <ToolTextFields values={values} />
-          <ToolCategorySelector categories={categories} selected={values.categories} onChange={(cats) => setFieldValue('categories', cats)} />
-          <ToolRoleSelector roles={roles} selected={values.roles} onChange={(roles) => setFieldValue('roles', roles)} />
+          <ToolCategorySelector
+            categories={categories}
+            selected={values.categories}
+            onChange={(cats) => setFieldValue('categories', cats)}
+          />
+          <ToolRoleSelector
+            roles={roles}
+            selected={values.roles}
+            onChange={(roles) => setFieldValue('roles', roles)}
+          />
           <TagMultiSelect value={values.tags} onChange={(tags) => setFieldValue('tags', tags)} />
-          <ToolScreenshots screenshots={screenshots} onAdd={addScreenshot} onRemove={removeScreenshot} />
+          <ToolScreenshots
+            screenshots={screenshots}
+            onAdd={addScreenshot}
+            onRemove={removeScreenshot}
+          />
 
           <FormActions submitting={isSubmitting} />
         </Form>
@@ -296,6 +327,7 @@ export default function ToolForm({ categories, roles, tags, onSaved, initial }: 
 ```
 
 **Impact**:
+
 - 249 lines → ~60 lines main component
 - Reusable ToggleButtonGroup for roles/categories
 - Screenshot logic extracted to hook + component
@@ -308,6 +340,7 @@ export default function ToolForm({ categories, roles, tags, onSaved, initial }: 
 **Target**: 7 components, multiple files
 
 #### New Structure:
+
 ```
 components/dashboard/
 ├── DashboardPage.tsx          # Main container (40 lines)
@@ -324,6 +357,7 @@ components/dashboard/
 ```
 
 **Example: DashboardPage.tsx** (Container)
+
 ```typescript
 export default function DashboardPage() {
   const { user, loading } = useAuth(true);
@@ -350,6 +384,7 @@ export default function DashboardPage() {
 ```
 
 **Impact**:
+
 - Cleaner main component
 - Reusable cards and UI elements
 - Easier to add/remove dashboard sections
@@ -362,6 +397,7 @@ export default function DashboardPage() {
 **Target**: Shared AuthForm component
 
 #### New Structure:
+
 ```
 components/auth/
 ├── AuthForm.tsx           # Shared form component
@@ -374,6 +410,7 @@ pages/
 ```
 
 **Example: Login page with AuthForm**
+
 ```typescript
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -409,6 +446,7 @@ export default function LoginPage() {
 ```
 
 **Impact**:
+
 - DRY - no duplicated form logic
 - Consistent UX across auth pages
 - Easier to add new auth methods
@@ -423,6 +461,7 @@ export default function LoginPage() {
 **Target**: CSS Modules per component
 
 #### Example Structure:
+
 ```
 components/journal/
 ├── JournalSection.tsx
@@ -432,6 +471,7 @@ components/journal/
 ```
 
 **Benefits**:
+
 - Scoped styles (no conflicts)
 - Better performance (no inline style parsing)
 - Easier theming
@@ -439,6 +479,7 @@ components/journal/
 - Better separation of concerns
 
 **Example**:
+
 ```typescript
 // Before (inline)
 <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
@@ -465,6 +506,7 @@ components/journal/
 ### 4.2 Design Tokens
 
 **File: `styles/tokens.module.css`**
+
 ```css
 :root {
   /* Spacing */
@@ -497,6 +539,7 @@ components/journal/
 ### 5.1 Error Boundary
 
 **File: `components/ErrorBoundary.tsx`**
+
 ```typescript
 export class ErrorBoundary extends React.Component<Props, State> {
   static getDerivedStateFromError(error: Error) {
@@ -517,6 +560,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 ```
 
 **Usage**:
+
 ```typescript
 <ErrorBoundary>
   <DashboardPage />
@@ -526,11 +570,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
 ### 5.2 Performance Optimizations
 
 1. **Memoize expensive components**:
+
 ```typescript
 export default React.memo(JournalEntry);
 ```
 
 2. **Memoize expensive computations**:
+
 ```typescript
 const filteredEntries = useMemo(() => {
   return entries.filter(/* ... */);
@@ -538,10 +584,16 @@ const filteredEntries = useMemo(() => {
 ```
 
 3. **Stabilize callbacks**:
+
 ```typescript
-const handleDelete = useCallback((id: number) => {
-  // ... logic
-}, [/* dependencies */]);
+const handleDelete = useCallback(
+  (id: number) => {
+    // ... logic
+  },
+  [
+    /* dependencies */
+  ],
+);
 ```
 
 ---
@@ -549,18 +601,21 @@ const handleDelete = useCallback((id: number) => {
 ## Implementation Priority
 
 ### Week 1 (Must Have)
+
 1. ✅ Extract constants (journal, dashboard)
 2. ✅ Create useJournal hook
 3. ✅ Split JournalSection into 5 components
 4. ✅ Create CSS modules for Journal
 
 ### Week 2 (Should Have)
+
 5. ✅ Create useTool, useFileUpload hooks
 6. ✅ Split ToolForm into 6 components
 7. ✅ Split Dashboard into 7 components
 8. ✅ Add Error Boundary
 
 ### Week 3 (Nice to Have)
+
 9. ✅ Refactor Auth pages with shared AuthForm
 10. ✅ Add performance optimizations (memo, useMemo)
 11. ✅ Improve accessibility (ARIA labels)
@@ -650,6 +705,7 @@ frontend/
 ## Benefits Summary
 
 ### Code Quality
+
 - ✅ **80% reduction** in component size (280 → 50 lines)
 - ✅ **Single Responsibility** - each component does one thing
 - ✅ **DRY** - no duplicated logic
@@ -657,17 +713,20 @@ frontend/
 - ✅ **Testable** - isolated units
 
 ### Maintainability
+
 - ✅ **Easier debugging** - smaller components
 - ✅ **Faster onboarding** - clearer structure
 - ✅ **Simpler updates** - change one component
 - ✅ **Better Git diffs** - smaller, focused commits
 
 ### Performance
+
 - ✅ **Faster re-renders** - React.memo prevents unnecessary updates
 - ✅ **Better code splitting** - smaller bundles
 - ✅ **Optimized computations** - useMemo/useCallback
 
 ### Developer Experience
+
 - ✅ **Easier to read** - less cognitive load
 - ✅ **Faster development** - reusable components/hooks
 - ✅ **Better tooling** - CSS modules autocomplete
@@ -678,23 +737,27 @@ frontend/
 ## Migration Strategy
 
 ### Step 1: Create New Files (Non-Breaking)
+
 - Add new hooks, components, constants
 - Don't touch existing code yet
 - Write tests for new code
 
 ### Step 2: Gradual Migration (Feature by Feature)
+
 - Migrate Journal section first (most benefit)
 - Then Dashboard
 - Then Tools
 - Finally Auth pages
 
 ### Step 3: Cleanup
+
 - Remove old components
 - Update imports
 - Remove unused code
 - Update documentation
 
 ### Step 4: Polish
+
 - Add performance optimizations
 - Improve accessibility
 - Add tests
@@ -705,6 +768,7 @@ frontend/
 ## Testing Strategy
 
 ### Unit Tests (Hooks)
+
 ```typescript
 describe('useJournal', () => {
   it('should load entries on mount', async () => {
@@ -716,6 +780,7 @@ describe('useJournal', () => {
 ```
 
 ### Component Tests
+
 ```typescript
 describe('JournalForm', () => {
   it('should validate required fields', async () => {
@@ -731,19 +796,25 @@ describe('JournalForm', () => {
 ## Risks & Mitigation
 
 ### Risk: Breaking Changes
+
 **Mitigation**:
+
 - Gradual migration
 - Keep old components until fully tested
 - Feature flags if needed
 
 ### Risk: Performance Regression
+
 **Mitigation**:
+
 - Benchmark before/after
 - Use React DevTools Profiler
 - Add performance budgets
 
 ### Risk: Increased Complexity
+
 **Mitigation**:
+
 - Clear folder structure
 - Good documentation
 - Consistent naming conventions
@@ -753,18 +824,21 @@ describe('JournalForm', () => {
 ## Success Metrics
 
 ### Code Metrics
+
 - [ ] Average component size: < 100 lines
 - [ ] Maximum component size: < 150 lines
 - [ ] Code duplication: < 5%
 - [ ] Test coverage: > 70%
 
 ### Performance Metrics
+
 - [ ] Lighthouse score: > 90
 - [ ] First Contentful Paint: < 1.5s
 - [ ] Time to Interactive: < 3s
 - [ ] Bundle size: < 200KB gzipped
 
 ### Developer Metrics
+
 - [ ] New feature time: -30%
 - [ ] Bug fix time: -40%
 - [ ] Code review time: -25%
@@ -788,6 +862,7 @@ describe('JournalForm', () => {
 
 **Q: Should we use Tailwind CSS instead of CSS Modules?**
 A: CSS Modules are better for this project because:
+
 - Already using CSS variables for theming
 - No build step changes needed
 - More familiar to team
@@ -795,18 +870,21 @@ A: CSS Modules are better for this project because:
 
 **Q: What about Styled Components?**
 A: Not recommended because:
+
 - Runtime cost
 - Larger bundle size
 - CSS Modules achieve same goals with zero runtime
 
 **Q: Should we use Context API for shared state?**
 A: Not yet. Current approach with hooks is sufficient. Consider Context if:
+
 - Prop drilling becomes painful (> 3 levels)
 - Same data needed in many unrelated components
 - Global UI state (theme, user) needs sharing
 
 **Q: What about TypeScript strict mode?**
 A: Good idea! Enable incrementally:
+
 - `strict: true` in tsconfig.json
 - Fix errors file by file
 - Prevents future bugs

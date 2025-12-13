@@ -23,9 +23,9 @@ describe('ThemeContext', () => {
 
   afterEach(() => {
     // restore mocks if they exist
-    const getItemMock = (Storage.prototype.getItem as unknown) as { mockRestore?: () => void };
+    const getItemMock = Storage.prototype.getItem as unknown as { mockRestore?: () => void };
     getItemMock.mockRestore?.();
-    const setItemMock = (Storage.prototype.setItem as unknown) as { mockRestore?: () => void };
+    const setItemMock = Storage.prototype.setItem as unknown as { mockRestore?: () => void };
     setItemMock.mockRestore?.();
   });
 
@@ -33,7 +33,7 @@ describe('ThemeContext', () => {
     renderWithProviders(
       <ThemeInitializer>
         <Consumer />
-      </ThemeInitializer>
+      </ThemeInitializer>,
     );
 
     // ThemeInitializer runs initialization on mount; wait for consumer to appear

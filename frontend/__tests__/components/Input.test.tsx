@@ -21,7 +21,14 @@ describe('Input component', () => {
         spy(v);
         setVal(v);
       };
-      return <Input placeholder="Enter name" helperText="This is helper" value={val} onChange={handler} />;
+      return (
+        <Input
+          placeholder="Enter name"
+          helperText="This is helper"
+          value={val}
+          onChange={handler}
+        />
+      );
     }
 
     renderWithProviders(<Controlled />);

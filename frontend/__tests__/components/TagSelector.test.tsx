@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import TagSelector from '../../components/journal/components/TagSelector';
 import { vi, describe, test, expect } from 'vitest';
@@ -7,7 +8,14 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
   const actual = await importOriginal();
   return {
     ...(actual as any),
-    useQuery: () => ({ data: [{ id: 1, name: 'alpha' }, { id: 2, name: 'beta' }], isLoading: false, isError: false })
+    useQuery: () => ({
+      data: [
+        { id: 1, name: 'alpha' },
+        { id: 2, name: 'beta' },
+      ],
+      isLoading: false,
+      isError: false,
+    }),
   };
 });
 

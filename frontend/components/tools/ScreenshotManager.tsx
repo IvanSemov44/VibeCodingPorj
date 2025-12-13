@@ -19,7 +19,7 @@ export default function ScreenshotManager({
   screenshots,
   toolId,
   onScreenshotsChange,
-  fileInputRef
+  fileInputRef,
 }: ScreenshotManagerProps): React.ReactElement {
   const [screenshotUrl, setScreenshotUrl] = useState<string>('');
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -48,7 +48,7 @@ export default function ScreenshotManager({
 
   const handleDelete = async (screenshotUrl: string) => {
     if (!toolId) {
-      onScreenshotsChange(screenshots.filter(x => x !== screenshotUrl));
+      onScreenshotsChange(screenshots.filter((x) => x !== screenshotUrl));
       return;
     }
 
@@ -57,14 +57,14 @@ export default function ScreenshotManager({
     setDeleting(true);
     try {
       const body = await deleteToolScreenshot(toolId, screenshotUrl);
-      const updated = body?.screenshots || screenshots.filter(x => x !== screenshotUrl);
+      const updated = body?.screenshots || screenshots.filter((x) => x !== screenshotUrl);
       onScreenshotsChange(updated);
     } catch (err: unknown) {
       if (hasStatus(err) && err.status === 401) {
         try {
           await getCsrf();
           const body2 = await deleteToolScreenshot(toolId, screenshotUrl);
-          const updated2 = body2?.screenshots || screenshots.filter(x => x !== screenshotUrl);
+          const updated2 = body2?.screenshots || screenshots.filter((x) => x !== screenshotUrl);
           onScreenshotsChange(updated2);
         } catch (err2: unknown) {
           console.error('Retry delete after CSRF refresh failed', err2);
@@ -72,7 +72,7 @@ export default function ScreenshotManager({
         }
       } else {
         console.error('Delete screenshot error', err);
-        alert((err instanceof Error && err.message) ? err.message : 'Failed to delete screenshot');
+        alert(err instanceof Error && err.message ? err.message : 'Failed to delete screenshot');
       }
     } finally {
       setDeleting(false);
@@ -85,23 +85,21 @@ export default function ScreenshotManager({
         Screenshots (optional) {screenshots.length > 0 && `(${screenshots.length}/10)`}
       </label>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        accept="image/*"
-        className="mt-2 text-sm"
-      />
+      <input ref={fileInputRef} type="file" multiple accept="image/*" className="mt-2 text-sm" />
       <ErrorMessage name="screenshots" component="div" className="error" />
 
       <div className="mt-2 flex gap-2">
         <input
           value={screenshotUrl}
-          onChange={e => setScreenshotUrl(e.target.value)}
+          onChange={(e) => setScreenshotUrl(e.target.value)}
           placeholder="Image URL"
           className="flex-1 px-3 py-2 bg-primary-bg border border-border rounded-md text-sm text-primary-text outline-none focus:border-accent"
         />
-        <button type="button" onClick={handleAddUrl} className="px-4 py-2 bg-accent text-white border-none rounded-md cursor-pointer font-medium transition-opacity hover:opacity-90">
+        <button
+          type="button"
+          onClick={handleAddUrl}
+          className="px-4 py-2 bg-accent text-white border-none rounded-md cursor-pointer font-medium transition-opacity hover:opacity-90"
+        >
           Add
         </button>
       </div>

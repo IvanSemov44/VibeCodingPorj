@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import { fireEvent } from '@testing-library/react';
 import XPSlider from '../../components/journal/components/XPSlider';

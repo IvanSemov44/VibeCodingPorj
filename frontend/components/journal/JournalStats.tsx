@@ -21,7 +21,9 @@ function StatItem({ icon, label, value, color }: StatItemProps): React.ReactElem
   return (
     <div className="text-center">
       <div className="text-2xl mb-1">{icon}</div>
-      <div className={`text-xl font-bold mb-0.5`} style={{ color }}>{value}</div>
+      <div className={`text-xl font-bold mb-0.5`} style={{ color }}>
+        {value}
+      </div>
       <div className="text-[11px] text-tertiary-text uppercase font-semibold">{label}</div>
     </div>
   );

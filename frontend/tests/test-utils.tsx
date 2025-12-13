@@ -13,7 +13,7 @@ export function createQueryClientForTest() {
 
 export function renderWithProviders(
   ui: React.ReactElement,
-  options?: { store?: Store; queryClient?: QueryClient }
+  options?: { store?: Store; queryClient?: QueryClient },
 ) {
   const queryClient = options?.queryClient || createQueryClientForTest();
   const usedStore = options?.store || (defaultStore as Store);

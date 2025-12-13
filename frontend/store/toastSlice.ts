@@ -28,7 +28,7 @@ const toastSlice = createSlice({
       },
     },
     removeToast(state, action: PayloadAction<number>) {
-      state.toasts = state.toasts.filter(t => t.id !== action.payload);
+      state.toasts = state.toasts.filter((t) => t.id !== action.payload);
     },
     clearToasts(state) {
       state.toasts = [];

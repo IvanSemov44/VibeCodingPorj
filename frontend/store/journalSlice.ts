@@ -10,7 +10,7 @@ interface JournalState {
 const initialState: JournalState = {
   entries: [],
   loading: false,
-  error: null
+  error: null,
 };
 
 const journalSlice = createSlice({
@@ -24,15 +24,15 @@ const journalSlice = createSlice({
       state.entries.unshift(action.payload);
     },
     removeEntry(state, action: PayloadAction<number>) {
-      state.entries = state.entries.filter(e => e.id !== action.payload);
+      state.entries = state.entries.filter((e) => e.id !== action.payload);
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
-    }
-  }
+    },
+  },
 });
 
 export const { setEntries, addEntry, removeEntry, setLoading, setError } = journalSlice.actions;

@@ -18,9 +18,14 @@ export function useAuth(requireAuth = true): { user: User | null; loading: boole
           const maybeRoles = (res as any).roles;
           let normalizedRoles: string[] | undefined = undefined;
           if (Array.isArray(maybeRoles)) {
-            normalizedRoles = maybeRoles.map(r => (typeof r === 'string' ? r : (r && (r.name || String(r.id))) )) as string[];
+            normalizedRoles = maybeRoles.map((r) =>
+              typeof r === 'string' ? r : r && (r.name || String(r.id)),
+            ) as string[];
           }
-          const normalizedUser = { ...(res as any), roles: normalizedRoles ?? (res as any).roles } as User;
+          const normalizedUser = {
+            ...(res as any),
+            roles: normalizedRoles ?? (res as any).roles,
+          } as User;
           setUser(normalizedUser);
         } else if (requireAuth) {
           router.push(ROUTES.LOGIN);

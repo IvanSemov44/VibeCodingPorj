@@ -13,14 +13,14 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
    * Update a single filter value
    */
   const updateFilter = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   /**
    * Update multiple filters at once
    */
   const updateFilters = useCallback((updates: Partial<T>) => {
-    setFilters(prev => ({ ...prev, ...updates }));
+    setFilters((prev) => ({ ...prev, ...updates }));
   }, []);
 
   /**
@@ -34,7 +34,7 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
    * Check if any filter has an active (non-empty) value
    */
   const hasActiveFilters = useMemo(() => {
-    return Object.keys(filters).some(key => {
+    return Object.keys(filters).some((key) => {
       const value = filters[key];
       // Consider a filter active if it's not empty, null, or undefined
       if (value === '' || value === null || value === undefined) return false;
@@ -47,7 +47,7 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
    * Get count of active filters
    */
   const activeFilterCount = useMemo(() => {
-    return Object.keys(filters).filter(key => {
+    return Object.keys(filters).filter((key) => {
       const value = filters[key];
       if (value === '' || value === null || value === undefined) return false;
       if (Array.isArray(value) && value.length === 0) return false;
@@ -62,6 +62,6 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
     clearFilters,
     hasActiveFilters,
     activeFilterCount,
-    setFilters
+    setFilters,
   };
 }

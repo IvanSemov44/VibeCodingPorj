@@ -8,7 +8,7 @@ const MOOD_CONFIG: Record<MoodKey, { emoji: string; color: string; label: string
   happy: { emoji: '😊', color: '#10b981', label: 'Happy' },
   neutral: { emoji: '😐', color: '#6b7280', label: 'Neutral' },
   tired: { emoji: '😴', color: '#8b5cf6', label: 'Tired' },
-  victorious: { emoji: '🏆', color: '#ef4444', label: 'Victorious' }
+  victorious: { emoji: '🏆', color: '#ef4444', label: 'Victorious' },
 };
 
 interface Props {
@@ -27,7 +27,7 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
     day: 'numeric',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 
   const handleDelete = async () => {
@@ -38,15 +38,19 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
     } catch {
       setDeleting(false);
       // keep UX simple for now
-       
+
       alert('Failed to delete entry. Please try again.');
     }
   };
 
   return (
     <div
-      className={`bg-secondary-bg border-2 border-border rounded-xl p-4 transition-all duration-300 ${deleting ? 'opacity-50 pointer-events-none' : ''}`}
-      style={expanded ? { borderColor: mood.color, boxShadow: `0 4px 12px ${mood.color}30` } : undefined}
+      className={`bg-secondary-bg border-2 border-border rounded-xl p-4 transition-all duration-300 ${
+        deleting ? 'opacity-50 pointer-events-none' : ''
+      }`}
+      style={
+        expanded ? { borderColor: mood.color, boxShadow: `0 4px 12px ${mood.color}30` } : undefined
+      }
     >
       <div className="flex items-start gap-3 mb-3">
         <div
@@ -61,9 +65,13 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
             {entry.title}
           </h3>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-xs font-semibold uppercase" style={{ color: mood.color }}>{mood.label}</span>
+            <span className="text-xs font-semibold uppercase" style={{ color: mood.color }}>
+              {mood.label}
+            </span>
             <span className="text-xs text-tertiary-text">{formattedDate}</span>
-            <span className="text-xs font-semibold text-amber-500 bg-amber-500/10 py-0.5 px-2 rounded-md">+{entry.xp} XP</span>
+            <span className="text-xs font-semibold text-amber-500 bg-amber-500/10 py-0.5 px-2 rounded-md">
+              +{entry.xp} XP
+            </span>
           </div>
         </div>
 
@@ -80,12 +88,23 @@ export default function JournalEntry({ entry, onDelete }: Props): React.ReactEle
       {entry.tags && entry.tags.length > 0 && (
         <div className="flex gap-1.5 flex-wrap mb-3">
           {entry.tags.map((tag, i) => (
-            <span key={i} className="text-[11px] py-1 px-2.5 bg-tertiary-bg border border-border rounded-md text-secondary-text font-medium">#{tag}</span>
+            <span
+              key={i}
+              className="text-[11px] py-1 px-2.5 bg-tertiary-bg border border-border rounded-md text-secondary-text font-medium"
+            >
+              #{tag}
+            </span>
           ))}
         </div>
       )}
 
-      <div className={`text-sm leading-relaxed text-secondary-text overflow-hidden mb-3 ${expanded ? 'max-h-none whitespace-pre-wrap' : 'max-h-[60px] whitespace-nowrap text-ellipsis'}`}>
+      <div
+        className={`text-sm leading-relaxed text-secondary-text overflow-hidden mb-3 ${
+          expanded
+            ? 'max-h-none whitespace-pre-wrap'
+            : 'max-h-[60px] whitespace-nowrap text-ellipsis'
+        }`}
+      >
         {entry.content}
       </div>
 

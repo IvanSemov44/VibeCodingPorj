@@ -5,7 +5,12 @@ import { addToast as addToastAction, removeToast as removeToastAction } from '..
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
-export interface ToastItem { id: number; message: string; type: ToastType; duration: number }
+export interface ToastItem {
+  id: number;
+  message: string;
+  type: ToastType;
+  duration: number;
+}
 
 const toastIcons: Record<ToastType, string> = {
   success: '✓',
@@ -43,14 +48,19 @@ export function ToastContainer(): React.ReactElement | null {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
-      {toasts.map(toast => (
+      {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg animate-[slideIn_0.3s_ease-out] pointer-events-auto ${toastStyles[toast.type]}`}
+          className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg animate-[slideIn_0.3s_ease-out] pointer-events-auto ${
+            toastStyles[toast.type]
+          }`}
         >
           <span className="text-lg font-bold">{toastIcons[toast.type]}</span>
           <span className="flex-1 text-sm font-medium">{toast.message}</span>
-          <button onClick={() => dispatch(removeToastAction(toast.id))} className="bg-transparent border-none text-white cursor-pointer text-xl leading-none transition-opacity hover:opacity-70">
+          <button
+            onClick={() => dispatch(removeToastAction(toast.id))}
+            className="bg-transparent border-none text-white cursor-pointer text-xl leading-none transition-opacity hover:opacity-70"
+          >
             ×
           </button>
         </div>

@@ -31,7 +31,13 @@ describe('utils helpers', () => {
     const clone = utils.deepClone(obj);
     expect(clone).toEqual(obj);
 
-    const grouped = utils.groupBy([{ id: 1, type: 'x' }, { id: 2, type: 'x' }], 'type');
+    const grouped = utils.groupBy(
+      [
+        { id: 1, type: 'x' },
+        { id: 2, type: 'x' },
+      ],
+      'type',
+    );
     expect(grouped.x.length).toBe(2);
   });
 });

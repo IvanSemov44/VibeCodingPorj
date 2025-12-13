@@ -40,13 +40,24 @@ export default function TwoFactorSetup() {
   }, [data]);
 
   if (isLoading) return <div>Loading 2FA setup...</div>;
-  if (error || enableMutation.error) return <div>Error: {(error as unknown as { message?: string })?.message ?? (enableMutation.error as unknown as { message?: string })?.message ?? String(error ?? enableMutation.error ?? '')}</div>;
-  if (!data) return (
-    <div>
-      <p>No 2FA setup available.</p>
-      <button onClick={enableTotp} disabled={enableMutation.isLoading}>Enable TOTP 2FA</button>
-    </div>
-  );
+  if (error || enableMutation.error)
+    return (
+      <div>
+        Error:{' '}
+        {(error as unknown as { message?: string })?.message ??
+          (enableMutation.error as unknown as { message?: string })?.message ??
+          String(error ?? enableMutation.error ?? '')}
+      </div>
+    );
+  if (!data)
+    return (
+      <div>
+        <p>No 2FA setup available.</p>
+        <button onClick={enableTotp} disabled={enableMutation.isLoading}>
+          Enable TOTP 2FA
+        </button>
+      </div>
+    );
 
   return (
     <div>
@@ -63,7 +74,9 @@ export default function TwoFactorSetup() {
           <h4>Recovery codes</h4>
           <ul>
             {recoveryCodes.map((c) => (
-              <li key={c}><code>{c}</code></li>
+              <li key={c}>
+                <code>{c}</code>
+              </li>
             ))}
           </ul>
         </div>

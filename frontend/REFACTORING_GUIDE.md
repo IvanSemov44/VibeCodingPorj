@@ -5,6 +5,7 @@ Complete code examples showing before/after for each major refactoring.
 ---
 
 ## Table of Contents
+
 1. [JournalSection Refactoring](#1-journalsection-refactoring)
 2. [Dashboard Page Refactoring](#2-dashboard-page-refactoring)
 3. [ToolForm Refactoring](#3-toolform-refactoring)
@@ -29,7 +30,13 @@ export default function JournalSection(): React.ReactElement {
   const [search, setSearch] = useState('');
   const [moodFilter, setMoodFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('');
-  const [formData, setFormData] = useState({ title: '', content: '', mood: 'neutral', tags: [] as string[], xp: 50 });
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    mood: 'neutral',
+    tags: [] as string[],
+    xp: 50,
+  });
   const [formError, setFormError] = useState('');
 
   const loadData = useCallback(async () => {
@@ -47,9 +54,7 @@ export default function JournalSection(): React.ReactElement {
   return (
     <div>
       {/* 150+ lines of JSX with inline components */}
-      <form onSubmit={handleSubmit}>
-        {/* Massive form with inline styles */}
-      </form>
+      <form onSubmit={handleSubmit}>{/* Massive form with inline styles */}</form>
       {/* More inline components */}
     </div>
   );
@@ -67,16 +72,24 @@ export const MOOD_OPTIONS = [
   { value: 'happy', emoji: '😊', label: 'Happy', color: '#10b981' },
   { value: 'neutral', emoji: '😐', label: 'Neutral', color: '#6b7280' },
   { value: 'tired', emoji: '😴', label: 'Tired', color: '#8b5cf6' },
-  { value: 'victorious', emoji: '🏆', label: 'Victorious', color: '#ef4444' }
+  { value: 'victorious', emoji: '🏆', label: 'Victorious', color: '#ef4444' },
 ] as const;
 
 export const TAG_OPTIONS = [
-  'Backend', 'Frontend', 'Bug Fix', 'Feature Quest', 'Refactor',
-  'Docs', 'Testing', 'Design', 'Learning', 'Team Collab'
+  'Backend',
+  'Frontend',
+  'Bug Fix',
+  'Feature Quest',
+  'Refactor',
+  'Docs',
+  'Testing',
+  'Design',
+  'Learning',
+  'Team Collab',
 ] as const;
 
-export type MoodValue = typeof MOOD_OPTIONS[number]['value'];
-export type TagValue = typeof TAG_OPTIONS[number];
+export type MoodValue = (typeof MOOD_OPTIONS)[number]['value'];
+export type TagValue = (typeof TAG_OPTIONS)[number];
 ```
 
 #### Step 2: Create Custom Hook
@@ -84,7 +97,12 @@ export type TagValue = typeof TAG_OPTIONS[number];
 ```typescript
 // hooks/useJournal.ts (NEW)
 import { useState, useCallback } from 'react';
-import { getJournalEntries, createJournalEntry, deleteJournalEntry, getJournalStats } from '../lib/api';
+import {
+  getJournalEntries,
+  createJournalEntry,
+  deleteJournalEntry,
+  getJournalStats,
+} from '../lib/api';
 import type { JournalEntry, JournalStats, JournalCreatePayload } from '../lib/types';
 
 export interface JournalFilters {
@@ -111,7 +129,7 @@ export function useJournal(filters: JournalFilters = {}) {
 
       const [entriesData, statsData] = await Promise.all([
         getJournalEntries(params),
-        getJournalStats()
+        getJournalStats(),
       ]);
 
       setEntries(entriesData || []);
@@ -124,30 +142,36 @@ export function useJournal(filters: JournalFilters = {}) {
     }
   }, [filters.search, filters.mood, filters.tag]);
 
-  const createEntry = useCallback(async (data: JournalCreatePayload): Promise<JournalEntry | null> => {
-    try {
-      const newEntry = await createJournalEntry(data);
-      if (newEntry) {
-        setEntries(prev => [newEntry, ...prev]);
+  const createEntry = useCallback(
+    async (data: JournalCreatePayload): Promise<JournalEntry | null> => {
+      try {
+        const newEntry = await createJournalEntry(data);
+        if (newEntry) {
+          setEntries((prev) => [newEntry, ...prev]);
+          // Reload to get updated stats
+          loadData();
+        }
+        return newEntry;
+      } catch (err) {
+        throw err;
+      }
+    },
+    [loadData],
+  );
+
+  const deleteEntry = useCallback(
+    async (id: number | string): Promise<void> => {
+      try {
+        await deleteJournalEntry(id);
+        setEntries((prev) => prev.filter((e) => e.id !== id));
         // Reload to get updated stats
         loadData();
+      } catch (err) {
+        throw err;
       }
-      return newEntry;
-    } catch (err) {
-      throw err;
-    }
-  }, [loadData]);
-
-  const deleteEntry = useCallback(async (id: number | string): Promise<void> => {
-    try {
-      await deleteJournalEntry(id);
-      setEntries(prev => prev.filter(e => e.id !== id));
-      // Reload to get updated stats
-      loadData();
-    } catch (err) {
-      throw err;
-    }
-  }, [loadData]);
+    },
+    [loadData],
+  );
 
   return {
     entries,
@@ -156,7 +180,7 @@ export function useJournal(filters: JournalFilters = {}) {
     error,
     loadData,
     createEntry,
-    deleteEntry
+    deleteEntry,
   };
 }
 ```
@@ -171,7 +195,7 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
   const [filters, setFilters] = useState<T>(initialFilters);
 
   const updateFilter = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const clearFilters = useCallback(() => {
@@ -179,7 +203,7 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
   }, [initialFilters]);
 
   const hasActiveFilters = useMemo(() => {
-    return Object.keys(filters).some(key => {
+    return Object.keys(filters).some((key) => {
       const value = filters[key];
       return value !== '' && value !== null && value !== undefined;
     });
@@ -189,7 +213,7 @@ export function useFilters<T extends Record<string, any>>(initialFilters: T) {
     filters,
     updateFilter,
     clearFilters,
-    hasActiveFilters
+    hasActiveFilters,
   };
 }
 ```
@@ -218,13 +242,14 @@ interface JournalFilters {
 const initialFilters: JournalFilters = {
   search: '',
   mood: '',
-  tag: ''
+  tag: '',
 };
 
 export default function JournalSection(): React.ReactElement {
   const [showForm, setShowForm] = useState(false);
   const { filters, updateFilter, clearFilters, hasActiveFilters } = useFilters(initialFilters);
-  const { entries, stats, loading, error, loadData, createEntry, deleteEntry } = useJournal(filters);
+  const { entries, stats, loading, error, loadData, createEntry, deleteEntry } =
+    useJournal(filters);
 
   useEffect(() => {
     loadData();
@@ -241,20 +266,11 @@ export default function JournalSection(): React.ReactElement {
 
   return (
     <div className={styles.container}>
-      <JournalHeader
-        stats={stats}
-        onNewEntry={() => setShowForm(!showForm)}
-        showForm={showForm}
-      />
+      <JournalHeader stats={stats} onNewEntry={() => setShowForm(!showForm)} showForm={showForm} />
 
       <JournalStats stats={stats} />
 
-      {showForm && (
-        <JournalForm
-          onSubmit={handleCreateEntry}
-          onCancel={() => setShowForm(false)}
-        />
-      )}
+      {showForm && <JournalForm onSubmit={handleCreateEntry} onCancel={() => setShowForm(false)} />}
 
       <JournalFilters
         filters={filters}
@@ -290,21 +306,15 @@ export default function JournalHeader({ stats, onNewEntry, showForm }: JournalHe
   return (
     <div className={styles.header}>
       <div className={styles.titleSection}>
-        <h2 className={styles.title}>
-          📖 Adventure Journal
-        </h2>
-        <p className={styles.subtitle}>
-          Track your coding journey and earn XP!
-        </p>
+        <h2 className={styles.title}>📖 Adventure Journal</h2>
+        <p className={styles.subtitle}>Track your coding journey and earn XP!</p>
       </div>
 
       <button
         onClick={onNewEntry}
         className={showForm ? styles.cancelButton : styles.newEntryButton}
       >
-        <span className={styles.buttonIcon}>
-          {showForm ? '✖️' : '✨'}
-        </span>
+        <span className={styles.buttonIcon}>{showForm ? '✖️' : '✨'}</span>
         {showForm ? 'Cancel' : 'New Entry'}
       </button>
     </div>
@@ -346,7 +356,9 @@ function StatItem({ icon, label, value, color }: StatItemProps) {
   return (
     <div className={styles.statItem}>
       <div className={styles.statIcon}>{icon}</div>
-      <div className={styles.statValue} style={{ color }}>{value}</div>
+      <div className={styles.statValue} style={{ color }}>
+        {value}
+      </div>
       <div className={styles.statLabel}>{label}</div>
     </div>
   );
@@ -372,7 +384,7 @@ const initialFormData = {
   content: '',
   mood: 'neutral' as const,
   tags: [] as string[],
-  xp: 50
+  xp: 50,
 };
 
 export default function JournalForm({ onSubmit, onCancel }: JournalFormProps) {
@@ -405,16 +417,14 @@ export default function JournalForm({ onSubmit, onCancel }: JournalFormProps) {
     }
   };
 
-  const updateField = <K extends keyof typeof formData>(key: K, value: typeof formData[K]) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+  const updateField = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const toggleTag = (tag: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.includes(tag)
-        ? prev.tags.filter(t => t !== tag)
-        : [...prev.tags, tag]
+      tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
     }));
   };
 
@@ -422,9 +432,7 @@ export default function JournalForm({ onSubmit, onCancel }: JournalFormProps) {
     <form onSubmit={handleSubmit} className={styles.form}>
       <h3 className={styles.formTitle}>✨ Record Your Adventure</h3>
 
-      {formError && (
-        <div className={styles.error}>{formError}</div>
-      )}
+      {formError && <div className={styles.error}>{formError}</div>}
 
       <div className={styles.field}>
         <label className={styles.label}>Title *</label>
@@ -456,11 +464,7 @@ export default function JournalForm({ onSubmit, onCancel }: JournalFormProps) {
         disabled={submitting}
       />
 
-      <TagSelector
-        selected={formData.tags}
-        onToggle={toggleTag}
-        disabled={submitting}
-      />
+      <TagSelector selected={formData.tags} onToggle={toggleTag} disabled={submitting} />
 
       <XPSlider
         value={formData.xp}
@@ -499,16 +503,18 @@ export function MoodSelector({ value, onChange, disabled }: MoodSelectorProps) {
     <div className={styles.container}>
       <label className={styles.label}>How are you feeling? *</label>
       <div className={styles.moodGrid}>
-        {MOOD_OPTIONS.map(mood => (
+        {MOOD_OPTIONS.map((mood) => (
           <button
             key={mood.value}
             type="button"
             onClick={() => onChange(mood.value)}
             disabled={disabled}
             className={value === mood.value ? styles.moodButtonActive : styles.moodButton}
-            style={{
-              '--mood-color': mood.color
-            } as React.CSSProperties}
+            style={
+              {
+                '--mood-color': mood.color,
+              } as React.CSSProperties
+            }
           >
             <span className={styles.moodEmoji}>{mood.emoji}</span>
             {mood.label}
@@ -522,16 +528,16 @@ export function MoodSelector({ value, onChange, disabled }: MoodSelectorProps) {
 
 ### Result: Component Size Comparison
 
-| Component | Before | After |
-|-----------|--------|-------|
+| Component      | Before    | After    |
+| -------------- | --------- | -------- |
 | JournalSection | 280 lines | 50 lines |
-| JournalHeader | (inline) | 30 lines |
-| JournalStats | (inline) | 40 lines |
-| JournalForm | (inline) | 80 lines |
-| JournalFilters | (inline) | 50 lines |
-| MoodSelector | (inline) | 30 lines |
-| TagSelector | (inline) | 30 lines |
-| XPSlider | (inline) | 20 lines |
+| JournalHeader  | (inline)  | 30 lines |
+| JournalStats   | (inline)  | 40 lines |
+| JournalForm    | (inline)  | 80 lines |
+| JournalFilters | (inline)  | 50 lines |
+| MoodSelector   | (inline)  | 30 lines |
+| TagSelector    | (inline)  | 30 lines |
+| XPSlider       | (inline)  | 20 lines |
 
 **Total Benefit**: One 280-line monolith → Eight focused components averaging 40 lines each
 
@@ -589,7 +595,7 @@ export const ROLE_COLORS: Record<string, BadgeVariant> = {
   frontend: 'success',
   pm: 'purple',
   qa: 'warning',
-  designer: 'purple'
+  designer: 'purple',
 } as const;
 
 export const ROLE_TITLES: Record<string, string> = {
@@ -598,16 +604,20 @@ export const ROLE_TITLES: Record<string, string> = {
   frontend: 'Frontend Tasks',
   pm: 'Project Management',
   qa: 'Quality Assurance',
-  designer: 'Design Tasks'
+  designer: 'Design Tasks',
 } as const;
 
 export const ROLE_CONTENT: Record<string, string> = {
-  owner: 'You have full system access. Monitor team activity, manage users, and configure system settings.',
-  backend: 'Focus on API development, database optimization, and server infrastructure. 3 pending code reviews.',
-  frontend: 'Work on UI components, responsive design, and user experience improvements. 5 features in progress.',
+  owner:
+    'You have full system access. Monitor team activity, manage users, and configure system settings.',
+  backend:
+    'Focus on API development, database optimization, and server infrastructure. 3 pending code reviews.',
+  frontend:
+    'Work on UI components, responsive design, and user experience improvements. 5 features in progress.',
   pm: 'Oversee project timelines, coordinate team efforts, and ensure deliverables meet requirements. 2 projects need updates.',
   qa: 'Review test cases, report bugs, and ensure quality standards. 7 issues awaiting verification.',
-  designer: 'Create mockups, refine UI/UX, and maintain design systems. 4 design reviews scheduled.'
+  designer:
+    'Create mockups, refine UI/UX, and maintain design systems. 4 design reviews scheduled.',
 } as const;
 
 export interface DashboardStat {
@@ -631,7 +641,12 @@ export interface Activity {
 }
 
 export const MOCK_ACTIVITIES: Activity[] = [
-  { icon: '✓', text: 'Completed task: Update documentation', time: '2 hours ago', color: '#10b981' },
+  {
+    icon: '✓',
+    text: 'Completed task: Update documentation',
+    time: '2 hours ago',
+    color: '#10b981',
+  },
   { icon: '💬', text: 'New comment on Design Review', time: '5 hours ago', color: '#3b82f6' },
   { icon: '📁', text: 'Created project: Mobile App v2', time: 'Yesterday', color: '#8b5cf6' },
 ];
@@ -725,10 +740,7 @@ export default function StatCard({ label, value, icon, color }: StatCardProps) {
           <div className={styles.label}>{label}</div>
           <div className={styles.value}>{value}</div>
         </div>
-        <div
-          className={styles.iconContainer}
-          style={{ backgroundColor: `${color}15` }}
-        >
+        <div className={styles.iconContainer} style={{ backgroundColor: `${color}15` }}>
           <span className={styles.icon}>{icon}</span>
         </div>
       </div>
@@ -769,10 +781,7 @@ export default function ProfileCard({ user }: ProfileCardProps) {
           <div className={styles.rolesContainer}>
             {user.roles && user.roles.length > 0 ? (
               user.roles.map((roleName: string) => (
-                <Badge
-                  key={roleName}
-                  variant={ROLE_COLORS[roleName] || 'default'}
-                >
+                <Badge key={roleName} variant={ROLE_COLORS[roleName] || 'default'}>
                   {roleName}
                 </Badge>
               ))
@@ -790,12 +799,14 @@ export default function ProfileCard({ user }: ProfileCardProps) {
 ### Result: Better Organization
 
 **Before**:
+
 - 1 file, 226 lines
 - Inline components
 - Hardcoded data mixed with logic
 - Difficult to test
 
 **After**:
+
 - 10 files, average 30 lines each
 - Reusable components
 - Constants separated
@@ -818,32 +829,35 @@ export function useFileUpload(maxFiles: number = 10) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (!selectedFiles) return;
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFiles = e.target.files;
+      if (!selectedFiles) return;
 
-    const fileArray = Array.from(selectedFiles);
+      const fileArray = Array.from(selectedFiles);
 
-    if (files.length + fileArray.length > maxFiles) {
-      setError(`Maximum ${maxFiles} files allowed`);
-      return;
-    }
+      if (files.length + fileArray.length > maxFiles) {
+        setError(`Maximum ${maxFiles} files allowed`);
+        return;
+      }
 
-    setFiles(prev => [...prev, ...fileArray]);
+      setFiles((prev) => [...prev, ...fileArray]);
 
-    // Generate previews
-    fileArray.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviews(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
-  }, [files.length, maxFiles]);
+      // Generate previews
+      fileArray.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviews((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    [files.length, maxFiles],
+  );
 
   const removeFile = useCallback((index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-    setPreviews(prev => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const reset = useCallback(() => {
@@ -855,24 +869,25 @@ export function useFileUpload(maxFiles: number = 10) {
     }
   }, []);
 
-  const uploadFiles = useCallback(async (
-    uploadFn: (files: File[]) => Promise<void>
-  ) => {
-    if (files.length === 0) return;
+  const uploadFiles = useCallback(
+    async (uploadFn: (files: File[]) => Promise<void>) => {
+      if (files.length === 0) return;
 
-    setUploading(true);
-    setError(null);
+      setUploading(true);
+      setError(null);
 
-    try {
-      await uploadFn(files);
-      reset();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
-      throw err;
-    } finally {
-      setUploading(false);
-    }
-  }, [files, reset]);
+      try {
+        await uploadFn(files);
+        reset();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Upload failed');
+        throw err;
+      } finally {
+        setUploading(false);
+      }
+    },
+    [files, reset],
+  );
 
   return {
     fileInputRef,
@@ -883,12 +898,13 @@ export function useFileUpload(maxFiles: number = 10) {
     handleFileSelect,
     removeFile,
     reset,
-    uploadFiles
+    uploadFiles,
   };
 }
 ```
 
 **Usage in ToolForm**:
+
 ```typescript
 export default function ToolForm({ onSaved }: ToolFormProps) {
   const { fileInputRef, previews, handleFileSelect, removeFile, uploadFiles } = useFileUpload();
@@ -930,29 +946,30 @@ export default function ToolForm({ onSaved }: ToolFormProps) {
 // hooks/useAsync.ts
 import { useState, useCallback } from 'react';
 
-export function useAsync<T, Args extends any[]>(
-  asyncFn: (...args: Args) => Promise<T>
-) {
+export function useAsync<T, Args extends any[]>(asyncFn: (...args: Args) => Promise<T>) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<T | null>(null);
 
-  const execute = useCallback(async (...args: Args) => {
-    setLoading(true);
-    setError(null);
+  const execute = useCallback(
+    async (...args: Args) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await asyncFn(...args);
-      setData(result);
-      return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [asyncFn]);
+      try {
+        const result = await asyncFn(...args);
+        setData(result);
+        return result;
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        setError(error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [asyncFn],
+  );
 
   const reset = useCallback(() => {
     setLoading(false);
@@ -965,6 +982,7 @@ export function useAsync<T, Args extends any[]>(
 ```
 
 **Usage**:
+
 ```typescript
 function MyComponent() {
   const { loading, error, data, execute } = useAsync(fetchUserData);
@@ -987,16 +1005,18 @@ function MyComponent() {
 
 ```typescript
 <div style={{ padding: 32, maxWidth: 1200, margin: '0 auto' }}>
-  <button style={{
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    padding: '12px 16px',
-    background: 'var(--bg-secondary)',
-    border: '1px solid var(--border-color)',
-    borderRadius: 8,
-    cursor: 'pointer'
-  }}>
+  <button
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 12,
+      padding: '12px 16px',
+      background: 'var(--bg-secondary)',
+      border: '1px solid var(--border-color)',
+      borderRadius: 8,
+      cursor: 'pointer',
+    }}
+  >
     Click me
   </button>
 </div>
@@ -1009,10 +1029,8 @@ function MyComponent() {
 import styles from './MyComponent.module.css';
 
 <div className={styles.container}>
-  <button className={styles.button}>
-    Click me
-  </button>
-</div>
+  <button className={styles.button}>Click me</button>
+</div>;
 ```
 
 ```css
@@ -1057,6 +1075,7 @@ import styles from './MyComponent.module.css';
 ```
 
 **Benefits**:
+
 - Hover/active states easy
 - Media queries built-in
 - Better performance
@@ -1139,6 +1158,7 @@ function Parent() {
 ## Implementation Checklist
 
 ### Phase 1: Quick Wins (Week 1)
+
 - [ ] Extract constants (journal, dashboard, tools)
 - [ ] Create useJournal hook
 - [ ] Create useFilters hook
@@ -1147,6 +1167,7 @@ function Parent() {
 - [ ] Create CSS module for JournalSection
 
 ### Phase 2: Major Refactors (Week 2)
+
 - [ ] Complete JournalSection refactor
 - [ ] Create useFileUpload hook
 - [ ] Split ToolForm component
@@ -1154,6 +1175,7 @@ function Parent() {
 - [ ] Create CSS modules for all components
 
 ### Phase 3: Polish (Week 3)
+
 - [ ] Add React.memo where beneficial
 - [ ] Add useMemo/useCallback optimizations
 - [ ] Create AuthForm shared component
@@ -1191,7 +1213,7 @@ describe('useJournal', () => {
         content: 'Test content',
         mood: 'happy',
         tags: [],
-        xp: 50
+        xp: 50,
       });
     });
 
@@ -1222,11 +1244,11 @@ describe('JournalForm', () => {
     render(<JournalForm onSubmit={onSubmit} onCancel={jest.fn()} />);
 
     fireEvent.change(screen.getByPlaceholderText('What did you accomplish today?'), {
-      target: { value: 'My Title' }
+      target: { value: 'My Title' },
     });
 
     fireEvent.change(screen.getByPlaceholderText('Describe your journey in detail...'), {
-      target: { value: 'My Content' }
+      target: { value: 'My Content' },
     });
 
     fireEvent.click(screen.getByText('🚀 Save Entry'));
@@ -1236,7 +1258,7 @@ describe('JournalForm', () => {
       content: 'My Content',
       mood: 'neutral',
       tags: [],
-      xp: 50
+      xp: 50,
     });
   });
 });

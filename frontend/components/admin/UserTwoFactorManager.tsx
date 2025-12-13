@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import QRCode from 'qrcode';
-import { useGetUser2faQuery, useSetUser2faMutation, useDisableUser2faMutation } from '../../store/api';
+import {
+  useGetUser2faQuery,
+  useSetUser2faMutation,
+  useDisableUser2faMutation,
+} from '../../store/api';
 
 type Status = {
   two_factor_type: string | null;
@@ -19,7 +23,9 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
   // API base is handled by the centralized client; any client-side fallback logic is not needed here.
 
   // React Query manages loading; ensure data is fetched on mount
-  useEffect(() => { if (!status) refetch(); }, [status, refetch]);
+  useEffect(() => {
+    if (!status) refetch();
+  }, [status, refetch]);
 
   // render provisioning QR when available
   useEffect(() => {
@@ -51,7 +57,16 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
   }
 
   if (isLoading) return <div>Loading...</div>;
-  if (error || setTypeMutation.error || disableMutation.error) return <div className="text-red-600">Error: {(error as unknown as { message?: string })?.message ?? (setTypeMutation.error as unknown as { message?: string })?.message ?? (disableMutation.error as unknown as { message?: string })?.message ?? ''}</div>;
+  if (error || setTypeMutation.error || disableMutation.error)
+    return (
+      <div className="text-red-600">
+        Error:{' '}
+        {(error as unknown as { message?: string })?.message ??
+          (setTypeMutation.error as unknown as { message?: string })?.message ??
+          (disableMutation.error as unknown as { message?: string })?.message ??
+          ''}
+      </div>
+    );
   if (!status) return <div>No data</div>;
 
   return (
@@ -71,11 +86,36 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
       )}
 
       <div className="mt-3 flex gap-2 flex-wrap">
-        <button onClick={() => setType('totp')} className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors">Enable TOTP</button>
-        <button onClick={() => setType('email')} className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors">Set Email OTP</button>
-        <button onClick={() => setType('telegram')} className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors">Set Telegram OTP</button>
-        <button onClick={() => setType('none')} className="py-1 px-2 bg-gray-600 text-white text-sm rounded border-none cursor-pointer hover:bg-gray-700 transition-colors">Set None</button>
-        <button onClick={disable} className="py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors">Disable 2FA</button>
+        <button
+          onClick={() => setType('totp')}
+          className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+        >
+          Enable TOTP
+        </button>
+        <button
+          onClick={() => setType('email')}
+          className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+        >
+          Set Email OTP
+        </button>
+        <button
+          onClick={() => setType('telegram')}
+          className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+        >
+          Set Telegram OTP
+        </button>
+        <button
+          onClick={() => setType('none')}
+          className="py-1 px-2 bg-gray-600 text-white text-sm rounded border-none cursor-pointer hover:bg-gray-700 transition-colors"
+        >
+          Set None
+        </button>
+        <button
+          onClick={disable}
+          className="py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors"
+        >
+          Disable 2FA
+        </button>
       </div>
 
       {message && <div className="mt-2 text-green-600">{message}</div>}

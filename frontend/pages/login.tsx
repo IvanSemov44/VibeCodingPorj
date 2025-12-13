@@ -14,26 +14,21 @@ export default function LoginPage(): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    values,
-    errors,
-    handleChange,
-    validate
-  } = useForm<{ email: string; password: string }>(
+  const { values, errors, handleChange, validate } = useForm<{ email: string; password: string }>(
     {
       email: 'ivan@admin.local',
-      password: 'password'
+      password: 'password',
     },
     {
       email: {
         required: true,
-        requiredMessage: 'Email is required'
+        requiredMessage: 'Email is required',
       },
       password: {
         required: true,
-        requiredMessage: 'Password is required'
-      }
-    }
+        requiredMessage: 'Password is required',
+      },
+    },
   );
 
   async function handleLogin(e: React.FormEvent) {
@@ -45,7 +40,7 @@ export default function LoginPage(): React.ReactElement {
     }
 
     setLoading(true);
-    
+
     try {
       await getCsrf();
       await login({ email: values.email, password: values.password });
@@ -55,7 +50,10 @@ export default function LoginPage(): React.ReactElement {
       }
       router.push('/dashboard');
     } catch (err: unknown) {
-      const message = (err && typeof err === 'object' && 'message' in (err as Record<string, unknown>)) ? String((err as Record<string, unknown>).message) : String(err || 'Login failed');
+      const message =
+        err && typeof err === 'object' && 'message' in (err as Record<string, unknown>)
+          ? String((err as Record<string, unknown>).message)
+          : String(err || 'Login failed');
       setError(message);
       setLoading(false);
     }
@@ -71,9 +69,7 @@ export default function LoginPage(): React.ReactElement {
     >
       <Card>
         <form onSubmit={handleLogin} className="flex flex-col gap-5">
-          {error && (
-            <Alert type="error" message={error} onClose={() => setError(null)} />
-          )}
+          {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
 
           <Input
             label="Email Address"
@@ -92,7 +88,10 @@ export default function LoginPage(): React.ReactElement {
                 Password
                 <span className="text-red-500 ml-1">*</span>
               </label>
-              <a href="#" className="text-[13px] text-accent no-underline hover:text-accent-hover transition-colors">
+              <a
+                href="#"
+                className="text-[13px] text-accent no-underline hover:text-accent-hover transition-colors"
+              >
                 Forgot?
               </a>
             </div>
@@ -106,13 +105,7 @@ export default function LoginPage(): React.ReactElement {
             />
           </div>
 
-          <Button
-            type="submit"
-            loading={loading}
-            disabled={loading}
-            fullWidth
-            size="lg"
-          >
+          <Button type="submit" loading={loading} disabled={loading} fullWidth size="lg">
             {loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>

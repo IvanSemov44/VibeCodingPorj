@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   test:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Snyk code scan
         env:
-          SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
+          SNYK_TOKEN: '${{ secrets.SNYK_TOKEN }}'
         run: |
           if [ -z "$SNYK_TOKEN" ]; then
             echo "SNYK_TOKEN not set, skipping Snyk scan"

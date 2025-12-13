@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderWithProviders, screen } from '../../tests/test-utils';
 import userEvent from '@testing-library/user-event';
 import JournalSection from '../../components/JournalSection';
@@ -16,7 +17,7 @@ vi.mock('../../hooks/useJournal', () => ({
     loading: true,
     createEntry: mockCreate,
     deleteEntry: mockDelete,
-  }))
+  })),
 }));
 
 vi.mock('../../components/Toast', () => ({ useToast: vi.fn(() => ({ addToast: vi.fn() })) }));
@@ -27,7 +28,7 @@ vi.mock('../../components/journal/JournalForm', () => ({
       <button onClick={() => onSubmit({ title: '', content: '', xp: 0 })}>submit-empty</button>
       <button onClick={() => onSubmit({ title: 'T', content: 'C', xp: 5 })}>submit-ok</button>
     </div>
-  )
+  ),
 }));
 
 describe('JournalSection extra', () => {
@@ -41,13 +42,16 @@ describe('JournalSection extra', () => {
     const addToast = vi.fn();
     // override useJournal to return non-loading for this test
     mockCreate.mockResolvedValue(undefined);
-    vi.mocked(useJournal).mockImplementation(() => ({
-      entries: [],
-      stats: { total: 0, xp: 0 },
-      loading: false,
-      createEntry: mockCreate,
-      deleteEntry: mockDelete
-    }) as any);
+    vi.mocked(useJournal).mockImplementation(
+      () =>
+        ({
+          entries: [],
+          stats: { total: 0, xp: 0 },
+          loading: false,
+          createEntry: mockCreate,
+          deleteEntry: mockDelete,
+        } as any),
+    );
     vi.mocked(useToast).mockImplementation(() => ({ addToast } as any));
 
     // render the real JournalSection so JournalHeader's button toggles the form

@@ -1,15 +1,25 @@
-import reducer, { setEntries, addEntry, removeEntry, setLoading, setError } from '../store/journalSlice';
+import reducer, {
+  setEntries,
+  addEntry,
+  removeEntry,
+  setLoading,
+  setError,
+} from '../store/journalSlice';
 import type { JournalEntry } from '../lib/types';
 import { describe, it, expect } from 'vitest';
 
 describe('journalSlice reducers', () => {
   const entry1: JournalEntry = {
-    id: 1, title: 'First', created_at: '',
-    content: ''
+    id: 1,
+    title: 'First',
+    created_at: '',
+    content: '',
   };
   const entry2: JournalEntry = {
-    id: 2, title: 'Second', created_at: '',
-    content: ''
+    id: 2,
+    title: 'Second',
+    created_at: '',
+    content: '',
   };
 
   it('setEntries replaces entries', () => {
@@ -24,7 +34,10 @@ describe('journalSlice reducers', () => {
   });
 
   it('removeEntry removes by id', () => {
-    const state = reducer({ entries: [entry1, entry2], loading: false, error: null }, removeEntry(1));
+    const state = reducer(
+      { entries: [entry1, entry2], loading: false, error: null },
+      removeEntry(1),
+    );
     expect(state.entries).toHaveLength(1);
     expect(state.entries[0].id).toBe(2);
   });

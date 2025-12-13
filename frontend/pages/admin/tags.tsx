@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  getCsrf,
-  getTags,
-  createTag,
-  updateTag,
-  deleteTag,
-} from '../../lib/api';
+import { getCsrf, getTags, createTag, updateTag, deleteTag } from '../../lib/api';
 import { Tag } from '../../lib/types';
 
 export default function AdminTags(): React.ReactElement {
@@ -76,15 +70,30 @@ export default function AdminTags(): React.ReactElement {
         <div>
           <label>Name</label>
           <br />
-          <input value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 p-2 border border-gray-200 rounded-md" />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="mt-1 p-2 border border-gray-200 rounded-md"
+          />
         </div>
         <div className="mt-2">
           <label>Slug (optional)</label>
           <br />
-          <input value={slug} onChange={(e) => setSlug(e.target.value)} className="mt-1 p-2 border border-gray-200 rounded-md" />
+          <input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className="mt-1 p-2 border border-gray-200 rounded-md"
+          />
         </div>
         <div className="mt-3">
-          <button type="submit" disabled={saving} className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors">{saving ? 'Saving...' : 'Create'}</button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors"
+          >
+            {saving ? 'Saving...' : 'Create'}
+          </button>
         </div>
       </form>
 
@@ -112,7 +121,15 @@ export default function AdminTags(): React.ReactElement {
   );
 }
 
-function TagRow({ tag, onUpdate, onDelete }: { tag: Tag; onUpdate: (id: number, updated: Partial<Tag>) => Promise<void>; onDelete: (id: number) => void; }) {
+function TagRow({
+  tag,
+  onUpdate,
+  onDelete,
+}: {
+  tag: Tag;
+  onUpdate: (id: number, updated: Partial<Tag>) => Promise<void>;
+  onDelete: (id: number) => void;
+}) {
   const [editing, setEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>(tag.name);
   const [slug, setSlug] = useState<string>(tag.slug || '');
@@ -127,18 +144,59 @@ function TagRow({ tag, onUpdate, onDelete }: { tag: Tag; onUpdate: (id: number, 
 
   return (
     <tr className="border-b border-gray-100">
-      <td className="p-2">{editing ? <input value={name} onChange={(e) => setName(e.target.value)} className="p-1 border border-gray-200 rounded" /> : tag.name}</td>
-      <td className="p-2">{editing ? <input value={slug} onChange={(e) => setSlug(e.target.value)} className="p-1 border border-gray-200 rounded" /> : tag.slug}</td>
+      <td className="p-2">
+        {editing ? (
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="p-1 border border-gray-200 rounded"
+          />
+        ) : (
+          tag.name
+        )}
+      </td>
+      <td className="p-2">
+        {editing ? (
+          <input
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className="p-1 border border-gray-200 rounded"
+          />
+        ) : (
+          tag.slug
+        )}
+      </td>
       <td className="p-2">
         {editing ? (
           <>
-            <button onClick={save} disabled={saving} className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors">{saving ? 'Saving...' : 'Save'}</button>
-            <button onClick={() => setEditing(false)} className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors">Cancel</button>
+            <button
+              onClick={save}
+              disabled={saving}
+              className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors"
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
           </>
         ) : (
           <>
-            <button onClick={() => setEditing(true)} className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors">Edit</button>
-            <button onClick={() => onDelete(tag.id)} className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors">Delete</button>
+            <button
+              onClick={() => setEditing(true)}
+              className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(tag.id)}
+              className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors"
+            >
+              Delete
+            </button>
           </>
         )}
       </td>

@@ -10,16 +10,17 @@ interface JournalHeaderProps {
   showForm: boolean;
 }
 
-export default function JournalHeader({ onNewEntry, showForm }: JournalHeaderProps): React.ReactElement {
+export default function JournalHeader({
+  onNewEntry,
+  showForm,
+}: JournalHeaderProps): React.ReactElement {
   return (
     <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
       <div>
         <h2 className="m-0 text-3xl font-bold text-primary-text flex items-center gap-3">
           📖 Adventure Journal
         </h2>
-        <p className="mt-1 text-sm text-secondary-text">
-          Track your coding journey and earn XP!
-        </p>
+        <p className="mt-1 text-sm text-secondary-text">Track your coding journey and earn XP!</p>
       </div>
 
       <button

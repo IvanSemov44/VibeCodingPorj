@@ -16,13 +16,18 @@ interface JournalFormProps {
   error: string;
 }
 
-export default function JournalForm({ onSubmit, onCancel, submitting, error }: JournalFormProps): React.ReactElement {
+export default function JournalForm({
+  onSubmit,
+  onCancel,
+  submitting,
+  error,
+}: JournalFormProps): React.ReactElement {
   const [formData, setFormData] = useState<JournalCreatePayload>({
     title: '',
     content: '',
     mood: 'neutral',
     tags: [],
-    xp: 50
+    xp: 50,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,12 +36,14 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
   };
 
   const toggleTag = (tag: string) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const currentTags = prev.tags ?? [];
-      const nextTags = currentTags.includes(tag) ? currentTags.filter(t => t !== tag) : [...currentTags, tag];
+      const nextTags = currentTags.includes(tag)
+        ? currentTags.filter((t) => t !== tag)
+        : [...currentTags, tag];
       return {
         ...prev,
-        tags: nextTags
+        tags: nextTags,
       };
     });
   };
@@ -46,9 +53,7 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
       onSubmit={handleSubmit}
       className="bg-secondary-bg border-2 border-accent rounded-xl p-5 mb-6 shadow-[0_4px_12px_rgba(59,130,246,0.2)]"
     >
-      <h3 className="m-0 mb-4 text-lg font-semibold text-primary-text">
-        ✨ Record Your Adventure
-      </h3>
+      <h3 className="m-0 mb-4 text-lg font-semibold text-primary-text">✨ Record Your Adventure</h3>
 
       {error && (
         <div className="p-3 bg-[#ef444420] border border-[#ef4444] rounded-lg text-[#ef4444] text-sm mb-4">
@@ -90,17 +95,11 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
       </div>
 
       <div className="mb-4">
-        <TagSelector
-          selectedTags={formData.tags ?? []}
-          onToggle={toggleTag}
-        />
+        <TagSelector selectedTags={formData.tags ?? []} onToggle={toggleTag} />
       </div>
 
       <div className="mb-5">
-        <XPSlider
-          value={formData.xp ?? 50}
-          onChange={(xp) => setFormData({ ...formData, xp })}
-        />
+        <XPSlider value={formData.xp ?? 50} onChange={(xp) => setFormData({ ...formData, xp })} />
       </div>
 
       <div className="flex gap-2 mt-2">

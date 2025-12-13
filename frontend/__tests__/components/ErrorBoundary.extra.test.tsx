@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderWithProviders, screen } from '../../tests/test-utils';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { describe, test, vi, expect } from 'vitest';
@@ -9,7 +10,7 @@ describe('ErrorBoundary extra coverage', () => {
     renderWithProviders(
       <ErrorBoundary fallback={<div>custom fallback</div>} onError={onError}>
         <Bomb />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(await screen.findByText(/custom fallback/i)).toBeInTheDocument();
@@ -23,7 +24,7 @@ describe('ErrorBoundary extra coverage', () => {
       renderWithProviders(
         <ErrorBoundary>
           <Bomb />
-        </ErrorBoundary>
+        </ErrorBoundary>,
       );
 
       expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();

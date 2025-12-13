@@ -13,7 +13,11 @@ interface RoleSelectorProps {
   onToggle: (roleId: number) => void;
 }
 
-export default function RoleSelector({ roles, selectedRoles, onToggle }: RoleSelectorProps): React.ReactElement {
+export default function RoleSelector({
+  roles,
+  selectedRoles,
+  onToggle,
+}: RoleSelectorProps): React.ReactElement {
   const toggleRole = (roleId: number) => {
     onToggle(roleId);
   };
@@ -22,7 +26,7 @@ export default function RoleSelector({ roles, selectedRoles, onToggle }: RoleSel
     <div className="mt-3">
       <label className="block font-semibold mb-1 text-sm text-primary-text">Roles</label>
       <div className="flex gap-2 flex-wrap mt-2">
-        {roles.map(r => {
+        {roles.map((r) => {
           const isSelected = selectedRoles.includes(r.id);
           return (
             <button
@@ -30,7 +34,9 @@ export default function RoleSelector({ roles, selectedRoles, onToggle }: RoleSel
               type="button"
               onClick={() => toggleRole(r.id)}
               className={`px-2.5 py-1.5 rounded-md border-none cursor-pointer text-[13px] font-medium transition-all ${
-                isSelected ? 'bg-[#2563eb] text-white' : 'bg-gray-100 text-inherit hover:bg-gray-200'
+                isSelected
+                  ? 'bg-[#2563eb] text-white'
+                  : 'bg-gray-100 text-inherit hover:bg-gray-200'
               }`}
             >
               {r.name}
