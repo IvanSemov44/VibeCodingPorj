@@ -24,8 +24,8 @@ export default function TextAreaField({
   optional = false
 }: TextAreaFieldProps): React.ReactElement {
   return (
-    <div style={{ marginTop: 12 }}>
-      <label style={{ display: 'block', fontWeight: 600 }}>
+    <div className="mt-3">
+      <label className="block font-semibold mb-1 text-sm text-primary-text">
         {label} {optional && '(optional)'}
       </label>
       <Field
@@ -33,9 +33,9 @@ export default function TextAreaField({
         name={name}
         maxLength={maxLength}
         rows={rows}
-        style={{ width: '100%', padding: 8 }}
+        className="w-full px-3 py-2 bg-primary-bg border border-border rounded-md text-sm text-primary-text outline-none focus:border-accent transition-colors resize-y font-[inherit]"
       />
-      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+      <div className="text-xs text-gray-500 mt-1 text-right">
         {(value || '').length}/{maxLength}
       </div>
       <ErrorMessage name={name} component="div" className="error" />

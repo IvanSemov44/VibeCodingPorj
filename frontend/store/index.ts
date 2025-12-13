@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
+import journalReducer from './journalSlice';
 
-// Minimal store: this project primarily uses react-query for remote data.
+// Minimal store: include the journal reducer so SSR/prerender sees a valid reducer.
 export const store = configureStore({
-  reducer: {},
+  reducer: {
+    journal: journalReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

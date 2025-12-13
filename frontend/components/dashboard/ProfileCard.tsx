@@ -16,30 +16,30 @@ interface ProfileCardProps {
 export default function ProfileCard({ user }: ProfileCardProps): React.ReactElement {
   return (
     <Card title="Profile Information">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="flex flex-col gap-4">
         <div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase', fontWeight: 600 }}>
+          <div className="text-xs text-secondary-text mb-1 uppercase font-semibold">
             Name
           </div>
-          <div style={{ fontSize: 16, color: 'var(--text-primary)' }}>
+          <div className="text-base text-primary-text">
             {user.name}
           </div>
         </div>
 
         <div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4, textTransform: 'uppercase', fontWeight: 600 }}>
+          <div className="text-xs text-secondary-text mb-1 uppercase font-semibold">
             Email
           </div>
-          <div style={{ fontSize: 16, color: 'var(--text-primary)' }}>
+          <div className="text-base text-primary-text">
             {user.email}
           </div>
         </div>
 
         <div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', fontWeight: 600 }}>
+          <div className="text-xs text-secondary-text mb-2 uppercase font-semibold">
             Roles
           </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div className="flex gap-2 flex-wrap">
             {user.roles && user.roles.length > 0 ? (
               user.roles.map((roleName: string) => (
                 <Badge key={roleName} variant={getRoleColor(roleName)}>
@@ -47,7 +47,7 @@ export default function ProfileCard({ user }: ProfileCardProps): React.ReactElem
                 </Badge>
               ))
             ) : (
-              <span style={{ color: 'var(--text-tertiary)' }}>No roles assigned</span>
+              <span className="text-tertiary-text">No roles assigned</span>
             )}
           </div>
         </div>

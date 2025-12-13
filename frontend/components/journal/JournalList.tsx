@@ -22,18 +22,12 @@ export default function JournalList({ entries, loading, hasFilters, onDelete }: 
 
   if (entries.length === 0) {
     return (
-      <div style={{
-        padding: 48,
-        textAlign: 'center',
-        background: 'var(--bg-secondary)',
-        border: '2px dashed var(--border-color)',
-        borderRadius: 12
-      }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>📖</div>
-        <h3 style={{ margin: '0 0 8px 0', fontSize: 18, fontWeight: 600, color: 'var(--text-primary)' }}>
+      <div className="p-12 text-center bg-secondary-bg border-2 border-dashed border-border rounded-xl">
+        <div className="text-5xl mb-4">📖</div>
+        <h3 className="m-0 mb-2 text-lg font-semibold text-primary-text">
           No entries yet
         </h3>
-        <p style={{ margin: 0, fontSize: 14, color: 'var(--text-secondary)' }}>
+        <p className="m-0 text-sm text-secondary-text">
           {hasFilters
             ? 'No entries match your filters. Try adjusting them.'
             : 'Start your adventure by creating your first journal entry!'
@@ -44,7 +38,7 @@ export default function JournalList({ entries, loading, hasFilters, onDelete }: 
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {entries.map(entry => (
         <JournalEntry key={entry.id} entry={entry} onDelete={onDelete} />
       ))}

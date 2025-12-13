@@ -14,7 +14,7 @@ interface RoleCardProps {
 export default function RoleCard({ roles }: RoleCardProps): React.ReactElement {
   return (
     <Card title={getRoleTitle(roles)}>
-      <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+      <div className="text-sm text-secondary-text leading-relaxed">
         {getRoleContent(roles)}
       </div>
     </Card>

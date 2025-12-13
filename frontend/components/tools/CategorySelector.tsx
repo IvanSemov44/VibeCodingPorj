@@ -24,9 +24,9 @@ export default function CategorySelector({
   };
 
   return (
-    <div style={{ marginTop: 12 }}>
-      <label style={{ display: 'block', fontWeight: 600 }}>Categories *</label>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+    <div className="mt-3">
+      <label className="block font-semibold mb-1 text-sm text-primary-text">Categories *</label>
+      <div className="flex gap-2 flex-wrap mt-2">
         {categories.map(c => {
           const isSelected = selectedCategories.includes(c.id);
           return (
@@ -34,14 +34,9 @@ export default function CategorySelector({
               key={c.id}
               type="button"
               onClick={() => toggleCategory(c.id)}
-              style={{
-                padding: '6px 10px',
-                background: isSelected ? '#059669' : '#f3f4f6',
-                color: isSelected ? 'white' : 'inherit',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer'
-              }}
+              className={`px-2.5 py-1.5 rounded-md border-none cursor-pointer text-[13px] font-medium transition-all ${
+                isSelected ? 'bg-[#059669] text-white' : 'bg-gray-100 text-inherit hover:bg-gray-200'
+              }`}
             >
               {c.name}
             </button>

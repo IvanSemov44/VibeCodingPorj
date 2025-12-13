@@ -9,7 +9,7 @@ describe('lib/api basic smoke tests', () => {
 
   test('getCsrf calls CSRF endpoint and reads cookie', async () => {
     // mock fetch to return ok
-    (global as unknown as { fetch?: jest.Mock }).fetch = jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
+    (global as unknown as { fetch?: ReturnType<typeof vi.fn> }).fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
 
     // simulate cookie set by server
     document.cookie = 'XSRF-TOKEN=test-token-123';
@@ -24,7 +24,7 @@ describe('lib/api basic smoke tests', () => {
 
   test('login posts credentials', async () => {
     // login returns an AuthResponse { user: { id } }
-    (global as unknown as { fetch?: jest.Mock }).fetch = jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ user: { id: 1 } }) });
+    (global as unknown as { fetch?: ReturnType<typeof vi.fn> }).fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ user: { id: 1 } }) });
     const auth = await login({ email: 'a@example.com', password: 'secret' });
     const g2 = (global as unknown as { fetch?: jest.Mock });
     expect(g2.fetch).toHaveBeenCalled();
@@ -39,8 +39,8 @@ describe('lib/api basic smoke tests', () => {
   });
 
   test('uploadToolScreenshots sends FormData body', async () => {
-    const mockFetch = jest.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ screenshots: [] }) });
-    (global as unknown as { fetch?: jest.Mock }).fetch = mockFetch;
+    const mockFetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ screenshots: [] }) });
+    (global as unknown as { fetch?: ReturnType<typeof vi.fn> }).fetch = mockFetch;
 
     const file = new File(['x'], 'a.png', { type: 'image/png' });
     const res = await uploadToolScreenshots(42, [file]);

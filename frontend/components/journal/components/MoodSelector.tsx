@@ -15,31 +15,27 @@ interface MoodSelectorProps {
 export default function MoodSelector({ value, onChange }: MoodSelectorProps): React.ReactElement {
   return (
     <div>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
+      <label className="block text-[13px] font-semibold text-secondary-text mb-2">
         How are you feeling? *
       </label>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div className="flex gap-2 flex-wrap">
         {MOOD_OPTIONS.map((mood: MoodOption) => (
           <button
             key={mood.value}
             type="button"
             onClick={() => onChange(mood.value)}
-            style={{
-              padding: '8px 16px',
-              background: value === mood.value ? `${mood.color}20` : 'var(--bg-primary)',
-              border: `2px solid ${value === mood.value ? mood.color : 'var(--border-color)'}`,
-              borderRadius: 8,
-              cursor: 'pointer',
-              fontSize: 13,
-              fontWeight: 600,
-              color: value === mood.value ? mood.color : 'var(--text-secondary)',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
-            }}
+            className={`px-4 py-2 rounded-lg cursor-pointer text-[13px] font-semibold transition-all duration-200 flex items-center gap-1.5 border-2 ${
+              value === mood.value
+                ? 'border-current'
+                : 'border-border bg-primary-bg text-secondary-text'
+            }`}
+            style={
+              value === mood.value
+                ? { background: `${mood.color}20`, borderColor: mood.color, color: mood.color }
+                : undefined
+            }
           >
-            <span style={{ fontSize: 18 }}>{mood.emoji}</span>
+            <span className="text-lg">{mood.emoji}</span>
             {mood.label}
           </button>
         ))}

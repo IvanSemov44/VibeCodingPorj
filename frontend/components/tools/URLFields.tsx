@@ -8,26 +8,26 @@ import { Field, ErrorMessage } from 'formik';
 
 export default function URLFields(): React.ReactElement {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+    <div className="grid grid-cols-2 gap-3">
       <div>
-        <label style={{ display: 'block', fontWeight: 600 }}>Link</label>
+        <label className="block font-semibold mb-1 text-sm text-primary-text">Link</label>
         <Field
           name="url"
           type="url"
           placeholder="https://example.com"
           maxLength={500}
-          style={{ width: '100%', padding: 8 }}
+          className="w-full px-3 py-2 bg-primary-bg border border-border rounded-md text-sm text-primary-text outline-none focus:border-accent transition-colors"
         />
         <ErrorMessage name="url" component="div" className="error" />
       </div>
       <div>
-        <label style={{ display: 'block', fontWeight: 600 }}>Documentation (link)</label>
+        <label className="block font-semibold mb-1 text-sm text-primary-text">Documentation (link)</label>
         <Field
           name="docs_url"
           type="url"
           placeholder="https://docs.example.com"
           maxLength={500}
-          style={{ width: '100%', padding: 8 }}
+          className="w-full px-3 py-2 bg-primary-bg border border-border rounded-md text-sm text-primary-text outline-none focus:border-accent transition-colors"
         />
         <ErrorMessage name="docs_url" component="div" className="error" />
       </div>

@@ -42,34 +42,22 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{
-      background: 'var(--bg-secondary)',
-      border: '2px solid var(--accent-primary)',
-      borderRadius: 12,
-      padding: 20,
-      marginBottom: 24,
-      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)'
-    }}>
-      <h3 style={{ margin: '0 0 16px 0', fontSize: 18, fontWeight: 600, color: 'var(--text-primary)' }}>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-secondary-bg border-2 border-accent rounded-xl p-5 mb-6 shadow-[0_4px_12px_rgba(59,130,246,0.2)]"
+    >
+      <h3 className="m-0 mb-4 text-lg font-semibold text-primary-text">
         ✨ Record Your Adventure
       </h3>
 
       {error && (
-        <div style={{
-          padding: 12,
-          background: '#ef444420',
-          border: '1px solid #ef4444',
-          borderRadius: 8,
-          color: '#ef4444',
-          fontSize: 14,
-          marginBottom: 16
-        }}>
+        <div className="p-3 bg-[#ef444420] border border-[#ef4444] rounded-lg text-[#ef4444] text-sm mb-4">
           {error}
         </div>
       )}
 
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
+      <div className="mb-4">
+        <label className="block text-[13px] font-semibold text-secondary-text mb-1.5">
           Title *
         </label>
         <input
@@ -77,24 +65,12 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.currentTarget.value })}
           placeholder="What did you accomplish today?"
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            background: 'var(--bg-primary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 8,
-            fontSize: 14,
-            color: 'var(--text-primary)',
-            outline: 'none',
-            transition: 'border-color 0.2s'
-          }}
-          onFocus={(e) => (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--accent-primary)'}
-          onBlur={(e) => (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--border-color)'}
+          className="w-full px-3 py-2.5 bg-primary-bg border border-border rounded-lg text-sm text-primary-text outline-none transition-colors focus:border-accent"
         />
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
+      <div className="mb-4">
+        <label className="block text-[13px] font-semibold text-secondary-text mb-1.5">
           Content *
         </label>
         <textarea
@@ -102,59 +78,37 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
           onChange={(e) => setFormData({ ...formData, content: e.currentTarget.value })}
           placeholder="Describe your journey in detail..."
           rows={6}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            background: 'var(--bg-primary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 8,
-            fontSize: 14,
-            color: 'var(--text-primary)',
-            outline: 'none',
-            transition: 'border-color 0.2s',
-            resize: 'vertical',
-            fontFamily: 'inherit'
-          }}
-          onFocus={(e) => (e.currentTarget as HTMLTextAreaElement).style.borderColor = 'var(--accent-primary)'}
-          onBlur={(e) => (e.currentTarget as HTMLTextAreaElement).style.borderColor = 'var(--border-color)'}
+          className="w-full px-3 py-2.5 bg-primary-bg border border-border rounded-lg text-sm text-primary-text outline-none transition-colors resize-y font-[inherit] focus:border-accent"
         />
       </div>
 
-      <div style={{ marginBottom: 16 }}>
+      <div className="mb-4">
         <MoodSelector
           value={formData.mood ?? 'neutral'}
           onChange={(mood) => setFormData({ ...formData, mood })}
         />
       </div>
 
-      <div style={{ marginBottom: 16 }}>
+      <div className="mb-4">
         <TagSelector
           selectedTags={formData.tags ?? []}
           onToggle={toggleTag}
         />
       </div>
 
-      <div style={{ marginBottom: 20 }}>
+      <div className="mb-5">
         <XPSlider
           value={formData.xp ?? 50}
           onChange={(xp) => setFormData({ ...formData, xp })}
         />
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+      <div className="flex gap-2 mt-2">
         <button
           type="button"
           onClick={() => onCancel()}
           disabled={submitting}
-          style={{
-            flex: '0 0 auto',
-            padding: '12px 16px',
-            background: 'var(--bg-secondary)',
-            color: 'var(--text-secondary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 8,
-            cursor: submitting ? 'not-allowed' : 'pointer'
-          }}
+          className="flex-[0_0_auto] px-4 py-3 bg-secondary-bg text-secondary-text border border-border rounded-lg cursor-pointer disabled:cursor-not-allowed"
         >
           Cancel
         </button>
@@ -162,20 +116,11 @@ export default function JournalForm({ onSubmit, onCancel, submitting, error }: J
         <button
           type="submit"
           disabled={submitting}
-          style={{
-            flex: 1,
-            padding: '12px',
-            background: submitting ? 'var(--bg-tertiary)' : 'var(--accent-primary)',
-            color: 'white',
-            border: 'none',
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: submitting ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => { if (!submitting) (e.currentTarget as HTMLElement).style.opacity = '0.9'; }}
-          onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.opacity = '1'}
+          className={`flex-1 py-3 border-none rounded-lg text-sm font-semibold transition-all duration-200 ${
+            submitting
+              ? 'bg-tertiary-bg cursor-not-allowed'
+              : 'bg-accent text-white cursor-pointer hover:opacity-90'
+          }`}
         >
           {submitting ? '⏳ Saving...' : '🚀 Save Entry'}
         </button>

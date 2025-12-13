@@ -1,6 +1,4 @@
 import React from 'react';
-import styles from './Input.module.css';
-import { cx } from '../lib/classNames';
 
 type BaseInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>;
 
@@ -25,17 +23,12 @@ export default function Input({
   helperText,
   ...rest
 }: InputProps): React.ReactElement {
-  const inputClassName = cx(
-    styles.input,
-    error && styles.input_error
-  );
-
   return (
-    <div className={styles.wrapper}>
+    <div className="mb-4">
       {label && (
-        <label className={styles.label}>
+        <label className="block text-sm font-semibold text-primary-text mb-1.5">
           {label}
-          {required && <span className={styles.requiredIndicator}>*</span>}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       <input
@@ -44,14 +37,16 @@ export default function Input({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder={placeholder}
-        className={inputClassName}
+        className={`w-full px-3 py-2 bg-primary-bg border rounded-lg text-sm text-primary-text outline-none transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+          error ? 'border-red-500 focus:border-red-600' : 'border-border focus:border-accent'
+        }`}
         {...rest}
       />
       {error && (
-        <div className={styles.errorMessage}>{error}</div>
+        <div className="mt-1 text-xs text-red-600">{error}</div>
       )}
       {!error && helperText && (
-        <div className={styles.helperText}>{helperText}</div>
+        <div className="mt-1 text-xs text-secondary-text">{helperText}</div>
       )}
     </div>
   );

@@ -19,9 +19,9 @@ export default function RoleSelector({ roles, selectedRoles, onToggle }: RoleSel
   };
 
   return (
-    <div style={{ marginTop: 12 }}>
-      <label style={{ display: 'block', fontWeight: 600 }}>Roles</label>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+    <div className="mt-3">
+      <label className="block font-semibold mb-1 text-sm text-primary-text">Roles</label>
+      <div className="flex gap-2 flex-wrap mt-2">
         {roles.map(r => {
           const isSelected = selectedRoles.includes(r.id);
           return (
@@ -29,14 +29,9 @@ export default function RoleSelector({ roles, selectedRoles, onToggle }: RoleSel
               key={r.id}
               type="button"
               onClick={() => toggleRole(r.id)}
-              style={{
-                padding: '6px 10px',
-                background: isSelected ? '#2563eb' : '#f3f4f6',
-                color: isSelected ? 'white' : 'inherit',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer'
-              }}
+              className={`px-2.5 py-1.5 rounded-md border-none cursor-pointer text-[13px] font-medium transition-all ${
+                isSelected ? 'bg-[#2563eb] text-white' : 'bg-gray-100 text-inherit hover:bg-gray-200'
+              }`}
             >
               {r.name}
             </button>

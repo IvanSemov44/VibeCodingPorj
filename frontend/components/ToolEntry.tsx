@@ -3,8 +3,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { deleteTool } from '../lib/api';
 import type { Tool } from '../lib/types';
-import { cx } from '../lib/classNames';
-import styles from './ToolEntry.module.css';
 
 interface Props {
   tool: Tool;
@@ -28,28 +26,27 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.row}>
-        <div className={styles.left}>
+    <div className="bg-[var(--card-bg)] border border-border rounded-xl p-4 transition-all hover:shadow-md">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-start gap-4 flex-1 min-w-0">
           {tool.screenshots && tool.screenshots[0] ? (
-            // next/image accepts className for styling
-            <Image src={tool.screenshots[0]} alt="thumb" width={96} height={64} className={styles.thumb} />
+            <Image src={tool.screenshots[0]} alt="thumb" width={96} height={64} className="rounded-lg object-cover flex-shrink-0" />
           ) : null}
-          <div className={styles.meta}>
-            <div className={styles.title}>
-              <Link href={`/tools/${tool.id}`}>{tool.name ?? `Tool ${tool.id}`}</Link>
+          <div className="flex-1 min-w-0">
+            <div className="mb-1">
+              <Link href={`/tools/${tool.id}`} className="text-lg font-semibold text-primary-text hover:text-accent transition-colors no-underline">{tool.name ?? `Tool ${tool.id}`}</Link>
             </div>
-            <div className={styles.desc}>{tool.description ?? ''}</div>
+            <div className="text-sm text-secondary-text line-clamp-2">{tool.description ?? ''}</div>
           </div>
         </div>
-        <div className={styles.actions}>
+        <div className="flex items-center gap-2 flex-shrink-0">
           {tool.url ? (
-            <a className={styles.visitLink} href={tool.url} target="_blank" rel="noreferrer">Visit</a>
+            <a className="px-3 py-1.5 text-sm font-medium text-accent hover:text-accent-hover no-underline transition-colors" href={tool.url} target="_blank" rel="noreferrer">Visit</a>
           ) : (
-            <span style={{ color: 'var(--text-tertiary)' }}>Visit</span>
+            <span className="px-3 py-1.5 text-sm font-medium text-tertiary-text">Visit</span>
           )}
-          <Link href={`/tools/${tool.id}/edit`}><button className={styles.button}>Edit</button></Link>
-          <button onClick={handleDelete} className={cx(styles.button, styles.delete)}>Delete</button>
+          <Link href={`/tools/${tool.id}/edit`}><button className="px-3 py-1.5 bg-accent text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-accent-hover">Edit</button></Link>
+          <button onClick={handleDelete} className="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-red-600">Delete</button>
         </div>
       </div>
     </div>

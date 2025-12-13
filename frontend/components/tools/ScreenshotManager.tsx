@@ -80,8 +80,8 @@ export default function ScreenshotManager({
   };
 
   return (
-    <div style={{ marginTop: 12 }}>
-      <label style={{ display: 'block', fontWeight: 600 }}>
+    <div className="mt-3">
+      <label className="block font-semibold mb-1 text-sm text-primary-text">
         Screenshots (optional) {screenshots.length > 0 && `(${screenshots.length}/10)`}
       </label>
 
@@ -90,38 +90,38 @@ export default function ScreenshotManager({
         type="file"
         multiple
         accept="image/*"
-        style={{ marginTop: 8 }}
+        className="mt-2 text-sm"
       />
       <ErrorMessage name="screenshots" component="div" className="error" />
 
-      <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+      <div className="mt-2 flex gap-2">
         <input
           value={screenshotUrl}
           onChange={e => setScreenshotUrl(e.target.value)}
           placeholder="Image URL"
-          style={{ flex: 1, padding: 8 }}
+          className="flex-1 px-3 py-2 bg-primary-bg border border-border rounded-md text-sm text-primary-text outline-none focus:border-accent"
         />
-        <button type="button" onClick={handleAddUrl} style={{ padding: '8px 10px' }}>
+        <button type="button" onClick={handleAddUrl} className="px-4 py-2 bg-accent text-white border-none rounded-md cursor-pointer font-medium transition-opacity hover:opacity-90">
           Add
         </button>
       </div>
 
       {screenshots.length > 0 && (
-        <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+        <div className="flex gap-2 mt-2 flex-wrap">
           {screenshots.map((s: string) => (
-            <div key={s} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div key={s} className="flex flex-col items-center">
               <Image
                 src={s}
                 alt="screenshot"
                 width={120}
                 height={80}
-                style={{ objectFit: 'cover', borderRadius: 6, border: '1px solid #e5e7eb' }}
+                className="object-cover rounded-md border border-gray-300"
               />
               <button
                 type="button"
                 onClick={() => handleDelete(s)}
                 disabled={deleting}
-                style={{ marginTop: 6 }}
+                className="mt-1.5 px-2.5 py-1 bg-red-500 text-white border-none rounded cursor-pointer text-xs transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Delete
               </button>

@@ -11,11 +11,11 @@ interface WelcomeHeaderProps {
 
 export default function WelcomeHeader({ userName }: WelcomeHeaderProps): React.ReactElement {
   return (
-    <div style={{ marginBottom: 32 }}>
-      <h1 style={{ margin: 0, marginBottom: 8, fontSize: 32, fontWeight: 700, color: 'var(--text-primary)' }}>
+    <div className="mb-8">
+      <h1 className="m-0 mb-2 text-4xl font-bold text-primary-text">
         Welcome back, {userName}! 👋
       </h1>
-      <p style={{ margin: 0, fontSize: 16, color: 'var(--text-secondary)' }}>
+      <p className="m-0 text-base text-secondary-text">
         Here is what is happening with your projects today.
       </p>
     </div>

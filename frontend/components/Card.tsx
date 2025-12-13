@@ -1,6 +1,4 @@
 import React from 'react';
-import styles from './Card.module.css';
-import { cx } from '../lib/classNames';
 
 export interface CardProps {
   title?: React.ReactNode;
@@ -11,15 +9,15 @@ export interface CardProps {
 
 export default function Card({ title, children, footer, className }: CardProps): React.ReactElement {
   return (
-    <div className={cx(styles.card, className)}>
+    <div className={`bg-[var(--card-bg)] border border-border rounded-xl shadow-sm ${className || ''}`}>
       {title && (
-        <div className={styles.header}>
+        <div className="px-5 py-4 border-b border-border font-semibold text-primary-text">
           {title}
         </div>
       )}
-      <div className={styles.body}>{children}</div>
+      <div className="p-5">{children}</div>
       {footer && (
-        <div className={styles.footer}>
+        <div className="px-5 py-4 border-t border-border text-sm">
           {footer}
         </div>
       )}

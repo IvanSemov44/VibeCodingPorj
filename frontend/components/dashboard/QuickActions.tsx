@@ -15,31 +15,8 @@ interface ActionButtonProps {
 
 function ActionButton({ icon, label }: ActionButtonProps): React.ReactElement {
   return (
-    <button style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 12,
-      padding: '12px 16px',
-      background: 'var(--bg-secondary)',
-      border: '1px solid var(--border-color)',
-      borderRadius: 8,
-      cursor: 'pointer',
-      fontSize: 14,
-      fontWeight: 500,
-      color: 'var(--text-primary)',
-      transition: 'all 0.2s',
-      textAlign: 'left',
-      width: '100%'
-    }}
-    onMouseEnter={e => {
-      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-tertiary)';
-      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-hover)';
-    }}
-    onMouseLeave={e => {
-      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-secondary)';
-      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-color)';
-    }}>
-      <span style={{ fontSize: 20 }}>{icon}</span>
+    <button className="flex items-center gap-3 px-4 py-3 bg-secondary-bg border border-border rounded-lg cursor-pointer text-sm font-medium text-primary-text transition-all duration-200 text-left w-full hover:bg-tertiary-bg hover:border-border-hover">
+      <span className="text-xl">{icon}</span>
       <span>{label}</span>
     </button>
   );
@@ -48,7 +25,7 @@ function ActionButton({ icon, label }: ActionButtonProps): React.ReactElement {
 export default function QuickActions(): React.ReactElement {
   return (
     <Card title="Quick Actions">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {QUICK_ACTIONS.map((action: QuickAction) => (
           <ActionButton key={action.label} icon={action.icon} label={action.label} />
         ))}

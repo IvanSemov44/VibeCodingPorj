@@ -19,10 +19,10 @@ interface StatItemProps {
 
 function StatItem({ icon, label, value, color }: StatItemProps): React.ReactElement {
   return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color, marginBottom: 2 }}>{value}</div>
-      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', textTransform: 'uppercase', fontWeight: 600 }}>{label}</div>
+    <div className="text-center">
+      <div className="text-2xl mb-1">{icon}</div>
+      <div className={`text-xl font-bold mb-0.5`} style={{ color }}>{value}</div>
+      <div className="text-[11px] text-tertiary-text uppercase font-semibold">{label}</div>
     </div>
   );
 }
@@ -31,16 +31,7 @@ export default function JournalStats({ stats }: JournalStatsProps): React.ReactE
   if (!stats) return null;
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-      gap: 12,
-      marginBottom: 24,
-      padding: 16,
-      background: 'var(--bg-secondary)',
-      border: '2px solid var(--border-color)',
-      borderRadius: 12
-    }}>
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-3 mb-6 p-4 bg-secondary-bg border-2 border-border rounded-xl">
       <StatItem icon="📚" label="Total Entries" value={stats.total_entries} color="#3b82f6" />
       <StatItem icon="⭐" label="Total XP" value={stats.total_xp} color="#f59e0b" />
       <StatItem icon="📅" label="This Week" value={stats.entries_this_week} color="#10b981" />

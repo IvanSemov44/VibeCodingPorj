@@ -18,8 +18,6 @@ import ScreenshotManager from './tools/ScreenshotManager';
 import type { Category, Tag, Tool, ToolCreatePayload, ToolUpdatePayload } from '../lib/types';
 import { ToolCreatePayloadSchema } from '../lib/schemas';
 import { zodToFormikValidate } from '../lib/formikZod';
-import styles from './ToolForm.module.css';
-import { cx } from '../lib/classNames';
 
 type Role = { id: number; name: string };
 
@@ -76,7 +74,7 @@ export default function ToolForm({
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className="max-w-3xl mx-auto">
       <Formik
         initialValues={initialValues}
         validate={zodToFormikValidate(ToolCreatePayloadSchema)}
@@ -115,7 +113,7 @@ export default function ToolForm({
       >
         {({ values, setFieldValue, isSubmitting }) => (
           <Form>
-            {error && <div className={styles.error}>{error}</div>}
+            {error && <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-800 rounded-lg text-sm">{error}</div>}
 
             <NameField />
 
@@ -192,11 +190,11 @@ export default function ToolForm({
               fileInputRef={fileRef}
             />
 
-            <div className={styles.submit}>
+            <div className="mt-8 flex justify-end">
               <button
                 type="submit"
                 disabled={saving || isSubmitting}
-                className={cx(styles.submitButton, (saving || isSubmitting) ? styles.submitButtonDisabled : '')}
+                className={`px-8 py-3 bg-accent text-white text-base font-semibold rounded-lg border-none cursor-pointer transition-all ${(saving || isSubmitting) ? 'opacity-60 cursor-not-allowed' : 'hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-lg'}`}
               >
                 {saving || isSubmitting ? 'Saving...' : 'Save Tool'}
               </button>

@@ -39,6 +39,10 @@
     "types/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "tests",
+    "__tests__",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

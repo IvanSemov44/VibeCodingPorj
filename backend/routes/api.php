@@ -103,15 +103,3 @@ Route::get('status', function () {
     ]);
 });
 
-// Temporary debug route: returns a personal access token for the seeded admin user
-Route::get('debug/token', function () {
-    $user = User::where('email', 'ivan@admin.local')->first();
-    if (! $user) {
-        return response()->json(['message' => 'test user not found'], 404);
-    }
-    $token = $user->createToken('debug-token')->plainTextToken;
-    return response()->json(['token' => $token]);
-});
-Route::get('debug/users', function () {
-    return response()->json(['emails' => User::pluck('email')]);
-});

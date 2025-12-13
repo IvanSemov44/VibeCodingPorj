@@ -29,37 +29,19 @@ export default function JournalFilters({
   hasActiveFilters
 }: JournalFiltersProps): React.ReactElement {
   return (
-    <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+    <div className="flex gap-3 mb-5 flex-wrap items-center">
       <input
         type="text"
         value={search}
         onChange={(e) => onSearchChange(e.currentTarget.value)}
         placeholder="🔍 Search entries..."
-        style={{
-          flex: '1 1 200px',
-          padding: '10px 12px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-color)',
-          borderRadius: 8,
-          fontSize: 14,
-          color: 'var(--text-primary)',
-          outline: 'none'
-        }}
+        className="flex-[1_1_200px] px-3 py-2.5 bg-secondary-bg border border-border rounded-lg text-sm text-primary-text outline-none focus:border-accent transition-colors"
       />
 
       <select
         value={moodFilter}
         onChange={(e) => onMoodChange(e.currentTarget.value)}
-        style={{
-          padding: '10px 12px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-color)',
-          borderRadius: 8,
-          fontSize: 14,
-          color: 'var(--text-primary)',
-          cursor: 'pointer',
-          outline: 'none'
-        }}
+        className="px-3 py-2.5 bg-secondary-bg border border-border rounded-lg text-sm text-primary-text cursor-pointer outline-none focus:border-accent transition-colors"
       >
         <option value="">All Moods</option>
         {MOOD_OPTIONS.map((mood: MoodOption) => (
@@ -72,16 +54,7 @@ export default function JournalFilters({
       <select
         value={tagFilter}
         onChange={(e) => onTagChange(e.currentTarget.value)}
-        style={{
-          padding: '10px 12px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-color)',
-          borderRadius: 8,
-          fontSize: 14,
-          color: 'var(--text-primary)',
-          cursor: 'pointer',
-          outline: 'none'
-        }}
+        className="px-3 py-2.5 bg-secondary-bg border border-border rounded-lg text-sm text-primary-text cursor-pointer outline-none focus:border-accent transition-colors"
       >
         <option value="">All Tags</option>
         {TAG_OPTIONS.map((tag: string) => (
@@ -94,17 +67,7 @@ export default function JournalFilters({
       {hasActiveFilters && (
         <button
           onClick={onClearFilters}
-          style={{
-            padding: '10px 16px',
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 8,
-            fontSize: 13,
-            fontWeight: 600,
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
+          className="px-4 py-2.5 bg-secondary-bg border border-border rounded-lg text-[13px] font-semibold text-secondary-text cursor-pointer transition-all hover:bg-tertiary-bg hover:border-border-hover"
         >
           Clear Filters
         </button>

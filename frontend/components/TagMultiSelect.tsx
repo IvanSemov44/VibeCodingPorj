@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTags } from '../lib/api';
-import styles from './TagMultiSelect.module.css';
-import { cx } from '../lib/classNames';
 
 type ExternalOption = string | { name?: string };
 
@@ -111,16 +109,16 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
   }, [input, options, value]);
 
   return (
-    <div ref={ref} className={styles.root}>
+    <div ref={ref} className="relative w-full">
       <div
-        className={styles.container}
+        className="min-h-[42px] w-full flex flex-wrap items-center gap-2 px-3 py-2 bg-primary-bg border border-border rounded-lg cursor-text transition-colors hover:border-accent focus-within:border-accent"
         onClick={() => { setOpen(true); inputRef.current?.focus(); }}
         aria-haspopup="listbox"
       >
         {value.map(tag => (
-          <div key={tag} className={styles.pill}>
-            <span className={styles.pillText}>{tag}</span>
-            <button type="button" aria-label={`Remove ${tag}`} onClick={(e) => { e.stopPropagation(); removeTag(tag); }} className={styles.pillRemove}>×</button>
+          <div key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 text-accent rounded-md text-sm font-medium">
+            <span>{tag}</span>
+            <button type="button" aria-label={`Remove ${tag}`} onClick={(e) => { e.stopPropagation(); removeTag(tag); }} className="bg-transparent border-none text-accent cursor-pointer text-base leading-none transition-opacity hover:opacity-70">×</button>
           </div>
         ))}
 
@@ -134,12 +132,12 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
           aria-controls={listId}
           aria-autocomplete="list"
           role="combobox"
-          className={styles.input}
+          className="flex-1 min-w-[120px] bg-transparent border-none outline-none text-sm text-primary-text placeholder:text-secondary-text"
         />
       </div>
 
       {open && (filtered().length > 0 || (allowCreate && input.trim() !== '')) && (
-        <div role="listbox" id={listId} className={styles.dropdown}>
+        <div role="listbox" id={listId} className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-primary-bg border border-border rounded-lg shadow-lg z-10">
           {filtered().map((s, idx) => (
             <div
               key={s}
@@ -149,7 +147,7 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
               onMouseEnter={() => setActiveIndex(idx)}
               onMouseDown={(e) => { e.preventDefault(); /* prevent blur before click */ }}
               onClick={() => addTag(s)}
-              className={cx(styles.option, activeIndex === idx ? styles.optionActive : '')}
+              className={`px-3 py-2 text-sm text-primary-text cursor-pointer transition-colors ${activeIndex === idx ? 'bg-accent/10 text-accent' : 'hover:bg-secondary-bg'}`}
             >
               {s}
             </div>
@@ -161,7 +159,7 @@ export default function TagMultiSelect({ value = [], onChange, allowCreate = tru
               onMouseEnter={() => setActiveIndex(filtered().length)}
               onMouseDown={(e) => { e.preventDefault(); }}
               onClick={() => addTag(input.trim())}
-              className={styles.createOption}
+              className="px-3 py-2 text-sm text-accent font-medium cursor-pointer border-t border-border bg-accent/5 hover:bg-accent/10 transition-colors"
             >
               {`Create "${input.trim()}"`}
             </div>

@@ -1,6 +1,4 @@
 import React from 'react';
-import styles from './Alert.module.css';
-import { cx } from '../lib/classNames';
 
 export type AlertType = 'success' | 'error' | 'warning' | 'info';
 
@@ -17,18 +15,22 @@ const alertIcons: Record<AlertType, string> = {
   info: 'ℹ'
 };
 
-export default function Alert({ type = 'info', message, onClose }: AlertProps): React.ReactElement {
-  const className = cx(
-    styles.alert,
-    styles[`alert_${type}`]
-  );
+const alertStyles: Record<AlertType, string> = {
+  success: 'bg-green-100 border-green-300 text-green-800',
+  error: 'bg-red-100 border-red-200 text-red-800',
+  warning: 'bg-yellow-100 border-yellow-300 text-yellow-800',
+  info: 'bg-blue-100 border-blue-200 text-blue-800'
+};
 
+export default function Alert({ type = 'info', message, onClose }: AlertProps): React.ReactElement {
   return (
-    <div className={className}>
-      <span className={styles.icon}>{alertIcons[type]}</span>
-      <div className={styles.message}>{message}</div>
+    <div className={`flex items-start gap-3 p-3 rounded-lg text-sm border ${alertStyles[type]}`}>
+      <span className="text-base font-bold">{alertIcons[type]}</span>
+      <div className="flex-1">{message}</div>
       {onClose && (
-        <button onClick={onClose} className={styles.closeButton}>×</button>
+        <button onClick={onClose} className="bg-transparent border-none text-inherit cursor-pointer text-lg p-0 leading-none transition-opacity hover:opacity-70">
+          ×
+        </button>
       )}
     </div>
   );

@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import styles from './Toast.module.css';
-import { cx } from '../lib/classNames';
 
 type ToastItem = { id: number; message: string; type: 'success' | 'error' | 'warning' | 'info' };
 
@@ -13,6 +11,13 @@ const toastIcons: Record<ToastItem['type'], string> = {
   error: '✕',
   warning: '⚠',
   info: 'ℹ'
+};
+
+const toastStyles: Record<ToastItem['type'], string> = {
+  success: 'bg-green-500 text-white',
+  error: 'bg-red-500 text-white',
+  warning: 'bg-yellow-500 text-white',
+  info: 'bg-blue-500 text-white'
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }): React.ReactElement {
@@ -44,21 +49,19 @@ function ToastContainer({ toasts, onClose }: { toasts: ToastItem[]; onClose: (id
   if (!toasts || toasts.length === 0) return null;
 
   return (
-    <div className={styles.container}>
-      {toasts.map(toast => {
-        const toastClassName = cx(
-          styles.toast,
-          styles[`toast_${toast.type}`]
-        );
-
-        return (
-          <div key={toast.id} className={toastClassName}>
-            <span className={styles.icon}>{toastIcons[toast.type]}</span>
-            <span className={styles.message}>{toast.message}</span>
-            <button onClick={() => onClose(toast.id)} className={styles.closeButton}>×</button>
-          </div>
-        );
-      })}
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      {toasts.map(toast => (
+        <div
+          key={toast.id}
+          className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg animate-[slideIn_0.3s_ease-out] pointer-events-auto ${toastStyles[toast.type]}`}
+        >
+          <span className="text-lg font-bold">{toastIcons[toast.type]}</span>
+          <span className="flex-1 text-sm font-medium">{toast.message}</span>
+          <button onClick={() => onClose(toast.id)} className="bg-transparent border-none text-white cursor-pointer text-xl leading-none transition-opacity hover:opacity-70">
+            ×
+          </button>
+        </div>
+      ))}
     </div>
   );
 }

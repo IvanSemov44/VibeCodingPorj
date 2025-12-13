@@ -13,8 +13,8 @@ interface XPSliderProps {
 export default function XPSlider({ value, onChange }: XPSliderProps): React.ReactElement {
   return (
     <div>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
-        XP Earned: <span style={{ color: '#f59e0b', fontSize: 16 }}>{value}</span>
+      <label className="block text-[13px] font-semibold text-secondary-text mb-2">
+        XP Earned: <span className="text-[#f59e0b] text-base">{value}</span>
       </label>
       <input
         type="range"
@@ -22,15 +22,9 @@ export default function XPSlider({ value, onChange }: XPSliderProps): React.Reac
         max="100"
         value={value}
         onChange={(e) => onChange(parseInt(e.currentTarget.value))}
-        style={{
-          width: '100%',
-          height: 6,
-          borderRadius: 3,
-          outline: 'none',
-          cursor: 'pointer'
-        }}
+        className="w-full h-1.5 rounded-sm outline-none cursor-pointer"
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
+      <div className="flex justify-between text-[11px] text-tertiary-text mt-1">
         <span>1 XP</span>
         <span>100 XP</span>
       </div>

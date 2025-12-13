@@ -24,26 +24,20 @@ export default function TagSelector({ selectedTags, onToggle }: TagSelectorProps
 
   return (
     <div>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
+      <label className="block text-[13px] font-semibold text-secondary-text mb-2">
         Tags (optional)
       </label>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      <div className="flex gap-1.5 flex-wrap">
         {display.map(tag => (
           <button
             key={tag}
             type="button"
             onClick={() => onToggle(tag)}
-            style={{
-              padding: '6px 12px',
-              background: selectedTags.includes(tag) ? 'var(--accent-primary)' : 'var(--bg-primary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: 6,
-              cursor: 'pointer',
-              fontSize: 12,
-              fontWeight: 500,
-              color: selectedTags.includes(tag) ? 'white' : 'var(--text-secondary)',
-              transition: 'all 0.2s'
-            }}
+            className={`px-3 py-1.5 border rounded-md cursor-pointer text-xs font-medium transition-all duration-200 ${
+              selectedTags.includes(tag)
+                ? 'bg-accent border-accent text-white'
+                : 'bg-primary-bg border-border text-secondary-text hover:bg-secondary-bg'
+            }`}
           >
             #{tag}
           </button>

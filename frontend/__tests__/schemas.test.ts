@@ -1,4 +1,4 @@
-import { ToolCreatePayloadSchema } from '../lib/schemas';
+import { ToolCreatePayloadSchema, ToolSchema } from '../lib/schemas';
 
 describe('schemas', () => {
   test('ToolCreatePayloadSchema rejects empty name and accepts basic payload', () => {
@@ -12,5 +12,15 @@ describe('schemas', () => {
     if (resOk.success) {
       expect(resOk.data.name).toBe('My Tool');
     }
+  });
+
+  test('ToolSchema accepts minimal tool and rejects invalid id', () => {
+    const ok = { id: 3, name: 'T' };
+    const parsed = ToolSchema.safeParse(ok);
+    expect(parsed.success).toBe(true);
+
+    const bad = { id: -1 };
+    const parsedBad = ToolSchema.safeParse(bad);
+    expect(parsedBad.success).toBe(false);
   });
 });

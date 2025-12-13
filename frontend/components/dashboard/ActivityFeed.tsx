@@ -17,26 +17,18 @@ interface ActivityItemProps {
 
 function ActivityItem({ icon, text, time, color }: ActivityItemProps): React.ReactElement {
   return (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'start' }}>
-      <div style={{
-        width: 32,
-        height: 32,
-        borderRadius: '50%',
-        background: `${color}15`,
-        color: color,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 16,
-        flexShrink: 0
-      }}>
+    <div className="flex gap-3 items-start">
+      <div
+        className="w-8 h-8 rounded-full flex items-center justify-center text-base flex-shrink-0"
+        style={{ background: `${color}15`, color }}
+      >
         {icon}
       </div>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, color: 'var(--text-primary)', marginBottom: 2 }}>
+      <div className="flex-1">
+        <div className="text-sm text-primary-text mb-0.5">
           {text}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
+        <div className="text-xs text-tertiary-text">
           {time}
         </div>
       </div>
@@ -49,12 +41,12 @@ export default function ActivityFeed(): React.ReactElement {
     <Card
       title="Recent Activity"
       footer={
-        <a href="#" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontSize: 13 }}>
+        <a href="#" className="text-accent no-underline text-[13px] hover:underline">
           View all activity →
         </a>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="flex flex-col gap-4">
         {MOCK_ACTIVITIES.map((activity: Activity, index: number) => (
           <ActivityItem
             key={index}
