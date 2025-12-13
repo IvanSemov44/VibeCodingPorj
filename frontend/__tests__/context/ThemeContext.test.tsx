@@ -1,9 +1,11 @@
+import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
-import { ThemeProvider, useTheme } from '../../context/ThemeContext';
+import { useAppTheme } from '../../hooks/useAppTheme';
+import { ThemeInitializer } from '../../components/ThemeInitializer';
 import { describe, beforeEach, vi, afterEach, test, expect } from 'vitest';
 
 function Consumer() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useAppTheme();
   return (
     <div>
       <span>theme:{theme}</span>
@@ -29,12 +31,12 @@ describe('ThemeContext', () => {
 
   test('provides theme and toggles', async () => {
     renderWithProviders(
-      <ThemeProvider>
+      <ThemeInitializer>
         <Consumer />
-      </ThemeProvider>
+      </ThemeInitializer>
     );
 
-    // ThemeProvider returns null until mounted; wait for consumer to appear
+    // ThemeInitializer runs initialization on mount; wait for consumer to appear
     const el = await screen.findByText(/theme:/i);
     expect(el).toBeInTheDocument();
 

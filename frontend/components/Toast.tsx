@@ -1,51 +1,44 @@
-import React, { createContext, useContext, useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../store';
+import { addToast as addToastAction, removeToast as removeToastAction } from '../store/toastSlice';
 
-type ToastItem = { id: number; message: string; type: 'success' | 'error' | 'warning' | 'info' };
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
-type ToastContextType = { addToast: (message: string, type?: ToastItem['type'], duration?: number) => void; removeToast: (id: number) => void };
+export interface ToastItem { id: number; message: string; type: ToastType; duration: number }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
-const toastIcons: Record<ToastItem['type'], string> = {
+const toastIcons: Record<ToastType, string> = {
   success: '✓',
   error: '✕',
   warning: '⚠',
-  info: 'ℹ'
+  info: 'ℹ',
 };
 
-const toastStyles: Record<ToastItem['type'], string> = {
+const toastStyles: Record<ToastType, string> = {
   success: 'bg-green-500 text-white',
   error: 'bg-red-500 text-white',
   warning: 'bg-yellow-500 text-white',
-  info: 'bg-blue-500 text-white'
+  info: 'bg-blue-500 text-white',
 };
 
-export function ToastProvider({ children }: { children: React.ReactNode }): React.ReactElement {
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
-
-  const addToast = (message: string, type: ToastItem['type'] = 'info', duration = 3000) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    if (duration > 0) setTimeout(() => removeToast(id), duration);
+export function useToast() {
+  const dispatch = useDispatch();
+  const addToast = (message: string, type: ToastType = 'info', duration = 3000) => {
+    // dispatch action (slice's prepare sets id)
+    const action = addToastAction(message, type, duration) as unknown as { payload: ToastItem };
+    dispatch(action as any);
+    // schedule removal
+    if (duration > 0) {
+      const id = (action as any).payload.id as number;
+      setTimeout(() => dispatch(removeToastAction(id)), duration);
+    }
   };
-
-  const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
-
-  return (
-    <ToastContext.Provider value={{ addToast, removeToast }}>
-      {children}
-      <ToastContainer toasts={toasts} onClose={removeToast} />
-    </ToastContext.Provider>
-  );
+  return { addToast, removeToast: (id: number) => dispatch(removeToastAction(id)) };
 }
 
-export function useToast(): ToastContextType {
-  const context = useContext(ToastContext);
-  if (!context) throw new Error('useToast must be used within ToastProvider');
-  return context;
-}
-
-function ToastContainer({ toasts, onClose }: { toasts: ToastItem[]; onClose: (id: number) => void }): React.ReactElement | null {
+export function ToastContainer(): React.ReactElement | null {
+  const toasts = useSelector((s: RootState) => s.toast?.toasts ?? []);
+  const dispatch = useDispatch();
   if (!toasts || toasts.length === 0) return null;
 
   return (
@@ -57,7 +50,7 @@ function ToastContainer({ toasts, onClose }: { toasts: ToastItem[]; onClose: (id
         >
           <span className="text-lg font-bold">{toastIcons[toast.type]}</span>
           <span className="flex-1 text-sm font-medium">{toast.message}</span>
-          <button onClick={() => onClose(toast.id)} className="bg-transparent border-none text-white cursor-pointer text-xl leading-none transition-opacity hover:opacity-70">
+          <button onClick={() => dispatch(removeToastAction(toast.id))} className="bg-transparent border-none text-white cursor-pointer text-xl leading-none transition-opacity hover:opacity-70">
             ×
           </button>
         </div>

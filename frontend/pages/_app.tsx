@@ -15,7 +15,7 @@ import '../styles/globals.css';
 
 // Components
 import Layout from '../components/Layout';
-import { ToastProvider } from '../components/Toast';
+import { ToastContainer } from '../components/Toast';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { ThemeInitializer } from '../components/ThemeInitializer';
 
@@ -33,14 +33,12 @@ export default function App({ Component, pageProps }: AppProps): React.ReactElem
         <Provider store={store}>
           {/* 4. ThemeInitializer - Load theme from localStorage */}
           <ThemeInitializer>
-            {/* 5. ToastProvider - Global notifications */}
-            <ToastProvider>
-              {/* 6. Layout - App structure (header, footer, nav) */}
-              <Layout>
-                {/* 7. Page Component - Your actual page content */}
-                <Component {...pageProps} />
-              </Layout>
-            </ToastProvider>
+            {/* 6. Layout - App structure (header, footer, nav) */}
+            <Layout>
+              {/* 7. Page Component - Your actual page content */}
+              <Component {...pageProps} />
+            </Layout>
+            <ToastContainer />
           </ThemeInitializer>
         </Provider>
       </QueryClientProvider>

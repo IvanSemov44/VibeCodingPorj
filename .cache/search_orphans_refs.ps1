@@ -18,9 +18,9 @@ $files = Get-ChildItem -Path $repo -Recurse -Include *.ts,*.tsx,*.js,*.jsx -Erro
 foreach ($p in $patterns) {
   Write-Output "=== $p ==="
   try {
-    $matches = Select-String -Path ($files | ForEach-Object { $_.FullName }) -Pattern $p -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Path -Unique
-    if ($matches) { $matches | ForEach-Object { Write-Output $_ } } else { Write-Output 'No matches' }
+    $matchPaths = Select-String -Path ($files | ForEach-Object { $_.FullName }) -Pattern $p -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Path -Unique
+    if ($matchPaths) { $matchPaths | ForEach-Object { Write-Output $_ } } else { Write-Output 'No matches' }
   } catch {
-    Write-Output ("Error searching for {0}: {1}" -f $p, $_)
+    Write-Output ("Error searching for {0}: {1}" -f @($p, $_))
   }
 }

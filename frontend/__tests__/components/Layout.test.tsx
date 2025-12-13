@@ -1,5 +1,6 @@
+import React from 'react';
 import { renderWithProviders, screen, userEvent, waitFor } from '../../tests/test-utils';
-import { ThemeProvider } from '../../context/ThemeContext';
+import { ThemeInitializer } from '../../components/ThemeInitializer';
 import Layout from '../../components/Layout';
 import * as api from '../../lib/api';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
@@ -20,11 +21,11 @@ describe('Layout', () => {
     (api.getUser as unknown as Mock).mockResolvedValue(null);
 
     renderWithProviders(
-      <ThemeProvider>
+      <ThemeInitializer>
         <Layout>
           <div>CONTENT</div>
         </Layout>
-      </ThemeProvider>
+      </ThemeInitializer>
     );
 
     expect(screen.getByText('VibeCoding')).toBeInTheDocument();
@@ -37,11 +38,11 @@ describe('Layout', () => {
     (api.getUser as unknown as Mock).mockResolvedValue({ id: 1, name: 'Test', email: 'a@b.com' });
 
     renderWithProviders(
-      <ThemeProvider>
+      <ThemeInitializer>
         <Layout>
           <div>ok</div>
         </Layout>
-      </ThemeProvider>
+      </ThemeInitializer>
     );
 
     await waitFor(() => expect(screen.getByText('Dashboard')).toBeInTheDocument());
@@ -55,11 +56,11 @@ describe('Layout', () => {
     (api.getUser as unknown as Mock).mockResolvedValue(null);
 
       renderWithProviders(
-        <ThemeProvider>
+        <ThemeInitializer>
           <Layout>
             <div>ok</div>
           </Layout>
-        </ThemeProvider>
+        </ThemeInitializer>
       );
 
     const btn = await screen.findByTitle(/Switch to/);
@@ -82,11 +83,11 @@ describe('Layout', () => {
     window.location = { href: '' } as any;
 
     renderWithProviders(
-      <ThemeProvider>
-        <Layout>
-          <div />
-        </Layout>
-      </ThemeProvider>
+        <ThemeInitializer>
+          <Layout>
+            <div />
+          </Layout>
+        </ThemeInitializer>
     );
 
     await waitFor(() => expect(screen.getByText('Logout')).toBeInTheDocument());

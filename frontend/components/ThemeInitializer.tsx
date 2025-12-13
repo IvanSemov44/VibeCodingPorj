@@ -11,7 +11,7 @@
  * 4. Sets data-theme attribute on document root
  */
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { initializeTheme } from '../store/themeSlice';
 

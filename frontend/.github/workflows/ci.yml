@@ -24,21 +24,34 @@ jobs:
           npm ci
 
       - name: Run Snyk code scan
-        if: secrets.SNYK_TOKEN != ''
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}"
         run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "SNYK_TOKEN not set, skipping Snyk scan"
+            exit 0
+          fi
           cd full-stack-starter-kit/frontend
-          npx snyk auth $SNYK_TOKEN
+          npx snyk auth "$SNYK_TOKEN"
           npx snyk test
           npx snyk monitor
 
       - name: Run tests (Vitest)
         run: |
           cd full-stack-starter-kit/frontend
-          npm run test -- --run --coverage
+          npm run test:coverage
+
+      - name: Check coverage file
+        id: check_coverage
+        run: |
+          if [ -f full-stack-starter-kit/frontend/coverage/lcov.info ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Upload coverage
+        if: steps.check_coverage.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-lcov
