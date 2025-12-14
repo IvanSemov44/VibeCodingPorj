@@ -6,7 +6,12 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Formik, Form, ErrorMessage } from 'formik';
-import { createTool, getCsrf, uploadToolScreenshots, updateTool } from '../lib/api';
+import { getCsrf } from '../lib/api';
+import {
+  useCreateToolMutation,
+  useUpdateToolMutation,
+  useUploadToolScreenshotsMutation,
+} from '../store/api';
 import { useToast } from './Toast';
 import TagMultiSelect from './TagMultiSelect';
 import NameField from './tools/NameField';
@@ -48,6 +53,9 @@ export default function ToolForm({
   const [error, setError] = useState<string>('');
   const fileRef = useRef<HTMLInputElement | null>(null);
   const { addToast } = useToast();
+  const [createTrigger] = useCreateToolMutation();
+  const [updateTrigger] = useUpdateToolMutation();
+  const [uploadTrigger] = useUploadToolScreenshotsMutation();
 
   useEffect(() => {
     (async () => {
@@ -84,12 +92,12 @@ export default function ToolForm({
           setSaving(true);
           try {
             let data: Tool;
-            const isUpdate = initial && initial.id;
+            const isUpdate = !!(initial && initial.id);
 
             if (isUpdate) {
-              data = await updateTool(initial.id as number, values as ToolUpdatePayload);
+              data = await updateTrigger({ id: initial!.id as number, body: values as ToolUpdatePayload }).unwrap();
             } else {
-              data = await createTool(values as unknown as ToolCreatePayload);
+              data = await createTrigger(values as unknown as ToolCreatePayload).unwrap();
             }
 
             const files =
@@ -97,9 +105,10 @@ export default function ToolForm({
                 ? fileRef.current.files
                 : null;
             if (files && files.length > 0) {
-              await uploadToolScreenshots(data.id, Array.from(files));
+              const arr = Array.from(files) as File[];
+              await uploadTrigger({ id: data.id, files: arr }).unwrap();
               addToast(
-                `Tool ${isUpdate ? 'updated' : 'created'} with ${files.length} screenshot(s)!`,
+                `Tool ${isUpdate ? 'updated' : 'created'} with ${arr.length} screenshot(s)!`,
                 'success',
               );
             } else {

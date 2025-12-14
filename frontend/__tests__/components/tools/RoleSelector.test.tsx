@@ -11,9 +11,7 @@ describe('RoleSelector', () => {
 
   test('renders role buttons and toggles', async () => {
     const onToggle = vi.fn();
-    renderWithProviders(
-      <RoleSelector roles={roles} selectedRoles={[2]} onToggle={onToggle} />
-    );
+    renderWithProviders(<RoleSelector roles={roles} selectedRoles={[2]} onToggle={onToggle} />);
 
     const frontBtn = screen.getByText('Frontend');
     const backBtn = screen.getByText('Backend');

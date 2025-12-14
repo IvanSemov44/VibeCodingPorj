@@ -19,13 +19,11 @@ describe('lib/api unit tests', () => {
     // Mock global fetch for FormData upload to avoid intermittent MSW timing issues
     const origFetch = (global as unknown as { fetch?: unknown }).fetch;
     try {
-      (global as unknown as { fetch?: unknown }).fetch = vi
-        .fn()
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          json: async () => ({ screenshots: ['s1.png'] }),
-        });
+      (global as unknown as { fetch?: unknown }).fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ screenshots: ['s1.png'] }),
+      });
       const file = new File(['x'], 'a.png', { type: 'image/png' });
       const res = await uploadToolScreenshots(42, [file]);
       expect(res).toBeDefined();

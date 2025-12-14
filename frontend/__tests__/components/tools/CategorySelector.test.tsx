@@ -15,7 +15,7 @@ describe('CategorySelector', () => {
     renderWithProviders(
       <Formik initialValues={{ categories: [] }} onSubmit={() => {}}>
         <CategorySelector categories={categories} selectedCategories={[]} onToggle={onToggle} />
-      </Formik>
+      </Formik>,
     );
 
     expect(screen.getByText('#alpha')).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('CategorySelector', () => {
         onSubmit={() => {}}
       >
         <CategorySelector categories={categories} selectedCategories={[]} onToggle={() => {}} />
-      </Formik>
+      </Formik>,
     );
 
     expect(screen.getByText(/pick at least one/i)).toBeInTheDocument();

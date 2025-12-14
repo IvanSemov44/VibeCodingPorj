@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getTool } from '../../../lib/api';
+import { useGetToolQuery } from '../../../store/api';
 
 type Category = { id: number; name: string };
 type Role = { id: number; name: string };
@@ -25,29 +25,18 @@ type Tool = {
 export default function ToolDetailPage(): React.ReactElement | null {
   const router = useRouter();
   const { id } = router.query;
-  const [tool, setTool] = useState<Tool | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const toolId = Array.isArray(id) ? id[0] : id;
+  const { data: tool, isLoading, error } = useGetToolQuery(toolId as string | number | undefined, {
+    enabled: !!toolId,
+  });
 
-  useEffect(() => {
-    if (!id) return;
-    (async () => {
-      setLoading(true);
-      try {
-        const toolObj = await getTool(String(id));
-        setTool(toolObj as Tool);
-        setError('');
-      } catch (err) {
-        console.error(err);
-        setError('Network error');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [id]);
-
-  if (loading) return <div className="max-w-[900px] my-6 mx-auto">Loading...</div>;
-  if (error) return <div className="max-w-[900px] my-6 mx-auto">{error}</div>;
+  if (isLoading) return <div className="max-w-[900px] my-6 mx-auto">Loading...</div>;
+  if (error)
+    return (
+      <div className="max-w-[900px] my-6 mx-auto">
+        {(error as unknown as { message?: string })?.message ?? String(error)}
+      </div>
+    );
   if (!tool) return null;
 
   return (

@@ -9,7 +9,7 @@ describe('URLFields', () => {
     renderWithProviders(
       <Formik initialValues={{ url: '', docs_url: '' }} onSubmit={() => {}}>
         <URLFields />
-      </Formik>
+      </Formik>,
     );
 
     const url = screen.getByPlaceholderText('https://example.com');
@@ -28,7 +28,7 @@ describe('URLFields', () => {
         onSubmit={() => {}}
       >
         <URLFields />
-      </Formik>
+      </Formik>,
     );
 
     expect(screen.getByText(/invalid link/i)).toBeInTheDocument();

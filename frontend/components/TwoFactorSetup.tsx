@@ -56,6 +56,18 @@ export default function TwoFactorSetup() {
         <button onClick={enableTotp} disabled={enableMutation.isLoading}>
           Enable TOTP 2FA
         </button>
+        {recoveryCodes && (
+          <div>
+            <h4>Recovery codes</h4>
+            <ul>
+              {recoveryCodes.map((c) => (
+                <li key={c}>
+                  <code>{c}</code>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
 

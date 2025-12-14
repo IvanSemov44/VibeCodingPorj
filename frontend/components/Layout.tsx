@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getUser, getCsrf, logout } from '../lib/api';
+import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/api';
 import { useAppTheme } from '../hooks/useAppTheme';
 import type { User } from '../lib/types';
 
 export default function Layout({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
+  const { data, isLoading, refetch } = useGetUserQuery();
+  const [csrfTrigger] = useGetCsrfMutation();
+  const [logoutTrigger] = useLogoutMutation();
   const [loading, setLoading] = useState<boolean>(true);
   const { theme, toggleTheme } = useAppTheme();
 
@@ -14,10 +17,11 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
     async function fetchUser() {
       try {
-        await getCsrf();
-        const u = await getUser();
+        await csrfTrigger().unwrap().catch(() => {});
+        const res = await refetch();
+        const u = res?.data ?? data;
         if (!mounted) return;
-        setUser(u || null);
+        setUser((u as User) || null);
       } catch (err) {
         console.error('Error fetching user:', err);
         setUser(null);
@@ -44,7 +48,7 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
   async function handleLogout() {
     try {
-      await logout();
+      await logoutTrigger().unwrap();
       setUser(null);
       window.location.href = '/login';
     } catch (e) {

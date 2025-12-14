@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getTags } from '../lib/api';
+import { useGetTagsQuery } from '../store/api';
 
 type ExternalOption = string | { name?: string };
 
@@ -25,6 +25,7 @@ export default function TagMultiSelect({
   const ref = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listId = 'tag-suggestions';
+  const q = useGetTagsQuery();
 
   useEffect(() => {
     if (externalOptions && Array.isArray(externalOptions)) {
@@ -34,21 +35,11 @@ export default function TagMultiSelect({
       setOptions(names);
       return;
     }
-
-    let mounted = true;
-    (async () => {
-      try {
-        const list = await getTags();
-        if (!mounted) return;
-        setOptions(list.map((t) => t.name));
-      } catch {
-        // ignore
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [externalOptions]);
+    if (q?.data && Array.isArray(q.data)) {
+      setOptions(q.data.map((t: any) => t.name));
+    }
+    // no manual unmount handling required; React Query manages lifecycle
+  }, [externalOptions, q?.data]);
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {

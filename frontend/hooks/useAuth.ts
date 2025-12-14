@@ -1,70 +1,49 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { getUser } from '../lib/api';
+import { useGetUserQuery } from '../store/api';
 import type { User } from '../lib/types';
 import { ROUTES } from '../lib/constants';
 
 export function useAuth(requireAuth = true): { user: User | null; loading: boolean } {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { data, isLoading } = useGetUserQuery();
 
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await getUser();
-        if (res) {
-          // Normalize roles: API may return role objects; components expect string[] of role names
-          const maybeRoles = (res as any).roles;
-          let normalizedRoles: string[] | undefined = undefined;
-          if (Array.isArray(maybeRoles)) {
-            normalizedRoles = maybeRoles.map((r) =>
-              typeof r === 'string' ? r : r && (r.name || String(r.id)),
-            ) as string[];
-          }
-          const normalizedUser = {
-            ...(res as any),
-            roles: normalizedRoles ?? (res as any).roles,
-          } as User;
-          setUser(normalizedUser);
-        } else if (requireAuth) {
-          router.push(ROUTES.LOGIN);
-        }
-      } catch {
-        if (requireAuth) {
-          router.push(ROUTES.LOGIN);
-        }
-      } finally {
-        setLoading(false);
+    if (isLoading) return;
+    if (data) {
+      const res = data as any;
+      const maybeRoles = res.roles;
+      let normalizedRoles: string[] | undefined = undefined;
+      if (Array.isArray(maybeRoles)) {
+        normalizedRoles = maybeRoles.map((r) => (typeof r === 'string' ? r : r && (r.name || String(r.id)))) as string[];
       }
+      const normalizedUser = { ...(res as any), roles: normalizedRoles ?? res.roles } as User;
+      setUser(normalizedUser);
+      return;
     }
+    if (!data && !isLoading && requireAuth) {
+      router.push(ROUTES.LOGIN);
+    }
+  }, [data, isLoading, requireAuth, router]);
 
-    checkAuth();
-  }, [router, requireAuth]);
-
-  return { user, loading };
+  return { user, loading: isLoading };
 }
 
 export function useRedirectIfAuthenticated(redirectTo = ROUTES.DASHBOARD): { checking: boolean } {
   const router = useRouter();
   const [checking, setChecking] = useState<boolean>(true);
+  const { data, isLoading } = useGetUserQuery();
 
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await getUser();
-        if (res) {
-          router.push(redirectTo);
-        }
-      } catch {
-        // not authenticated; allow access
-      } finally {
-        setChecking(false);
-      }
+    if (isLoading) return;
+    try {
+      if (data) router.push(redirectTo);
+    } finally {
+      setChecking(false);
     }
-
-    checkAuth();
-  }, [router, redirectTo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, isLoading]);
 
   return { checking };
 }

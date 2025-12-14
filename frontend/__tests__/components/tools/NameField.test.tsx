@@ -9,7 +9,7 @@ describe('NameField component', () => {
     renderWithProviders(
       <Formik initialValues={{ name: '' }} onSubmit={() => {}}>
         <NameField />
-      </Formik>
+      </Formik>,
     );
 
     expect(screen.getByText(/name \*/i)).toBeInTheDocument();
@@ -27,7 +27,7 @@ describe('NameField component', () => {
         onSubmit={() => {}}
       >
         <NameField />
-      </Formik>
+      </Formik>,
     );
 
     expect(screen.getByText(/required/i)).toBeInTheDocument();

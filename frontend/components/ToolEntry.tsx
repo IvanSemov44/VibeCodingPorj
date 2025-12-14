@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { deleteTool } from '../lib/api';
+import { useDeleteToolMutation } from '../store/api';
 import type { Tool } from '../lib/types';
 
 interface Props {
@@ -12,14 +12,15 @@ interface Props {
 export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElement {
   // router not used here
 
+  const [deleteTrigger] = useDeleteToolMutation();
+
   const handleDelete = async () => {
     if (!confirm('Delete this tool?')) return;
     try {
-      await deleteTool(tool.id);
+      await deleteTrigger(tool.id).unwrap();
       if (onDeleted) onDeleted(tool.id);
     } catch (err) {
       console.error(err);
-
       alert('Failed to delete');
     }
   };

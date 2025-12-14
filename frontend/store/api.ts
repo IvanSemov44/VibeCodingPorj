@@ -60,6 +60,95 @@ export function useGet2faSecretQuery(options?: any) {
   } as any);
 }
 
+// Tool hooks
+export function useGetToolQuery(id?: string | number, options?: any) {
+  return useQuery({
+    queryKey: ['tool', typeof id === 'undefined' ? id : String(id)],
+    queryFn: async () => api.getTool(String(id)),
+    enabled: !!id,
+    ...(options || {}),
+  } as any);
+}
+
+export function useCreateToolMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, any>({
+    mutationFn: async (body) => api.createTool(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tools'] });
+    },
+  });
+  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useUpdateToolMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, { id: string | number; body: any }>({
+    mutationFn: async ({ id, body }) => api.updateTool(id, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tools'] });
+      qc.invalidateQueries({ queryKey: ['tool'] });
+    },
+  });
+  const trigger = (arg: { id: string | number; body: any }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useUploadToolScreenshotsMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, { id: string | number; files: File[] }>({
+    mutationFn: async ({ id, files }) => api.uploadToolScreenshots(id, files as any),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tool'] });
+    },
+  });
+  const trigger = (arg: { id: string | number; files: File[] }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useDeleteToolMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<void, Error, string | number>({
+    mutationFn: async (id: string | number) => api.deleteTool(id),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: ['tools'] });
+      qc.invalidateQueries({ queryKey: ['tool', String(id)] });
+    },
+  });
+  const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+// Auth / user helpers
+export function useGetUserQuery(options?: any) {
+  return useQuery({
+    queryKey: ['user'],
+    queryFn: async () => api.getUser(),
+    ...(options || {}),
+  } as any);
+}
+
+export function useGetCsrfMutation() {
+  const m = useMutation<any, Error, void>({
+    mutationFn: async () => api.getCsrf(),
+  });
+  const trigger = () => ({ unwrap: () => m.mutateAsync() });
+  return [trigger, m as any] as const;
+}
+
+export function useLogoutMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, void>({
+    mutationFn: async () => api.logout(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+  const trigger = () => ({ unwrap: () => m.mutateAsync() });
+  return [trigger, m as any] as const;
+}
+
 export function useEnable2faMutation() {
   const qc = useQueryClient();
   const m = useMutation<any, Error, void>({
@@ -77,6 +166,31 @@ export function useGetUser2faQuery(userId: string | number, options?: any) {
   return useQuery({
     queryKey: ['admin', 'user-2fa', String(userId)],
     queryFn: async () => api.getUserTwoFactor(String(userId)),
+    ...(options || {}),
+  } as any);
+}
+
+// Tags / categories / roles common queries
+export function useGetTagsQuery(options?: any) {
+  return useQuery({
+    queryKey: ['tags'],
+    queryFn: async () => api.getTags(),
+    ...(options || {}),
+  } as any);
+}
+
+export function useGetCategoriesQuery(options?: any) {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => api.getCategories(),
+    ...(options || {}),
+  } as any);
+}
+
+export function useGetRolesQuery(options?: any) {
+  return useQuery({
+    queryKey: ['roles'],
+    queryFn: async () => api.getRoles(),
     ...(options || {}),
   } as any);
 }
