@@ -86,3 +86,10 @@ Steps
     - Rationale: keep a single canonical `.github` at the repository root to avoid duplicated CI/workflow configs.
     - Note: If you want any of the removed workflows preserved, I can restore them from the safety branch `keep-8b2c4e3c`.
 
+   11. Import `full-stack-starter-kit` into root repo (remove nested git)
+      Status: COMPLETED (2025-12-14)
+      - Action: Removed the nested Git metadata at `full-stack-starter-kit/.git` and added the directory into the root repository as a normal folder.
+      - Commit: `4ce173b` — message: "Import full-stack-starter-kit into root repo (removed nested .git)".
+      - Note: The nested repository's local history was preserved in safety branches (`keep-8b2c4e3c`, `backup-before-reset`) before removal. The root repo now contains the `full-stack-starter-kit` files as tracked content.
+
+
