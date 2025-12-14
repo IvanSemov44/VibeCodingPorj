@@ -1,37 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import {
-  getCsrf,
-  getCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from '../../lib/api';
 import { Category } from '../../lib/types';
+import {
+  useGetCsrfMutation,
+  useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+} from '../../store/api';
 
 export default function AdminCategories(): React.ReactElement {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { data: categoriesData, isLoading, refetch } = useGetCategoriesQuery();
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState<string>('');
   const [slug, setSlug] = useState<string>('');
   const [saving, setSaving] = useState<boolean>(false);
 
+  const [csrfTrigger] = useGetCsrfMutation();
+  const [createTrigger] = useCreateCategoryMutation();
+  const [updateTrigger] = useUpdateCategoryMutation();
+  const [deleteTrigger] = useDeleteCategoryMutation();
+
   useEffect(() => {
-    getCsrf().catch(() => {});
-    fetchCategories();
+    csrfTrigger().unwrap().catch(() => {});
   }, []);
 
+  useEffect(() => {
+    setCategories(categoriesData || []);
+  }, [categoriesData]);
+
   async function fetchCategories() {
-    setLoading(true);
     setError(null);
     try {
-      const list = await getCategories();
-      setCategories(list || []);
+      await refetch();
     } catch {
       setError('Failed to load categories');
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -39,7 +43,7 @@ export default function AdminCategories(): React.ReactElement {
     e.preventDefault();
     setSaving(true);
     try {
-      await createCategory({ name, slug: slug || undefined });
+      await createTrigger({ name, slug: slug || undefined }).unwrap();
       setName('');
       setSlug('');
       await fetchCategories();
@@ -52,7 +56,7 @@ export default function AdminCategories(): React.ReactElement {
 
   async function handleUpdate(id: number, updated: Partial<Category>) {
     try {
-      await updateCategory(id, updated);
+      await updateTrigger({ id, body: updated }).unwrap();
       await fetchCategories();
     } catch {
       setError('Update failed');
@@ -62,7 +66,7 @@ export default function AdminCategories(): React.ReactElement {
   async function handleDelete(id: number) {
     if (!confirm('Delete this category?')) return;
     try {
-      await deleteCategory(id);
+      await deleteTrigger(id).unwrap();
       await fetchCategories();
     } catch {
       setError('Delete failed');
@@ -105,7 +109,7 @@ export default function AdminCategories(): React.ReactElement {
 
       {error && <div className="text-red-600">{error}</div>}
 
-      {loading ? (
+      {isLoading ? (
         <div>Loading...</div>
       ) : (
         <table className="border-0 w-full">

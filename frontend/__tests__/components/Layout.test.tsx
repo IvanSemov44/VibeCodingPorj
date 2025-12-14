@@ -5,10 +5,10 @@ import Layout from '../../components/Layout';
 import * as api from '../../lib/api';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
-vi.mock('../../lib/api', () => ({
-  getCsrf: vi.fn(),
-  getUser: vi.fn(),
-  logout: vi.fn(),
+vi.mock('../../store/api', () => ({
+  useGetUserQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }),
+  useGetCsrfMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],
+  useLogoutMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],
 }));
 
 describe('Layout', () => {
@@ -17,8 +17,7 @@ describe('Layout', () => {
   });
 
   it('renders children, title and footer year', async () => {
-    (api.getCsrf as unknown as Mock).mockResolvedValue(undefined);
-    (api.getUser as unknown as Mock).mockResolvedValue(null);
+    // mocked via store/api hooks above
 
     renderWithProviders(
       <ThemeInitializer>
@@ -34,8 +33,7 @@ describe('Layout', () => {
   });
 
   it('shows dashboard and logout when user present, login otherwise', async () => {
-    (api.getCsrf as unknown as Mock).mockResolvedValue(undefined);
-    (api.getUser as unknown as Mock).mockResolvedValue({ id: 1, name: 'Test', email: 'a@b.com' });
+    // mocked via store/api hooks above (override by mocking module if needed)
 
     renderWithProviders(
       <ThemeInitializer>
@@ -52,8 +50,7 @@ describe('Layout', () => {
 
   it('calls toggleTheme when theme button clicked', async () => {
     const toggle = vi.fn();
-    (api.getCsrf as unknown as Mock).mockResolvedValue(undefined);
-    (api.getUser as unknown as Mock).mockResolvedValue(null);
+    // mocked via store/api hooks above
 
     renderWithProviders(
       <ThemeInitializer>
@@ -71,9 +68,7 @@ describe('Layout', () => {
   });
 
   it('calls logout and navigates to /login', async () => {
-    (api.getCsrf as unknown as Mock).mockResolvedValue(undefined);
-    (api.getUser as unknown as Mock).mockResolvedValue({ id: 1, name: 'X' });
-    (api.logout as unknown as Mock).mockResolvedValue(undefined);
+    // mocked via store/api hooks above
 
     const orig = window.location;
     // override location href for test

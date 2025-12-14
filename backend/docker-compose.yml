@@ -35,8 +35,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ${DB_DATABASE:-laravel}
-      MYSQL_USER: ${DB_USERNAME:-laravel}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      # Use a non-root user for application connections in the local dev DB
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
     ports:
       - "3306:3306"
     volumes:

@@ -19,7 +19,7 @@ while ! mysqladmin ping -h "$DB_HOST" -P "$DB_PORT" --silent; do
   sleep $SLEEP
 done
 
-MIGRATIONS_MARKER="/var/www/html/.migrations_done"
+MARKER_KEY="migrations_done"
 LOCK_NAME="migrate_and_seed_lock"
 
 acquire_lock() {
@@ -52,8 +52,22 @@ if [ "$LOCK_ACQUIRED" -ne 1 ]; then
   exit 1
 fi
 
-if [ -f "$MIGRATIONS_MARKER" ]; then
-  echo "Migrator: marker file exists; skipping migrations and seeds"
+check_db_marker() {
+  local res
+  res=$(eval "$MYSQL_CMD_BASE \"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='migration_metadata'\"") || true
+  if [ "$res" = "1" ]; then
+    # Check marker row
+    local exists
+    exists=$(eval "$MYSQL_CMD_BASE \"SELECT COUNT(*) FROM migration_metadata WHERE marker_key='$MARKER_KEY' AND marker_value IS NOT NULL\"") || true
+    [ "$exists" != "0" ]
+  else
+    # migration_metadata table doesn't exist yet
+    return 1
+  fi
+}
+
+if check_db_marker; then
+  echo "Migrator: DB marker exists; skipping migrations and seeds"
   exit 0
 fi
 
@@ -66,8 +80,12 @@ if php artisan migrate --force; then
   else
     echo "Migrator: seeders had errors (non-fatal)"
   fi
-  echo "Migrator: marking migrations done"
-  date -u +"%Y-%m-%dT%H:%M:%SZ" > "$MIGRATIONS_MARKER"
+  echo "Migrator: marking migrations done in DB"
+  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  # Ensure migration_metadata table exists (it may be created by migrations)
+  eval "$MYSQL_CMD_BASE \"CREATE TABLE IF NOT EXISTS migration_metadata (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, marker_key VARCHAR(191) UNIQUE, marker_value TEXT, ran_by VARCHAR(191), ran_at TIMESTAMP NULL DEFAULT NULL, created_at TIMESTAMP NULL, updated_at TIMESTAMP NULL)\"" || true
+  # Upsert marker row
+  eval "$MYSQL_CMD_BASE \"INSERT INTO migration_metadata (marker_key, marker_value, ran_by, ran_at, created_at, updated_at) VALUES ('${MARKER_KEY}', '${TIMESTAMP}', 'migrator', '${TIMESTAMP}', NOW(), NOW()) ON DUPLICATE KEY UPDATE marker_value=VALUES(marker_value), ran_by=VALUES(ran_by), ran_at=VALUES(ran_at), updated_at=NOW()\"" || true
   echo "Migrator: finished"
   exit 0
 else

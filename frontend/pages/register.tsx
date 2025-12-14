@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { getCsrf, register } from '../lib/api';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -8,6 +7,7 @@ import Alert from '../components/Alert';
 import AuthLayout from '../components/AuthLayout';
 import { useForm } from '../hooks/useForm';
 import { ROUTES, VALIDATION } from '../lib/constants';
+import { useGetCsrfMutation, useRegisterMutation } from '../store/api';
 
 export default function RegisterPage(): React.ReactElement {
   const router = useRouter();
@@ -57,9 +57,12 @@ export default function RegisterPage(): React.ReactElement {
 
     setLoading(true);
 
+    const [csrfTrigger] = useGetCsrfMutation();
+    const [registerTrigger] = useRegisterMutation();
+
     try {
-      await getCsrf();
-      await register({
+      await csrfTrigger().unwrap();
+      await registerTrigger({
         name: values.name,
         email: values.email,
         password: values.password,

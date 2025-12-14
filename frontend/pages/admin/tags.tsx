@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { getCsrf, getTags, createTag, updateTag, deleteTag } from '../../lib/api';
 import { Tag } from '../../lib/types';
+import {
+  useGetCsrfMutation,
+  useGetTagsQuery,
+  useCreateTagMutation,
+  useUpdateTagMutation,
+  useDeleteTagMutation,
+} from '../../store/api';
 
 export default function AdminTags(): React.ReactElement {
   const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { data: tagsData, isLoading, refetch } = useGetTagsQuery();
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState<string>('');
   const [slug, setSlug] = useState<string>('');
   const [saving, setSaving] = useState<boolean>(false);
 
+  const [csrfTrigger] = useGetCsrfMutation();
+  const [createTrigger] = useCreateTagMutation();
+  const [updateTrigger] = useUpdateTagMutation();
+  const [deleteTrigger] = useDeleteTagMutation();
+
   useEffect(() => {
-    getCsrf().catch(() => {});
-    fetchTags();
+    csrfTrigger().unwrap().catch(() => {});
   }, []);
 
+  useEffect(() => {
+    setTags(tagsData || []);
+  }, [tagsData]);
+
   async function fetchTags() {
-    setLoading(true);
     setError(null);
     try {
-      const list = await getTags();
-      setTags(list || []);
+      await refetch();
     } catch {
       setError('Failed to load tags');
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -33,7 +43,7 @@ export default function AdminTags(): React.ReactElement {
     e.preventDefault();
     setSaving(true);
     try {
-      await createTag({ name, slug: slug || undefined });
+      await createTrigger({ name, slug: slug || undefined }).unwrap();
       setName('');
       setSlug('');
       await fetchTags();
@@ -46,7 +56,7 @@ export default function AdminTags(): React.ReactElement {
 
   async function handleUpdate(id: number, updated: Partial<Tag>) {
     try {
-      await updateTag(id, updated);
+      await updateTrigger({ id, body: updated }).unwrap();
       await fetchTags();
     } catch {
       setError('Update failed');
@@ -56,7 +66,7 @@ export default function AdminTags(): React.ReactElement {
   async function handleDelete(id: number) {
     if (!confirm('Delete this tag?')) return;
     try {
-      await deleteTag(id);
+      await deleteTrigger(id).unwrap();
       await fetchTags();
     } catch {
       setError('Delete failed');
@@ -99,7 +109,7 @@ export default function AdminTags(): React.ReactElement {
 
       {error && <div className="text-red-600">{error}</div>}
 
-      {loading ? (
+      {isLoading ? (
         <div>Loading...</div>
       ) : (
         <table className="border-0 w-full">

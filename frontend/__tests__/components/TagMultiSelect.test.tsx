@@ -2,8 +2,9 @@ import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import { vi } from 'vitest';
 
-vi.mock('../../lib/api', () => ({ getTags: vi.fn() }));
-import { getTags } from '../../lib/api';
+vi.mock('../../store/api', () => ({
+  useGetTagsQuery: () => ({ data: [{ name: 'vitest' }, { name: 'testing' }], isLoading: false }),
+}));
 import TagMultiSelect from '../../components/TagMultiSelect';
 
 describe('TagMultiSelect', () => {
@@ -12,7 +13,7 @@ describe('TagMultiSelect', () => {
   });
 
   it('renders existing tags and adds suggestion on click', async () => {
-    (getTags as any).mockResolvedValue([{ name: 'vitest' }, { name: 'testing' }]);
+    // mocked via useGetTagsQuery above
     const onChange = vi.fn();
 
     renderWithProviders(<TagMultiSelect value={['react']} onChange={onChange} />);
@@ -27,7 +28,7 @@ describe('TagMultiSelect', () => {
   });
 
   it('creates a new tag when pressing Enter', async () => {
-    (getTags as any).mockResolvedValue([]);
+    // mocked via useGetTagsQuery above (empty list case)
     const onChange = vi.fn();
 
     renderWithProviders(<TagMultiSelect value={[]} onChange={onChange} />);

@@ -4,9 +4,9 @@ import { vi, describe, beforeEach, it, expect } from 'vitest';
 
 const pushMock = vi.fn();
 vi.mock('next/router', () => ({ useRouter: () => ({ push: pushMock }) }));
-vi.mock('../../lib/api', () => ({
-  getCsrf: vi.fn().mockResolvedValue({ ok: true }),
-  login: vi.fn().mockResolvedValue({ user: { id: 1 } }),
+vi.mock('../../store/api', () => ({
+  useGetCsrfMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],
+  useLoginMutation: () => [() => ({ unwrap: () => Promise.resolve({ data: { id: 1 } }) }), {}],
 }));
 
 describe('Login page (integration)', () => {

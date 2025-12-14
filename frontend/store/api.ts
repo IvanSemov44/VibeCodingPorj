@@ -158,6 +158,30 @@ export function useLogoutMutation() {
   return [trigger, m as any] as const;
 }
 
+export function useLoginMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, { email: string; password: string }>({
+    mutationFn: async (body) => api.login(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+  const trigger = (arg: { email: string; password: string }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useRegisterMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, { name: string; email: string; password: string; password_confirmation?: string }>({
+    mutationFn: async (body) => api.register(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
 export function useEnable2faMutation() {
   const qc = useQueryClient();
   const m = useMutation<any, Error, void>({
@@ -194,6 +218,66 @@ export function useGetCategoriesQuery(options?: any) {
     queryFn: async () => api.getCategories(),
     ...(options || {}),
   } as any);
+}
+
+export function useCreateTagMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, any>({
+    mutationFn: async (body) => api.createTag(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
+  });
+  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useUpdateTagMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, { id: number | string; body: any }>({
+    mutationFn: async ({ id, body }) => api.updateTag(id, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
+  });
+  const trigger = (arg: { id: number | string; body: any }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useDeleteTagMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<void, Error, number | string>({
+    mutationFn: async (id: number | string) => api.deleteTag(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
+  });
+  const trigger = (arg: number | string) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useCreateCategoryMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, any>({
+    mutationFn: async (body) => api.createCategory(body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+  });
+  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useUpdateCategoryMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<any, Error, { id: number | string; body: any }>({
+    mutationFn: async ({ id, body }) => api.updateCategory(id, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+  });
+  const trigger = (arg: { id: number | string; body: any }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
+}
+
+export function useDeleteCategoryMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<void, Error, number | string>({
+    mutationFn: async (id: number | string) => api.deleteCategory(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
+  });
+  const trigger = (arg: number | string) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as any] as const;
 }
 
 export function useGetRolesQuery(options?: any) {

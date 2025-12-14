@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { getCsrf, login } from '../lib/api';
+import { useGetCsrfMutation, useLoginMutation } from '../store/api';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -31,7 +31,10 @@ export default function LoginPage(): React.ReactElement {
     },
   );
 
-  async function handleLogin(e: React.FormEvent) {
+  const [csrfTrigger] = useGetCsrfMutation();
+  const [loginTrigger] = useLoginMutation();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -42,8 +45,8 @@ export default function LoginPage(): React.ReactElement {
     setLoading(true);
 
     try {
-      await getCsrf();
-      await login({ email: values.email, password: values.password });
+      await csrfTrigger().unwrap();
+      await loginTrigger({ email: values.email, password: values.password }).unwrap();
       // Successful login - redirect to dashboard
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('user:login'));
@@ -57,7 +60,7 @@ export default function LoginPage(): React.ReactElement {
       setError(message);
       setLoading(false);
     }
-  }
+  };
 
   return (
     <AuthLayout

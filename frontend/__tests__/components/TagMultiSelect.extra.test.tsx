@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from '../../tests/test-utils'
 import { vi } from 'vitest'
 
-vi.mock('../../lib/api', () => ({
+vi.mock('../../store/api', () => ({
   useGetTagsQuery: () => ({ data: [{ id: 1, name: 'tag1' }], isLoading: false }),
 }))
 
