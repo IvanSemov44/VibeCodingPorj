@@ -2,10 +2,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./tests/vitest.setup.ts'],
-    globals: true,
-    watch: false,
+  environment: 'jsdom',
+  setupFiles: ['./__tests__/vitest.setup.ts'],
+  globals: true,
+  watch: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
@@ -29,7 +29,6 @@ export default defineConfig({
         '**/*.d.ts',
         'public/**',
         'styles/**',
-        '**/__tests__/**',
         'node_modules/**',
       ],
       // Coverage thresholds — relaxed to allow incremental improvements

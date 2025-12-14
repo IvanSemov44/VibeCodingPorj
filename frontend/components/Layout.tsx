@@ -33,7 +33,9 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
       try {
         const trigger = csrfTriggerRef.current;
         if (trigger) {
-          await trigger().unwrap().catch(() => {});
+          await trigger()
+            .unwrap()
+            .catch(() => {});
         }
         const res = await refetch();
         const u = res?.data ?? dataRef.current;
