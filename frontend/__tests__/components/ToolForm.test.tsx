@@ -15,7 +15,11 @@ vi.mock('../../store/api', () => ({
 vi.mock('../../components/Toast', () => ({ useToast: () => ({ addToast: vi.fn() }) }));
 
 import ToolForm from '../../components/ToolForm';
-import { useCreateToolMutation, useUpdateToolMutation, useUploadToolScreenshotsMutation } from '../../store/api';
+import {
+  useCreateToolMutation,
+  useUpdateToolMutation,
+  useUploadToolScreenshotsMutation,
+} from '../../store/api';
 
 describe('ToolForm', () => {
   beforeEach(() => {
@@ -25,15 +29,30 @@ describe('ToolForm', () => {
   test('submits create mutation when creating a new tool', async () => {
     const mockUnwrap = vi.fn().mockResolvedValue({ id: 42, name: 'My Tool' });
     const createFn = vi.fn().mockReturnValue({ unwrap: mockUnwrap });
-    (useCreateToolMutation as unknown as any).mockReturnValue([createFn, { isLoading: false, error: null }]);
+    (useCreateToolMutation as unknown as any).mockReturnValue([
+      createFn,
+      { isLoading: false, error: null },
+    ]);
     // ensure update/upload hooks exist so component destructuring doesn't fail
-    (useUpdateToolMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
-    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useUpdateToolMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const onSaved = vi.fn();
 
     const { getByText } = renderWithProviders(
-      <ToolForm initial={{ name: 'My Tool' }} onSaved={onSaved} categories={[]} roles={[]} allTags={[]} />,
+      <ToolForm
+        initial={{ name: 'My Tool' }}
+        onSaved={onSaved}
+        categories={[]}
+        roles={[]}
+        allTags={[]}
+      />,
     );
 
     const btn = getByText(/Save Tool/);

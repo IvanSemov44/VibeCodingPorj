@@ -6,7 +6,7 @@ import type { PreloadedState } from '@reduxjs/toolkit';
  * Tests can pass a reducers map to exercise slices during integration tests.
  */
 export function createTestStore(
-  reducers: Record<string, any> = {},
+  reducers: Record<string, unknown> = {},
   preloadedState?: PreloadedState<Record<string, unknown>>,
 ) {
   return configureStore({

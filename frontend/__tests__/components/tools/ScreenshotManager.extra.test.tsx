@@ -76,7 +76,11 @@ describe('ScreenshotManager edge cases', () => {
       <Formik initialValues={{ screenshots }} onSubmit={() => {}}>
         {() => (
           <form>
-            <ScreenshotManager screenshots={screenshots} onScreenshotsChange={onChange} fileInputRef={ref} />
+            <ScreenshotManager
+              screenshots={screenshots}
+              onScreenshotsChange={onChange}
+              fileInputRef={ref}
+            />
           </form>
         )}
       </Formik>,
@@ -85,7 +89,9 @@ describe('ScreenshotManager edge cases', () => {
     // click delete for 'a'
     const delButtons = document.querySelectorAll('button');
     // find the Delete button that appears (multiple buttons exist); choose one with text Delete
-    const deleteBtn = Array.from(delButtons).find((b) => b.textContent === 'Delete') as HTMLButtonElement;
+    const deleteBtn = Array.from(delButtons).find(
+      (b) => b.textContent === 'Delete',
+    ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
     expect(onChange).toHaveBeenCalledWith(['b']);
@@ -100,14 +106,21 @@ describe('ScreenshotManager edge cases', () => {
       <Formik initialValues={{ screenshots: ['a', 'b'] }} onSubmit={() => {}}>
         {() => (
           <form>
-            <ScreenshotManager screenshots={['a', 'b']} toolId={1} onScreenshotsChange={onChange} fileInputRef={ref} />
+            <ScreenshotManager
+              screenshots={['a', 'b']}
+              toolId={1}
+              onScreenshotsChange={onChange}
+              fileInputRef={ref}
+            />
           </form>
         )}
       </Formik>,
     );
 
     const delButtons = document.querySelectorAll('button');
-    const deleteBtn = Array.from(delButtons).find((b) => b.textContent === 'Delete') as HTMLButtonElement;
+    const deleteBtn = Array.from(delButtons).find(
+      (b) => b.textContent === 'Delete',
+    ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
     await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalled());
@@ -128,14 +141,21 @@ describe('ScreenshotManager edge cases', () => {
       <Formik initialValues={{ screenshots: ['a', 'b'] }} onSubmit={() => {}}>
         {() => (
           <form>
-            <ScreenshotManager screenshots={['a', 'b']} toolId={2} onScreenshotsChange={onChange} fileInputRef={ref} />
+            <ScreenshotManager
+              screenshots={['a', 'b']}
+              toolId={2}
+              onScreenshotsChange={onChange}
+              fileInputRef={ref}
+            />
           </form>
         )}
       </Formik>,
     );
 
     const delButtons = document.querySelectorAll('button');
-    const deleteBtn = Array.from(delButtons).find((b) => b.textContent === 'Delete') as HTMLButtonElement;
+    const deleteBtn = Array.from(delButtons).find(
+      (b) => b.textContent === 'Delete',
+    ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
     await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalledTimes(2));
@@ -146,20 +166,29 @@ describe('ScreenshotManager edge cases', () => {
   test('delete error shows alert', async () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
-    (deleteToolScreenshot as jest.MockedFunction<any>).mockRejectedValue(new Error('delete-failed'));
+    (deleteToolScreenshot as jest.MockedFunction<any>).mockRejectedValue(
+      new Error('delete-failed'),
+    );
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     renderWithProviders(
       <Formik initialValues={{ screenshots: ['a'] }} onSubmit={() => {}}>
         {() => (
           <form>
-            <ScreenshotManager screenshots={['a']} toolId={3} onScreenshotsChange={onChange} fileInputRef={ref} />
+            <ScreenshotManager
+              screenshots={['a']}
+              toolId={3}
+              onScreenshotsChange={onChange}
+              fileInputRef={ref}
+            />
           </form>
         )}
       </Formik>,
     );
 
     const delButtons = document.querySelectorAll('button');
-    const deleteBtn = Array.from(delButtons).find((b) => b.textContent === 'Delete') as HTMLButtonElement;
+    const deleteBtn = Array.from(delButtons).find(
+      (b) => b.textContent === 'Delete',
+    ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
     await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalled());

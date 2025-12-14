@@ -1,7 +1,7 @@
 <?php
 namespace App\Console;
 
-use Illuminate\Console\Kernel as ConsoleKernel;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {

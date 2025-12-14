@@ -95,7 +95,10 @@ export default function ToolForm({
             const isUpdate = !!(initial && initial.id);
 
             if (isUpdate) {
-              data = await updateTrigger({ id: initial!.id as number, body: values as ToolUpdatePayload }).unwrap();
+              data = await updateTrigger({
+                id: initial!.id as number,
+                body: values as ToolUpdatePayload,
+              }).unwrap();
             } else {
               data = await createTrigger(values as unknown as ToolCreatePayload).unwrap();
             }

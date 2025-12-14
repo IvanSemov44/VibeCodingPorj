@@ -1,0 +1,10 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+cd "$(dirname "$0")/.."
+
+# Run a full typecheck before commit; fail fast if type errors exist
+npm run typecheck || exit 1
+
+# Run lint-staged to fix staged files (eslint --fix + prettier)
+npx --no-install lint-staged

@@ -23,7 +23,9 @@ export default function AdminCategories(): React.ReactElement {
   const [deleteTrigger] = useDeleteCategoryMutation();
 
   useEffect(() => {
-    csrfTrigger().unwrap().catch(() => {});
+    csrfTrigger()
+      .unwrap()
+      .catch(() => {});
   }, []);
 
   useEffect(() => {

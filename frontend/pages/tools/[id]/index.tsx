@@ -26,7 +26,11 @@ export default function ToolDetailPage(): React.ReactElement | null {
   const router = useRouter();
   const { id } = router.query;
   const toolId = Array.isArray(id) ? id[0] : id;
-  const { data: tool, isLoading, error } = useGetToolQuery(toolId as string | number | undefined, {
+  const {
+    data: tool,
+    isLoading,
+    error,
+  } = useGetToolQuery(toolId as string | number | undefined, {
     enabled: !!toolId,
   });
 

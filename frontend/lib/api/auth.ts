@@ -28,7 +28,7 @@ export async function logout(): Promise<void> {
   if (!res.ok) await parseJson(res as unknown as Response);
 }
 
-export async function getUser(): Promise<any | null> {
+export async function getUser(): Promise<unknown | null> {
   try {
     let res = await fetchWithAuth(`${API_ENDPOINTS.USER}`);
     if (res.status === 401) {
@@ -45,11 +45,11 @@ export async function getUser(): Promise<any | null> {
   }
 }
 
-export async function register(data: any): Promise<AuthResponse> {
+export async function register(data: Record<string, unknown>): Promise<AuthResponse> {
   const res = await fetchWithAuth(`${API_ENDPOINTS.REGISTER}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(data as Record<string, unknown>),
   });
   return await parseJson<AuthResponse>(res);
 }

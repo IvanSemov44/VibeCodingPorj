@@ -12,15 +12,28 @@ export function useAuth(requireAuth = true): { user: User | null; loading: boole
   useEffect(() => {
     if (isLoading) return;
     if (data) {
-      const res = data as any;
-      const maybeRoles = res.roles;
-      let normalizedRoles: string[] | undefined = undefined;
-      if (Array.isArray(maybeRoles)) {
-        normalizedRoles = maybeRoles.map((r) => (typeof r === 'string' ? r : r && (r.name || String(r.id)))) as string[];
+      const raw = data as unknown;
+      if (raw && typeof raw === 'object') {
+        const obj = raw as Record<string, unknown>;
+        const maybeRoles = obj.roles;
+        let normalizedRoles: string[] | undefined = undefined;
+        if (Array.isArray(maybeRoles)) {
+          normalizedRoles = maybeRoles
+            .map((r) => {
+              if (typeof r === 'string') return r;
+              if (r && typeof r === 'object') {
+                const o = r as Record<string, unknown>;
+                if (typeof o.name === 'string') return o.name;
+                if (o.id !== undefined) return String(o.id);
+              }
+              return '';
+            })
+            .filter(Boolean) as string[];
+        }
+        const normalizedUser = ({ ...(obj as unknown as User), roles: normalizedRoles ?? (obj.roles as unknown as string[] | undefined) } as unknown) as User;
+        setUser(normalizedUser);
+        return;
       }
-      const normalizedUser = { ...(res as any), roles: normalizedRoles ?? res.roles } as User;
-      setUser(normalizedUser);
-      return;
     }
     if (!data && !isLoading && requireAuth) {
       router.push(ROUTES.LOGIN);

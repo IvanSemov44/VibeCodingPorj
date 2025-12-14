@@ -3,8 +3,8 @@ set -e
 
 # Only install if node_modules doesn't exist or is incomplete
 if [ ! -d "node_modules" ] || [ ! -d "node_modules/.bin" ]; then
-  echo "Installing dependencies..."
-  npm install
+  echo "Installing dependencies (allowing legacy peer deps)..."
+  npm install --legacy-peer-deps
 fi
 
 echo "Starting Next.js development server..."

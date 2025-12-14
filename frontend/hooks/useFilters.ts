@@ -6,7 +6,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 
-export function useFilters<T extends Record<string, any>>(initialFilters: T) {
+export function useFilters<T extends Record<string, unknown>>(initialFilters: T) {
   const [filters, setFilters] = useState<T>(initialFilters);
 
   /**

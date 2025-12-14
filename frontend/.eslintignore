@@ -1,3 +1,5 @@
+.next
+node_modules
 node_modules/
 .next/
 dist/
@@ -5,3 +7,7 @@ build/
 coverage/
 /*.config.js
 /*.config.cjs
+/.next/types
+/.next/static
+/.next/static/**
+/.next/**/webpack.js

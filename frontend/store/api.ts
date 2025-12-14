@@ -34,86 +34,93 @@ async function fetchJson(path: string, opts: RequestInit = {}) {
   return res.json();
 }
 
-export function useGetEntriesQuery(params?: Record<string, any>, options?: any) {
+export function useGetEntriesQuery(
+  params?: Record<string, unknown>,
+  options?: Record<string, unknown>
+) {
   const key = ['entries', params ?? null];
   return useQuery({
     queryKey: key,
     queryFn: async () => api.getJournalEntries(params ?? {}),
-    ...(options ? (options as any) : {}),
-  } as any);
+    ...(options || {}),
+  });
 }
 
-export function useGetStatsQuery(_arg?: any, options?: any) {
+export function useGetStatsQuery(_arg?: unknown, options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['stats'],
     queryFn: async () => api.getJournalStats(),
-    ...(options ? (options as any) : {}),
-  } as any);
+    ...(options || {}),
+  });
 }
 
 // 2FA hooks (public)
-export function useGet2faSecretQuery(options?: any) {
+export function useGet2faSecretQuery(options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['2fa', 'secret'],
     queryFn: async () => api.get2faSecret(),
     ...(options || {}),
-  } as any);
+  });
 }
 
 // Tool hooks
-export function useGetToolQuery(id?: string | number, options?: any) {
+export function useGetToolQuery(id?: string | number, options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['tool', typeof id === 'undefined' ? id : String(id)],
     queryFn: async () => api.getTool(String(id)),
     enabled: !!id,
     ...(options || {}),
-  } as any);
+  });
 }
 
 export function useCreateToolMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, any>({
-    mutationFn: async (body) => api.createTool(body),
+  const m = useMutation<unknown, Error, unknown>({
+    mutationFn: async (body: unknown) => api.createTool(body as unknown as Record<string, unknown>),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tools'] });
     },
   });
-  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: unknown) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as unknown] as const;
 }
 
-export function useGetToolsQuery(params?: Record<string, any>, options?: any) {
+export function useGetToolsQuery(params?: Record<string, unknown>, options?: Record<string, unknown>) {
   const key = ['tools', params ?? null];
   return useQuery({
     queryKey: key,
     queryFn: async () => api.getTools(params ?? {}),
     ...(options || {}),
-  } as any);
+  });
 }
 
 export function useUpdateToolMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { id: string | number; body: any }>({
-    mutationFn: async ({ id, body }) => api.updateTool(id, body),
+  const m = useMutation<unknown, Error, { id: string | number; body: unknown }>({
+    mutationFn: async ({ id, body }) => api.updateTool(id, body as unknown as Record<string, unknown>),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tools'] });
       qc.invalidateQueries({ queryKey: ['tool'] });
     },
   });
-  const trigger = (arg: { id: string | number; body: any }) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: { id: string | number; body: unknown }) => ({
+    unwrap: () => m.mutateAsync(arg),
+  });
+  return [trigger, m as unknown] as const;
 }
 
 export function useUploadToolScreenshotsMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { id: string | number; files: File[] }>({
-    mutationFn: async ({ id, files }) => api.uploadToolScreenshots(id, files as any),
+  const m = useMutation<unknown, Error, { id: string | number; files: File[] }>({
+    mutationFn: async ({ id, files }) => api.uploadToolScreenshots(id, files),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tool'] });
     },
   });
-  const trigger = (arg: { id: string | number; files: File[] }) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: { id: string | number; files: File[] }) => ({
+    unwrap: () => m.mutateAsync(arg),
+  });
+  return [trigger, m as unknown] as const;
 }
 
 export function useDeleteToolMutation() {
@@ -126,118 +133,126 @@ export function useDeleteToolMutation() {
     },
   });
   const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 // Auth / user helpers
-export function useGetUserQuery(options?: any) {
+export function useGetUserQuery(options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['user'],
     queryFn: async () => api.getUser(),
     ...(options || {}),
-  } as any);
+  });
 }
 
 export function useGetCsrfMutation() {
-  const m = useMutation<any, Error, void>({
+  const m = useMutation<unknown, Error, void>({
     mutationFn: async () => api.getCsrf(),
   });
   const trigger = () => ({ unwrap: () => m.mutateAsync() });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 export function useLogoutMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, void>({
+  const m = useMutation<unknown, Error, void>({
     mutationFn: async () => api.logout(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['user'] });
     },
   });
   const trigger = () => ({ unwrap: () => m.mutateAsync() });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 export function useLoginMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { email: string; password: string }>({
+  const m = useMutation<unknown, Error, { email: string; password: string }>({
     mutationFn: async (body) => api.login(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['user'] });
     },
   });
-  const trigger = (arg: { email: string; password: string }) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: { email: string; password: string }) => ({
+    unwrap: () => m.mutateAsync(arg),
+  });
+  return [trigger, m as unknown] as const;
 }
 
 export function useRegisterMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { name: string; email: string; password: string; password_confirmation?: string }>({
+  const m = useMutation<
+    unknown,
+    Error,
+    { name: string; email: string; password: string; password_confirmation?: string }
+  >({
     mutationFn: async (body) => api.register(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['user'] });
     },
   });
-  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: unknown) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as unknown] as const;
 }
 
 export function useEnable2faMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, void>({
+  const m = useMutation<unknown, Error, void>({
     mutationFn: async () => api.enable2faTotp(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['2fa', 'secret'] });
     },
   });
   const trigger = () => ({ unwrap: () => m.mutateAsync() });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 // Admin: per-user 2FA hooks
-export function useGetUser2faQuery(userId: string | number, options?: any) {
+export function useGetUser2faQuery(userId: string | number, options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['admin', 'user-2fa', String(userId)],
     queryFn: async () => api.getUserTwoFactor(String(userId)),
     ...(options || {}),
-  } as any);
+  });
 }
 
 // Tags / categories / roles common queries
-export function useGetTagsQuery(options?: any) {
+export function useGetTagsQuery(options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['tags'],
     queryFn: async () => api.getTags(),
     ...(options || {}),
-  } as any);
+  });
 }
 
-export function useGetCategoriesQuery(options?: any) {
+export function useGetCategoriesQuery(options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['categories'],
     queryFn: async () => api.getCategories(),
     ...(options || {}),
-  } as any);
+  });
 }
 
 export function useCreateTagMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, any>({
-    mutationFn: async (body) => api.createTag(body),
+  const m = useMutation<unknown, Error, unknown>({
+    mutationFn: async (body: unknown) => api.createTag(body as unknown as Record<string, unknown>),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
   });
-  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: unknown) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as unknown] as const;
 }
 
 export function useUpdateTagMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { id: number | string; body: any }>({
-    mutationFn: async ({ id, body }) => api.updateTag(id, body),
+  const m = useMutation<unknown, Error, { id: number | string; body: unknown }>({
+    mutationFn: async ({ id, body }) => api.updateTag(id, body as unknown as Record<string, unknown>),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
   });
-  const trigger = (arg: { id: number | string; body: any }) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: { id: number | string; body: unknown }) => ({
+    unwrap: () => m.mutateAsync(arg),
+  });
+  return [trigger, m as unknown] as const;
 }
 
 export function useDeleteTagMutation() {
@@ -247,27 +262,29 @@ export function useDeleteTagMutation() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['tags'] }),
   });
   const trigger = (arg: number | string) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 export function useCreateCategoryMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, any>({
-    mutationFn: async (body) => api.createCategory(body),
+  const m = useMutation<unknown, Error, unknown>({
+    mutationFn: async (body: unknown) => api.createCategory(body as unknown as Record<string, unknown>),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
   });
-  const trigger = (arg: any) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: unknown) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m as unknown] as const;
 }
 
 export function useUpdateCategoryMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { id: number | string; body: any }>({
-    mutationFn: async ({ id, body }) => api.updateCategory(id, body),
+  const m = useMutation<unknown, Error, { id: number | string; body: unknown }>({
+    mutationFn: async ({ id, body }) => api.updateCategory(id, body as unknown as Record<string, unknown>),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
   });
-  const trigger = (arg: { id: number | string; body: any }) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  const trigger = (arg: { id: number | string; body: unknown }) => ({
+    unwrap: () => m.mutateAsync(arg),
+  });
+  return [trigger, m as unknown] as const;
 }
 
 export function useDeleteCategoryMutation() {
@@ -277,20 +294,20 @@ export function useDeleteCategoryMutation() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['categories'] }),
   });
   const trigger = (arg: number | string) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
-export function useGetRolesQuery(options?: any) {
+export function useGetRolesQuery(options?: Record<string, unknown>) {
   return useQuery({
     queryKey: ['roles'],
     queryFn: async () => api.getRoles(),
     ...(options || {}),
-  } as any);
+  });
 }
 
 export function useSetUser2faMutation() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, { userId: string | number; type: string }>({
+  const m = useMutation<unknown, Error, { userId: string | number; type: string }>({
     mutationFn: async ({ userId, type }) => api.setUserTwoFactor(String(userId), type),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['admin', 'user-2fa', String(vars.userId)] });
@@ -299,7 +316,7 @@ export function useSetUser2faMutation() {
   const trigger = (arg: { userId: string | number; type: string }) => ({
     unwrap: () => m.mutateAsync(arg),
   });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 export function useDisableUser2faMutation() {
@@ -311,7 +328,7 @@ export function useDisableUser2faMutation() {
     },
   });
   const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 export function useCreateEntryMutation() {
@@ -325,7 +342,7 @@ export function useCreateEntryMutation() {
     },
   });
   const trigger = (arg: JournalCreatePayload) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }
 
 export function useDeleteEntryMutation() {
@@ -338,5 +355,5 @@ export function useDeleteEntryMutation() {
     },
   });
   const trigger = (arg: number | string) => ({ unwrap: () => m.mutateAsync(arg) });
-  return [trigger, m as any] as const;
+  return [trigger, m as unknown] as const;
 }

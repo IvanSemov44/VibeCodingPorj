@@ -18,34 +18,76 @@ vi.mock('../../../store/api', () => ({
 
 import UserTwoFactorManager from '../../../../frontend/components/admin/UserTwoFactorManager';
 import { renderWithProviders } from '../../../../frontend/tests/test-utils';
-import { useGetUser2faQuery, useSetUser2faMutation, useDisableUser2faMutation } from '../../../store/api';
+import {
+  useGetUser2faQuery,
+  useSetUser2faMutation,
+  useDisableUser2faMutation,
+} from '../../../store/api';
 
 describe('UserTwoFactorManager', () => {
   beforeEach(() => vi.clearAllMocks());
 
   test('shows loading state', () => {
-    (useGetUser2faQuery as unknown as any).mockReturnValue({ data: null, isLoading: true, error: null, refetch: vi.fn() });
-    (useSetUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
-    (useDisableUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useGetUser2faQuery as unknown as any).mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+      refetch: vi.fn(),
+    });
+    (useSetUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useDisableUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const { getByText } = renderWithProviders(<UserTwoFactorManager userId="u1" />);
     expect(getByText(/Loading/)).toBeTruthy();
   });
 
   test('shows No data when no status present', () => {
-    (useGetUser2faQuery as unknown as any).mockReturnValue({ data: null, isLoading: false, error: null, refetch: vi.fn() });
-    (useSetUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
-    (useDisableUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useGetUser2faQuery as unknown as any).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+    (useSetUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useDisableUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const { getByText } = renderWithProviders(<UserTwoFactorManager userId="u1" />);
     expect(getByText(/No data/)).toBeTruthy();
   });
 
   test('renders provisioning uri and canvas when present', () => {
-    const data = { two_factor_type: 'totp', two_factor_confirmed_at: null, has_secret: true, provisioning_uri: 'otpauth://totp/u1' };
-    (useGetUser2faQuery as unknown as any).mockReturnValue({ data, isLoading: false, error: null, refetch: vi.fn() });
-    (useSetUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
-    (useDisableUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    const data = {
+      two_factor_type: 'totp',
+      two_factor_confirmed_at: null,
+      has_secret: true,
+      provisioning_uri: 'otpauth://totp/u1',
+    };
+    (useGetUser2faQuery as unknown as any).mockReturnValue({
+      data,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+    (useSetUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useDisableUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const { getByText, container } = renderWithProviders(<UserTwoFactorManager userId="u1" />);
     expect(getByText(/2FA for user u1/)).toBeTruthy();
@@ -59,9 +101,20 @@ describe('UserTwoFactorManager', () => {
     const mockUnwrap = vi.fn().mockResolvedValue({});
     const setFn = vi.fn().mockReturnValue({ unwrap: mockUnwrap });
 
-    (useGetUser2faQuery as unknown as any).mockReturnValue({ data, isLoading: false, error: null, refetch: vi.fn() });
-    (useSetUser2faMutation as unknown as any).mockReturnValue([setFn, { isLoading: false, error: null }]);
-    (useDisableUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useGetUser2faQuery as unknown as any).mockReturnValue({
+      data,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+    (useSetUser2faMutation as unknown as any).mockReturnValue([
+      setFn,
+      { isLoading: false, error: null },
+    ]);
+    (useDisableUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const { getByText, findByText } = renderWithProviders(<UserTwoFactorManager userId="u1" />);
     const btn = getByText('Enable TOTP');
@@ -77,9 +130,20 @@ describe('UserTwoFactorManager', () => {
     const mockUnwrap = vi.fn().mockResolvedValue({});
     const disableFn = vi.fn().mockReturnValue({ unwrap: mockUnwrap });
 
-    (useGetUser2faQuery as unknown as any).mockReturnValue({ data, isLoading: false, error: null, refetch: vi.fn() });
-    (useSetUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
-    (useDisableUser2faMutation as unknown as any).mockReturnValue([disableFn, { isLoading: false, error: null }]);
+    (useGetUser2faQuery as unknown as any).mockReturnValue({
+      data,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+    (useSetUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useDisableUser2faMutation as unknown as any).mockReturnValue([
+      disableFn,
+      { isLoading: false, error: null },
+    ]);
 
     const { getByText, findByText } = renderWithProviders(<UserTwoFactorManager userId="u1" />);
     const btn = getByText('Disable 2FA');
@@ -91,9 +155,20 @@ describe('UserTwoFactorManager', () => {
   });
 
   test('renders error when mutation error present', () => {
-    (useGetUser2faQuery as unknown as any).mockReturnValue({ data: null, isLoading: false, error: null, refetch: vi.fn() });
-    (useSetUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: { message: 'bad' } }]);
-    (useDisableUser2faMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useGetUser2faQuery as unknown as any).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+    (useSetUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: { message: 'bad' } },
+    ]);
+    (useDisableUser2faMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const { getByText } = renderWithProviders(<UserTwoFactorManager userId="u1" />);
     expect(getByText(/Error:/)).toBeTruthy();

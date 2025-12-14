@@ -33,14 +33,23 @@ describe('ToolForm branch coverage', () => {
   test('update path uploads files and shows updated toast', async () => {
     const mockUpdateUnwrap = vi.fn().mockResolvedValue({ id: 99, name: 'Updated' });
     const updateFn = vi.fn().mockReturnValue({ unwrap: mockUpdateUnwrap });
-    (useUpdateToolMutation as unknown as any).mockReturnValue([updateFn, { isLoading: false, error: null }]);
+    (useUpdateToolMutation as unknown as any).mockReturnValue([
+      updateFn,
+      { isLoading: false, error: null },
+    ]);
 
     const mockUploadUnwrap = vi.fn().mockResolvedValue({ screenshots: ['a.png'] });
     const uploadFn = vi.fn().mockReturnValue({ unwrap: mockUploadUnwrap });
-    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([uploadFn, { isLoading: false, error: null }]);
+    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
+      uploadFn,
+      { isLoading: false, error: null },
+    ]);
 
     // create hook must exist as well
-    (useCreateToolMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useCreateToolMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const onSaved = vi.fn();
 
@@ -66,18 +75,29 @@ describe('ToolForm branch coverage', () => {
 
     await waitFor(() => expect(updateFn).toHaveBeenCalled());
     await waitFor(() => expect(uploadFn).toHaveBeenCalled());
-    await waitFor(() => expect(addToast).toHaveBeenCalledWith(expect.stringContaining('updated'), 'success'));
+    await waitFor(() =>
+      expect(addToast).toHaveBeenCalledWith(expect.stringContaining('updated'), 'success'),
+    );
     expect(onSaved).toHaveBeenCalledWith(expect.objectContaining({ id: 99 }));
   });
 
   test('create path shows error message when mutation fails', async () => {
     const mockCreateUnwrap = vi.fn().mockRejectedValue(new Error('create-fail'));
     const createFn = vi.fn().mockReturnValue({ unwrap: mockCreateUnwrap });
-    (useCreateToolMutation as unknown as any).mockReturnValue([createFn, { isLoading: false, error: null }]);
+    (useCreateToolMutation as unknown as any).mockReturnValue([
+      createFn,
+      { isLoading: false, error: null },
+    ]);
 
     // ensure others exist
-    (useUpdateToolMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
-    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([vi.fn(), { isLoading: false, error: null }]);
+    (useUpdateToolMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
 
     const { container } = renderWithProviders(<ToolForm categories={[]} roles={[]} allTags={[]} />);
 

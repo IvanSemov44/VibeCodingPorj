@@ -17,7 +17,9 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
     async function fetchUser() {
       try {
-        await csrfTrigger().unwrap().catch(() => {});
+        await csrfTrigger()
+          .unwrap()
+          .catch(() => {});
         const res = await refetch();
         const u = res?.data ?? data;
         if (!mounted) return;

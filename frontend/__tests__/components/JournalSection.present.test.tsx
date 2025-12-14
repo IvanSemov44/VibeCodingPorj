@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react'
-import { renderWithProviders } from '../../tests/test-utils'
-import { vi } from 'vitest'
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from '../../tests/test-utils';
+import { vi } from 'vitest';
 
 vi.mock('../../hooks/useJournal', () => ({
   useJournal: () => ({
@@ -10,10 +10,10 @@ vi.mock('../../hooks/useJournal', () => ({
     createEntry: vi.fn(),
     deleteEntry: vi.fn(),
   }),
-}))
+}));
 
 test('renders JournalSection header when mounted', async () => {
-  const { default: JournalSection } = await import('../../components/JournalSection')
-  renderWithProviders(<JournalSection />)
-  expect(await screen.findByText(/adventure journal/i)).toBeTruthy()
-})
+  const { default: JournalSection } = await import('../../components/JournalSection');
+  renderWithProviders(<JournalSection />);
+  expect(await screen.findByText(/adventure journal/i)).toBeTruthy();
+});

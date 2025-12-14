@@ -9,6 +9,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "watch:fix": "node ./scripts/watch-and-fix.js",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:ci": "vitest run --reporter default",

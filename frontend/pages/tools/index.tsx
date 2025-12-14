@@ -27,7 +27,7 @@ export default function ToolsIndex(): React.ReactElement {
 
   useEffect(() => {
     // initial load handled by React Query hooks below
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   // Debounce search input
@@ -48,7 +48,12 @@ export default function ToolsIndex(): React.ReactElement {
     return p;
   }, [qDebounced, page, selectedCategory, selectedRole, selectedTags, perPage]);
 
-  const { data: toolsRes, isLoading, error: queryError, refetch } = useGetToolsQuery(params, {
+  const {
+    data: toolsRes,
+    isLoading,
+    error: queryError,
+    refetch,
+  } = useGetToolsQuery(params, {
     keepPreviousData: true,
   });
 
@@ -151,7 +156,9 @@ export default function ToolsIndex(): React.ReactElement {
       {isLoading ? (
         <div>Loading...</div>
       ) : queryError ? (
-        <div className="p-3 bg-red-100 text-red-700 rounded-md">Unable to load tools. {String(queryError)}</div>
+        <div className="p-3 bg-red-100 text-red-700 rounded-md">
+          Unable to load tools. {String(queryError)}
+        </div>
       ) : (
         <div>
           {toolsData.length === 0 ? (
@@ -188,7 +195,9 @@ export default function ToolsIndex(): React.ReactElement {
                 </button>
               ))}
               <button
-                onClick={() => setPage(Math.min(metaData.last_page, (metaData.current_page || page) + 1))}
+                onClick={() =>
+                  setPage(Math.min(metaData.last_page, (metaData.current_page || page) + 1))
+                }
                 disabled={!((metaData.current_page || page) < metaData.last_page)}
                 className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               >

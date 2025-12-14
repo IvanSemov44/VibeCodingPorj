@@ -42,7 +42,7 @@ export function useJournal(
   // Use RTK Query hooks to manage journal data
   // Build and memoize the params object so its identity is stable across renders
   const memoParams = useMemo(() => {
-    const p: Record<string, any> = {};
+    const p: Record<string, string> = {};
     if (filters.search) p.search = filters.search;
     if (filters.mood) p.mood = filters.mood;
     if (filters.tag) p.tag = filters.tag;
@@ -63,12 +63,13 @@ export function useJournal(
 
   const entries = (entriesQuery.data as JournalEntry[]) ?? [];
   const stats = (statsQuery.data as JournalStats) ?? null;
+  type MutationResultLike = { isLoading?: boolean; error?: { message?: string } | null };
   const loading =
-    entriesQuery.isLoading || (createResult as any).isLoading || (deleteResult as any).isLoading;
+    entriesQuery.isLoading || (createResult as MutationResultLike).isLoading || (deleteResult as MutationResultLike).isLoading;
   const error =
-    (entriesQuery.error as any)?.message ??
-    (createResult as any)?.error?.message ??
-    (deleteResult as any)?.error?.message ??
+    (entriesQuery.error as unknown as { message?: string })?.message ??
+    (createResult as MutationResultLike)?.error?.message ??
+    (deleteResult as MutationResultLike)?.error?.message ??
     null;
 
   /**

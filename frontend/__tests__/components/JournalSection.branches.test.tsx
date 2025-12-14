@@ -41,8 +41,12 @@ describe.skip('JournalSection branch coverage', () => {
     renderWithProviders(<JournalSection />);
 
     // open the form and trigger failing create
-    await (await import('@testing-library/user-event')).default.click(screen.getByText(/new entry/i));
-    await (await import('@testing-library/user-event')).default.click(screen.getByText('submit-ok'));
+    await (
+      await import('@testing-library/user-event')
+    ).default.click(screen.getByText(/new entry/i));
+    await (
+      await import('@testing-library/user-event')
+    ).default.click(screen.getByText('submit-ok'));
 
     expect(createFail).toHaveBeenCalled();
     await screen.findAllByText(/create-fail/);
@@ -57,7 +61,7 @@ describe.skip('JournalSection branch coverage', () => {
     const deleteFail = vi.fn().mockRejectedValue(new Error('del-fail'));
     vi.doMock('../../hooks/useJournal', () => ({
       useJournal: () => ({
-        entries: [ { id: 5, title: 'X', content: 'x', xp: 1, created_at: new Date().toISOString() } ],
+        entries: [{ id: 5, title: 'X', content: 'x', xp: 1, created_at: new Date().toISOString() }],
         stats: { total: 1, xp: 1 },
         loading: false,
         createEntry: vi.fn(),
@@ -124,9 +128,13 @@ describe.skip('JournalSection branch coverage', () => {
     renderWithProviders(<JournalSection />);
 
     expect(screen.getByText(/hasFilters:false/i)).toBeInTheDocument();
-    await (await import('@testing-library/user-event')).default.click(screen.getByText('set-search'));
+    await (
+      await import('@testing-library/user-event')
+    ).default.click(screen.getByText('set-search'));
     expect(screen.getByText(/hasFilters:true/i)).toBeInTheDocument();
-    await (await import('@testing-library/user-event')).default.click(screen.getByText('clear-filters'));
+    await (
+      await import('@testing-library/user-event')
+    ).default.click(screen.getByText('clear-filters'));
     expect(screen.getByText(/hasFilters:false/i)).toBeInTheDocument();
   });
 });

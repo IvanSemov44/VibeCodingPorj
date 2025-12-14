@@ -23,7 +23,9 @@ export default function AdminTags(): React.ReactElement {
   const [deleteTrigger] = useDeleteTagMutation();
 
   useEffect(() => {
-    csrfTrigger().unwrap().catch(() => {});
+    csrfTrigger()
+      .unwrap()
+      .catch(() => {});
   }, []);
 
   useEffect(() => {

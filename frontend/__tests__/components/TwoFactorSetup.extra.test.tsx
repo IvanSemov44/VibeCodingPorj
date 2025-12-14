@@ -10,7 +10,12 @@ describe('TwoFactorSetup extra branches', () => {
   test('shows Error when query returns error', async () => {
     // mock store hooks with an error
     vi.doMock('../../store/api', () => ({
-      useGet2faSecretQuery: () => ({ data: null, isLoading: false, error: { message: 'fetch-failed' }, refetch: vi.fn() }),
+      useGet2faSecretQuery: () => ({
+        data: null,
+        isLoading: false,
+        error: { message: 'fetch-failed' },
+        refetch: vi.fn(),
+      }),
       useEnable2faMutation: () => [vi.fn(), { isLoading: false, error: null }],
     }));
 
@@ -23,14 +28,24 @@ describe('TwoFactorSetup extra branches', () => {
   test('handles QRCode.toCanvas callback error without throwing', async () => {
     vi.doMock('qrcode', async () => ({
       default: {
-        toCanvas: (canvas: HTMLCanvasElement, uri: string, opts: any, cb: (err?: unknown) => void) => cb(new Error('qrfail')),
+        toCanvas: (
+          canvas: HTMLCanvasElement,
+          uri: string,
+          opts: any,
+          cb: (err?: unknown) => void,
+        ) => cb(new Error('qrfail')),
       },
     }));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     vi.doMock('../../store/api', () => ({
-      useGet2faSecretQuery: () => ({ data: { provisioning_uri: 'otpauth://x', secret_mask: 'm' }, isLoading: false, error: null, refetch: vi.fn() }),
+      useGet2faSecretQuery: () => ({
+        data: { provisioning_uri: 'otpauth://x', secret_mask: 'm' },
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      }),
       useEnable2faMutation: () => [vi.fn(), { isLoading: false, error: null }],
     }));
 

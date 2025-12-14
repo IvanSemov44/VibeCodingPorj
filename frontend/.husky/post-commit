@@ -1,0 +1,24 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+cd "$(dirname "$0")/.."
+
+# Detect AI-created commits by commit message marker or author email
+
+commit_msg=$(git log -1 --pretty=%B)
+author_email=$(git log -1 --pretty=%ae)
+
+is_ai=false
+echo "$commit_msg" | grep -Ei "\[ai\]|\[auto\]" >/dev/null 2>&1 && is_ai=true
+echo "$author_email" | grep -Ei "ai[-._]?agent|bot@|automation@" >/dev/null 2>&1 && is_ai=true
+
+if [ "$is_ai" != "true" ]; then
+  exit 0
+fi
+
+echo "AI commit detected — running configured AI checks..."
+
+# Use the centralized script which reads ai-action.config.json
+node ./scripts/run-ai-checks.js --amend || true
+
+exit 0
