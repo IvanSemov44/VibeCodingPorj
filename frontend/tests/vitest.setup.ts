@@ -3,8 +3,8 @@ import { vi, afterEach, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { server } from './mockServer';
-// Global mocks (e.g. next/image) for jsdom tests
-import '../__tests__/mocks/next-image';
+// Global mocks (e.g. next/image) for jsdom tests — use tests/mocks
+import './mocks/next-image';
 
 // Make React available globally for tests
 (globalThis as unknown as { React?: typeof React }).React = React;

@@ -31,7 +31,12 @@ export default defineConfig({
         'styles/**',
         'node_modules/**',
       ],
-      // Coverage thresholds — relaxed to allow incremental improvements
+    },
+    // Ensure both top-level `tests/` and colocated `__tests__/` are discovered
+    include: [
+      'tests/**/*.{test,spec}.{js,ts,tsx}',
+      '__tests__/**/*.{test,spec}.{js,ts,tsx}',
+    ],
       thresholds: {
         statements: 60,
         branches: 60,
