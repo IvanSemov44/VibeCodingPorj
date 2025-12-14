@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MigrateAndSeedWithLock extends Command
 {
@@ -50,14 +51,15 @@ class MigrateAndSeedWithLock extends Command
                     }
                 }
             } catch (\Throwable $e) {
-                $this->warn('Migrator (artisan): lock attempt error: ' . $e->getMessage());
+                $this->warn('Migrator (artisan): lock attempt error: '.$e->getMessage());
             }
-            $this->info("Migrator (artisan): waiting for lock... (" . ($i+1) . "/{$tries})");
+            $this->info('Migrator (artisan): waiting for lock... ('.($i + 1)."/{$tries})");
             sleep($sleep);
         }
 
         if (! $acquired) {
             $this->error('Migrator (artisan): could not acquire lock after retries; exiting');
+
             return 1;
         }
 
@@ -83,7 +85,7 @@ class MigrateAndSeedWithLock extends Command
 
             // Ensure migration_metadata exists and upsert marker
             try {
-                DB::statement("CREATE TABLE IF NOT EXISTS migration_metadata (
+                DB::statement('CREATE TABLE IF NOT EXISTS migration_metadata (
                     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                     marker_key VARCHAR(191) UNIQUE,
                     marker_value TEXT,
@@ -91,9 +93,9 @@ class MigrateAndSeedWithLock extends Command
                     ran_at TIMESTAMP NULL DEFAULT NULL,
                     created_at TIMESTAMP NULL,
                     updated_at TIMESTAMP NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
             } catch (\Throwable $e) {
-                $this->warn('Migrator (artisan): could not ensure migration_metadata table: ' . $e->getMessage());
+                $this->warn('Migrator (artisan): could not ensure migration_metadata table: '.$e->getMessage());
             }
 
             $now = Carbon::now()->toIso8601String();
@@ -111,13 +113,14 @@ class MigrateAndSeedWithLock extends Command
 
             $this->info('Migrator (artisan): marking migrations done in DB');
         } catch (\Throwable $e) {
-            $this->error('Migrator (artisan): error during migrate/seed: ' . $e->getMessage());
+            $this->error('Migrator (artisan): error during migrate/seed: '.$e->getMessage());
             // Attempt to release lock before exiting
             try {
                 DB::select('SELECT RELEASE_LOCK(?)', [$lockName]);
             } catch (\Throwable $e2) {
                 // ignore
             }
+
             return 1;
         }
 
@@ -125,10 +128,11 @@ class MigrateAndSeedWithLock extends Command
         try {
             DB::select('SELECT RELEASE_LOCK(?)', [$lockName]);
         } catch (\Throwable $e) {
-            $this->warn('Migrator (artisan): could not release lock: ' . $e->getMessage());
+            $this->warn('Migrator (artisan): could not release lock: '.$e->getMessage());
         }
 
         $this->info('Migrator (artisan): finished');
+
         return 0;
     }
 }

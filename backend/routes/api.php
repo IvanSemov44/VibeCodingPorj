@@ -2,8 +2,8 @@
 
 // API routes intentionally left minimal. Use web routes for session-based SPA auth.
 
-use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
 // Tools API (protected - authenticated users can create)
 // Public discovery endpoints for categories and roles (useful for frontend filters)
@@ -85,10 +85,10 @@ Route::middleware([
             Route::post('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'store']);
             Route::delete('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'destroy']);
         });
-        });
     });
+});
 
-    // 2FA challenge (public - rate limited)
+// 2FA challenge (public - rate limited)
 Route::post('2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])
     ->middleware('throttle:10,1'); // 10 attempts per minute
 
@@ -102,4 +102,3 @@ Route::get('status', function () {
         'time' => now()->toDateTimeString(),
     ]);
 });
-

@@ -6,7 +6,7 @@ import type { User } from '../lib/types';
 
 export default function Layout({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
-  const { data, isLoading, refetch } = useGetUserQuery();
+  const { data, refetch } = useGetUserQuery();
   const [csrfTrigger] = useGetCsrfMutation();
   const [logoutTrigger] = useLogoutMutation();
   const [loading, setLoading] = useState<boolean>(true);
@@ -17,9 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
     async function fetchUser() {
       try {
-        await csrfTrigger()
-          .unwrap()
-          .catch(() => {});
+        await csrfTrigger().unwrap().catch(() => {});
         const res = await refetch();
         const u = res?.data ?? data;
         if (!mounted) return;
@@ -46,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
       mounted = false;
       window.removeEventListener('user:login', onLoginEvent);
     };
-  }, []);
+  }, [csrfTrigger, data, refetch]);
 
   async function handleLogout() {
     try {

@@ -14,7 +14,7 @@ class UserPolicyTest extends TestCase
     public function test_user_can_update_their_own_profile(): void
     {
         $user = User::factory()->create();
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertTrue($policy->update($user, $user));
     }
@@ -23,7 +23,7 @@ class UserPolicyTest extends TestCase
     {
         $user = User::factory()->create();
         $other = User::factory()->create();
-        $policy = new UserPolicy();
+        $policy = new UserPolicy;
 
         $this->assertFalse($policy->update($user, $other));
     }

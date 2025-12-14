@@ -13,6 +13,8 @@ export default function RegisterPage(): React.ReactElement {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [csrfTrigger] = useGetCsrfMutation();
+  const [registerTrigger] = useRegisterMutation();
 
   const { values, errors, handleChange, validate, setFieldError } = useForm(
     {
@@ -56,9 +58,6 @@ export default function RegisterPage(): React.ReactElement {
     }
 
     setLoading(true);
-
-    const [csrfTrigger] = useGetCsrfMutation();
-    const [registerTrigger] = useRegisterMutation();
 
     try {
       await csrfTrigger().unwrap();

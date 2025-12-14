@@ -16,14 +16,14 @@ export default function useTheme() {
       dispatch(setTheme(saved));
       try {
         document.documentElement.setAttribute('data-theme', saved);
-      } catch (e) {
+      } catch {
         // ignore DOM update errors in non-DOM environments
       }
     } else {
       // ensure DOM reflects current theme value
       try {
         document.documentElement.setAttribute('data-theme', theme);
-      } catch (e) {}
+      } catch {}
     }
 
     dispatch(initializeTheme());
@@ -35,12 +35,12 @@ export default function useTheme() {
     if (typeof window === 'undefined') return;
     try {
       localStorage.setItem('theme', theme);
-    } catch (e) {
+    } catch {
       // ignore
     }
     try {
       document.documentElement.setAttribute('data-theme', theme);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [theme]);

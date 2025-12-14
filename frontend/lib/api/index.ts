@@ -8,6 +8,8 @@ export * from './tools';
 export * from './admin';
 
 // Provide a default export to support imports that expect a module default
-export default {
+const apiDefault = {
   // named exports available individually
 };
+
+export default apiDefault;

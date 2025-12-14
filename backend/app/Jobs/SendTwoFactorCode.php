@@ -22,8 +22,7 @@ class SendTwoFactorCode implements ShouldQueue
         private User $user,
         private string $code,
         private string $method
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

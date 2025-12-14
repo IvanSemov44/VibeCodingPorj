@@ -17,7 +17,7 @@ class ToolPolicyTest extends TestCase
         $owner = User::factory()->create();
         $tool = Tool::factory()->make(['user_id' => $owner->id]);
 
-        $policy = new ToolPolicy();
+        $policy = new ToolPolicy;
 
         $this->assertTrue($policy->view($owner, $tool));
         $this->assertTrue($policy->update($owner, $tool));
@@ -30,7 +30,7 @@ class ToolPolicyTest extends TestCase
         $other = User::factory()->create();
         $tool = Tool::factory()->make(['user_id' => $owner->id]);
 
-        $policy = new ToolPolicy();
+        $policy = new ToolPolicy;
 
         $this->assertTrue($policy->view($other, $tool)); // viewing may be allowed
         $this->assertFalse($policy->update($other, $tool));

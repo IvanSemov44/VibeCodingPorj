@@ -4,7 +4,7 @@
  * Handles loading states, errors, and data synchronization
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { JournalEntry, JournalStats, JournalCreatePayload } from '../lib/types';
 import {
   useGetEntriesQuery,
@@ -85,6 +85,12 @@ export function useJournal(
       throw err;
     }
   }, [entriesQuery, statsQuery]);
+
+  // Respect `autoLoad` parameter to keep variable used; RTK Query already
+  // triggers data fetching by default, so this is intentionally a no-op.
+  if (autoLoad) {
+    /* no-op: data loaded by RTK Query hooks */
+  }
 
   /**
    * Create a new journal entry

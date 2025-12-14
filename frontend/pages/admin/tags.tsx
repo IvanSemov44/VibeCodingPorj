@@ -26,7 +26,7 @@ export default function AdminTags(): React.ReactElement {
     csrfTrigger()
       .unwrap()
       .catch(() => {});
-  }, []);
+  }, [csrfTrigger]);
 
   useEffect(() => {
     setTags(tagsData || []);

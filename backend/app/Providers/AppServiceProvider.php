@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Ensure login rate limiter exists for Fortify/login routes
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input('email', '')) . '|' . $request->ip());
+            $throttleKey = Str::transliterate(Str::lower($request->input('email', '')).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });

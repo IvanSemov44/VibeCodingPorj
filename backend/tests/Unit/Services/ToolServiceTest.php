@@ -18,7 +18,7 @@ class ToolServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->toolService = new ToolService();
+        $this->toolService = new ToolService;
     }
 
     public function test_create_tool_with_basic_data(): void

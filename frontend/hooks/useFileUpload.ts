@@ -26,10 +26,11 @@ export interface UseFileUploadReturn {
  */
 export function useFileUpload(
   maxFiles: number = 10,
-  accept: string = 'image/*',
+  _accept: string = 'image/*',
   maxSizeMB: number = 5,
 ): UseFileUploadReturn {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  void _accept;
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);

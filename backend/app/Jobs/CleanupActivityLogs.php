@@ -19,8 +19,7 @@ class CleanupActivityLogs implements ShouldQueue
      */
     public function __construct(
         private int $daysToKeep = 90
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

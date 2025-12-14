@@ -18,7 +18,7 @@ class AuthServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->authService = new AuthService();
+        $this->authService = new AuthService;
     }
 
     public function test_register_creates_new_user(): void

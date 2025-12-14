@@ -31,10 +31,10 @@ export function useToast() {
   const addToast = (message: string, type: ToastType = 'info', duration = 3000) => {
     // dispatch action (slice's prepare sets id)
     const action = addToastAction(message, type, duration) as unknown as { payload: ToastItem };
-    dispatch(action as any);
+    dispatch(action);
     // schedule removal
     if (duration > 0) {
-      const id = (action as any).payload.id as number;
+      const id = action.payload.id as number;
       setTimeout(() => dispatch(removeToastAction(id)), duration);
     }
   };

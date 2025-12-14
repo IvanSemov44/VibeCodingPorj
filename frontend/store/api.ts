@@ -1,38 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { JournalEntry, JournalStats, JournalCreatePayload } from '../lib/types';
-import { API_BASE_URL } from '../lib/constants';
+import type { JournalEntry, JournalCreatePayload } from '../lib/types';
 import * as api from '../lib/api';
-
-const _apiBaseServer = 'http://backend/api';
-
-function joinBaseAndPath(base: string, path: string) {
-  return base.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
-}
-
-let _apiBaseClient = '';
-if (API_BASE_URL && API_BASE_URL.length) {
-  // Use provided API_BASE_URL as-is (strip trailing slash)
-  _apiBaseClient = API_BASE_URL.replace(/\/$/, '');
-} else if (typeof window !== 'undefined') {
-  // Default to origin + /api when running in the browser
-  _apiBaseClient = joinBaseAndPath(window.location.origin || '', 'api');
-}
-
-const _baseUrl = typeof window === 'undefined' ? _apiBaseServer : _apiBaseClient;
-
-async function fetchJson(path: string, opts: RequestInit = {}) {
-  const res = await fetch(joinBaseAndPath(_baseUrl, path), {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    ...opts,
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(text || res.statusText || `HTTP ${res.status}`);
-  }
-  if (res.status === 204) return null;
-  return res.json();
-}
 
 export function useGetEntriesQuery(
   params?: Record<string, unknown>,

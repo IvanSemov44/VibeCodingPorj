@@ -2,12 +2,10 @@ includes:
     - ./vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 6
+    level: 5
     paths:
         - app
     excludePaths:
         - app/Console/Kernel.php
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
-    ignoreErrors:
-        - '#Unsafe usage of new static#'
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false

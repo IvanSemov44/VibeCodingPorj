@@ -8,7 +8,7 @@ import {
   useGetTagsQuery,
 } from '../../../store/api';
 import ToolForm from '../../../components/ToolForm';
-import { Tool, Category, Tag, Role } from '../../../lib/types';
+import { Tool } from '../../../lib/types';
 
 export default function EditToolPage(): React.ReactElement | null {
   const router = useRouter();
@@ -23,11 +23,11 @@ export default function EditToolPage(): React.ReactElement | null {
   useEffect(() => {
     if (!id) return;
     (async () => {
-      try {
-        await csrfTrigger().unwrap();
-      } catch (err) {
-        // ignore
-      }
+        try {
+          await csrfTrigger().unwrap();
+        } catch {
+          // ignore
+        }
     })();
   }, [id, csrfTrigger]);
 

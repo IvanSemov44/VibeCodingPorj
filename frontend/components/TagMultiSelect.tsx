@@ -36,7 +36,7 @@ export default function TagMultiSelect({
       return;
     }
     if (q?.data && Array.isArray(q.data)) {
-      setOptions(q.data.map((t: any) => t.name));
+      setOptions(q.data.map((t: { name: string }) => t.name));
     }
     // no manual unmount handling required; React Query manages lifecycle
   }, [externalOptions, q?.data]);

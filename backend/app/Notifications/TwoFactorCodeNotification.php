@@ -17,8 +17,7 @@ class TwoFactorCodeNotification extends Notification implements ShouldQueue
     public function __construct(
         private string $code,
         private string $method
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
@@ -39,7 +38,7 @@ class TwoFactorCodeNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject('Your Two-Factor Authentication Code')
             ->line('Your verification code is: '.$this->code)
             ->line('This code will expire in 5 minutes.')

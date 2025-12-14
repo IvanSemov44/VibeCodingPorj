@@ -25,7 +25,7 @@ export default function TwoFactorSetup() {
         if ('recovery_codes' in result) setRecoveryCodes(result.recovery_codes ?? null);
         // let query invalidate/refresh
       }
-    } catch (err: unknown) {
+    } catch {
       // set error display via local state if needed
       // result error is available on enableMutation.error
     }

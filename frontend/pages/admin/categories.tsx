@@ -26,7 +26,7 @@ export default function AdminCategories(): React.ReactElement {
     csrfTrigger()
       .unwrap()
       .catch(() => {});
-  }, []);
+  }, [csrfTrigger]);
 
   useEffect(() => {
     setCategories(categoriesData || []);

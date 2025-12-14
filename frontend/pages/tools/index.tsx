@@ -1,33 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  useGetToolsQuery,
-  useGetCategoriesQuery,
-  useGetRolesQuery,
-  useGetTagsQuery,
-} from '../../store/api';
-import { Tool, Category, Tag, Role, PaginationMeta } from '../../lib/types';
+import { useGetToolsQuery, useGetCategoriesQuery, useGetRolesQuery, useGetTagsQuery } from '../../store/api';
 import Link from 'next/link';
 import ToolEntry from '../../components/ToolEntry';
 import TagMultiSelect from '../../components/TagMultiSelect';
 
 export default function ToolsIndex(): React.ReactElement {
-  const [tools, setTools] = useState<Tool[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const [meta, setMeta] = useState<PaginationMeta | null>(null);
+
   const [page, setPage] = useState<number>(1);
-  const [perPage] = useState<number>(8);
+  const perPage = 8;
   const [q, setQ] = useState<string>('');
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
+  const { data: categoriesRes } = useGetCategoriesQuery();
+  const categories = categoriesRes?.data || [];
+  const { data: rolesRes } = useGetRolesQuery();
+  const roles = rolesRes?.data || [];
+  const { data: tagsRes } = useGetTagsQuery();
+  const tags = tagsRes?.data || [];
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
 
   useEffect(() => {
     // initial load handled by React Query hooks below
-     
+
   }, []);
 
   // Debounce search input
@@ -38,7 +32,7 @@ export default function ToolsIndex(): React.ReactElement {
   }, [q]);
 
   const params = useMemo(() => {
-    const p: Record<string, any> = {};
+    const p: Record<string, string | number> = {};
     if (qDebounced) p.q = qDebounced;
     if (page && page > 1) p.page = page;
     if (selectedCategory) p.category = selectedCategory;
@@ -103,7 +97,7 @@ export default function ToolsIndex(): React.ReactElement {
           onChange={(e) => {
             setSelectedCategory(e.target.value);
             setPage(1);
-            load(1);
+            refetch();
           }}
           className="p-2 rounded-md border border-gray-200"
         >
@@ -119,7 +113,7 @@ export default function ToolsIndex(): React.ReactElement {
           onChange={(e) => {
             setSelectedRole(e.target.value);
             setPage(1);
-            load(1);
+            refetch();
           }}
           className="p-2 rounded-md border border-gray-200"
         >
@@ -136,7 +130,7 @@ export default function ToolsIndex(): React.ReactElement {
             onChange={(vals) => {
               setSelectedTags(vals);
               setPage(1);
-              load(1);
+              refetch();
             }}
             allowCreate={false}
             placeholder="Filter tags..."

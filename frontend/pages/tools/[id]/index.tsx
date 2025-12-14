@@ -4,23 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useGetToolQuery } from '../../../store/api';
 
-type Category = { id: number; name: string };
-type Role = { id: number; name: string };
-type Tag = { id: number; name: string };
-
-type Tool = {
-  id: number | string;
-  name?: string;
-  description?: string;
-  url?: string;
-  docs_url?: string | null;
-  usage?: string | null;
-  examples?: string | null;
-  categories?: Category[];
-  roles?: Role[];
-  tags?: Tag[];
-  screenshots?: string[];
-};
+// types in this file are inferred from API responses — no local aliases needed
 
 export default function ToolDetailPage(): React.ReactElement | null {
   const router = useRouter();

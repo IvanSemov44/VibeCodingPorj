@@ -6,7 +6,7 @@ import {
   useGetRolesQuery,
   useGetTagsQuery,
 } from '../../store/api';
-import { Category, Tag, Role } from '../../lib/types';
+// types are inferred from API responses where needed
 
 export default function NewToolPage(): React.ReactElement {
   const [csrfTrigger] = useGetCsrfMutation();
