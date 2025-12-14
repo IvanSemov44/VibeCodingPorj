@@ -1,27 +1,30 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useGetToolsQuery, useGetCategoriesQuery, useGetRolesQuery, useGetTagsQuery } from '../../store/api';
+import {
+  useGetToolsQuery,
+  useGetCategoriesQuery,
+  useGetRolesQuery,
+  useGetTagsQuery,
+} from '../../store/api2';
 import Link from 'next/link';
 import ToolEntry from '../../components/ToolEntry';
 import TagMultiSelect from '../../components/TagMultiSelect';
 
 export default function ToolsIndex(): React.ReactElement {
-
   const [page, setPage] = useState<number>(1);
   const perPage = 8;
   const [q, setQ] = useState<string>('');
   const { data: categoriesRes } = useGetCategoriesQuery();
-  const categories = categoriesRes?.data || [];
+  const categories = categoriesRes || [];
   const { data: rolesRes } = useGetRolesQuery();
-  const roles = rolesRes?.data || [];
+  const roles = rolesRes || [];
   const { data: tagsRes } = useGetTagsQuery();
-  const tags = tagsRes?.data || [];
+  const tags = tagsRes || [];
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
 
   useEffect(() => {
     // initial load handled by React Query hooks below
-
   }, []);
 
   // Debounce search input

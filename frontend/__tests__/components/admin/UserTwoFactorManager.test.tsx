@@ -10,22 +10,23 @@ vi.mock('qrcode', async () => ({
 }));
 
 // mock store hooks
-vi.mock('../../../store/api', () => ({
+vi.mock('../../../store/api2', () => ({
   useGetUser2faQuery: vi.fn(),
   useSetUser2faMutation: vi.fn(),
   useDisableUser2faMutation: vi.fn(),
 }));
-
-import UserTwoFactorManager from '../../../../frontend/components/admin/UserTwoFactorManager';
-import { renderWithProviders } from '../../../../frontend/tests/test-utils';
+import UserTwoFactorManager from '../../../components/admin/UserTwoFactorManager';
+import { renderWithProviders } from '../../../tests/test-utils';
 import {
   useGetUser2faQuery,
   useSetUser2faMutation,
   useDisableUser2faMutation,
-} from '../../../store/api';
+} from '../../../store/api2';
 
 describe('UserTwoFactorManager', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   test('shows loading state', () => {
     (useGetUser2faQuery as unknown as any).mockReturnValue({
@@ -175,12 +176,4 @@ describe('UserTwoFactorManager', () => {
     expect(getByText(/bad/)).toBeTruthy();
   });
 });
-import React from 'react';
-import { renderWithProviders } from '../../../tests/test-utils';
-import UserTwoFactorManager from '../../../components/admin/UserTwoFactorManager';
 
-test('renders UserTwoFactorManager without crashing', () => {
-  const { getByText } = renderWithProviders(<UserTwoFactorManager />);
-  // basic smoke assertion — component may render headings or buttons
-  expect(document.body).toBeTruthy();
-});

@@ -3,6 +3,6 @@ import { renderWithProviders } from '../../../tests/test-utils';
 import WelcomeHeader from '../../../components/dashboard/WelcomeHeader';
 
 test('renders WelcomeHeader smoke', () => {
-  const { container } = renderWithProviders(<WelcomeHeader />);
+  const { container } = renderWithProviders(<WelcomeHeader userName="Test User" />);
   expect(container).toBeTruthy();
 });

@@ -10,7 +10,7 @@ describe('ErrorBoundary extra coverage', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     renderWithProviders(
       <ErrorBoundary fallback={<div>custom fallback</div>} onError={onError}>
-        <Bomb />
+        <Bomb explode />
       </ErrorBoundary>,
     );
 
@@ -20,13 +20,13 @@ describe('ErrorBoundary extra coverage', () => {
   });
 
   test('shows development error details when NODE_ENV=development', async () => {
-    const prev = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    const prev = (process as any).env.NODE_ENV;
+    (process as any).env.NODE_ENV = 'development';
     try {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       renderWithProviders(
         <ErrorBoundary>
-          <Bomb />
+          <Bomb explode />
         </ErrorBoundary>,
       );
 
@@ -34,7 +34,7 @@ describe('ErrorBoundary extra coverage', () => {
       expect(await screen.findByText(/Error Details/i)).toBeInTheDocument();
       consoleSpy.mockRestore();
     } finally {
-      process.env.NODE_ENV = prev;
+      (process as any).env.NODE_ENV = prev;
     }
   });
 });

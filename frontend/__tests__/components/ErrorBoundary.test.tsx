@@ -18,7 +18,7 @@ describe('ErrorBoundary', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     rerender(
       <ErrorBoundary>
-        <Bomb />
+        <Bomb explode />
       </ErrorBoundary>,
     );
 

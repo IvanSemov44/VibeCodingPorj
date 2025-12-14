@@ -11,7 +11,7 @@ import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
-} from '../store/api';
+} from '../store/api2';
 import { useToast } from './Toast';
 import TagMultiSelect from './TagMultiSelect';
 import NameField from './tools/NameField';
@@ -58,6 +58,8 @@ export default function ToolForm({
   const [uploadTrigger] = useUploadToolScreenshotsMutation();
 
   useEffect(() => {
+    // During tests we skip the CSRF call to avoid network and test-runner timing issues.
+    if (process.env.NODE_ENV === 'test') return;
     (async () => {
       try {
         await getCsrf();

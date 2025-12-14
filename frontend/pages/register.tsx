@@ -7,7 +7,7 @@ import Alert from '../components/Alert';
 import AuthLayout from '../components/AuthLayout';
 import { useForm } from '../hooks/useForm';
 import { ROUTES, VALIDATION } from '../lib/constants';
-import { useGetCsrfMutation, useRegisterMutation } from '../store/api';
+import { useGetCsrfMutation, useRegisterMutation } from '../store/api2';
 
 export default function RegisterPage(): React.ReactElement {
   const router = useRouter();

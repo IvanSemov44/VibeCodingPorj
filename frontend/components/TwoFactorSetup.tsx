@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import QRCode from 'qrcode';
-import { useGet2faSecretQuery, useEnable2faMutation } from '../store/api';
+import { useGet2faSecretQuery, useEnable2faMutation } from '../store/api2';
 
 type SecretResp = {
   provisioning_uri: string | null;
@@ -53,7 +53,10 @@ export default function TwoFactorSetup() {
     return (
       <div>
         <p>No 2FA setup available.</p>
-        <button onClick={enableTotp} disabled={enableMutation.isLoading}>
+        <button
+          onClick={enableTotp}
+          disabled={Boolean((enableMutation as unknown as { isLoading?: boolean })?.isLoading)}
+        >
           Enable TOTP 2FA
         </button>
         {recoveryCodes && (

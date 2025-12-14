@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useGetUserQuery } from '../store/api';
+import { useGetUserQuery } from '../store/api2';
 import type { User } from '../lib/types';
 import { ROUTES } from '../lib/constants';
 
@@ -30,7 +30,10 @@ export function useAuth(requireAuth = true): { user: User | null; loading: boole
             })
             .filter(Boolean) as string[];
         }
-        const normalizedUser = ({ ...(obj as unknown as User), roles: normalizedRoles ?? (obj.roles as unknown as string[] | undefined) } as unknown) as User;
+        const normalizedUser = {
+          ...(obj as unknown as User),
+          roles: normalizedRoles ?? (obj.roles as unknown as string[] | undefined),
+        } as unknown as User;
         setUser(normalizedUser);
         return;
       }

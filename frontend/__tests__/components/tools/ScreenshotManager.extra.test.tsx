@@ -100,7 +100,7 @@ describe('ScreenshotManager edge cases', () => {
   test('delete with toolId performs API delete and updates', async () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
-    (deleteToolScreenshot as jest.MockedFunction<any>).mockResolvedValue({ screenshots: ['b'] });
+    (deleteToolScreenshot as any).mockResolvedValue({ screenshots: ['b'] });
 
     const { getByText } = renderWithProviders(
       <Formik initialValues={{ screenshots: ['a', 'b'] }} onSubmit={() => {}}>
@@ -132,10 +132,10 @@ describe('ScreenshotManager edge cases', () => {
     const ref = { current: null } as any;
 
     // first call rejects with object having status 401
-    (deleteToolScreenshot as jest.MockedFunction<any>)
+    (deleteToolScreenshot as any)
       .mockRejectedValueOnce({ status: 401 })
       .mockResolvedValueOnce({ screenshots: ['b'] });
-    (getCsrf as jest.MockedFunction<any>).mockResolvedValue({});
+    (getCsrf as any).mockResolvedValue({});
 
     renderWithProviders(
       <Formik initialValues={{ screenshots: ['a', 'b'] }} onSubmit={() => {}}>
@@ -166,9 +166,7 @@ describe('ScreenshotManager edge cases', () => {
   test('delete error shows alert', async () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
-    (deleteToolScreenshot as jest.MockedFunction<any>).mockRejectedValue(
-      new Error('delete-failed'),
-    );
+    (deleteToolScreenshot as any).mockRejectedValue(new Error('delete-failed'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     renderWithProviders(
       <Formik initialValues={{ screenshots: ['a'] }} onSubmit={() => {}}>

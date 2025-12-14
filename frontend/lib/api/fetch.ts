@@ -73,7 +73,7 @@ export async function parseListResponse<T>(res: Response) {
 
 export async function getCsrf(): Promise<Response> {
   try {
-    const res = await fetchWithAuth(`${BASE}${API_ENDPOINTS.CSRF}`);
+    const res = await fetchWithAuth(API_ENDPOINTS.CSRF);
     const cookieVal = getCookie('XSRF-TOKEN');
     if (cookieVal) csrfToken = cookieVal;
     return res;

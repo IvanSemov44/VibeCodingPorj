@@ -1,5 +1,12 @@
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
-export default function Bomb(): ReactElement {
-  throw new Error('boom');
+type BombProps = {
+  explode?: boolean;
+};
+
+export default function Bomb({ explode = false }: BombProps): ReactElement | null {
+  if (explode) {
+    throw new Error('boom');
+  }
+  return <div data-testid="bomb">safe</div>;
 }

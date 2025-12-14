@@ -8,7 +8,7 @@ const addToast = vi.fn();
 vi.mock('../../components/Toast', () => ({ useToast: () => ({ addToast }) }));
 
 // mock react-query hooks used inside ToolForm
-vi.mock('../../store/api', () => ({
+vi.mock('../../store/api2', () => ({
   useCreateToolMutation: vi.fn(),
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
@@ -23,7 +23,7 @@ import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
-} from '../../store/api';
+} from '../../store/api2';
 
 describe('ToolForm branch coverage', () => {
   beforeEach(() => {

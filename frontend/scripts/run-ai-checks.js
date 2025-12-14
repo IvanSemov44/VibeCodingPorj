@@ -17,7 +17,7 @@ function readConfig(dir) {
 function runCmd(cmd) {
   return new Promise((resolve) => {
     const p = exec(cmd, { maxBuffer: 1024 * 1024 }, (err, stdout, stderr) => {
-      resolve({ cmd, code: err ? (err.code || 1) : 0, stdout: stdout || '', stderr: stderr || '' });
+      resolve({ cmd, code: err ? err.code || 1 : 0, stdout: stdout || '', stderr: stderr || '' });
     });
     p.stdout && p.stdout.pipe(process.stdout);
     p.stderr && p.stderr.pipe(process.stderr);
@@ -79,7 +79,11 @@ async function main() {
   console.log('=== AI-CHECKS-SUMMARY-END ===\n');
 
   // exit with non-zero if any command failed with non-zero
-  const failed = results.some((r) => r.code !== 0 && (r.cmd.toLowerCase().includes('typecheck') || r.cmd.toLowerCase().includes('tsc')));
+  const failed = results.some(
+    (r) =>
+      r.code !== 0 &&
+      (r.cmd.toLowerCase().includes('typecheck') || r.cmd.toLowerCase().includes('tsc')),
+  );
   process.exit(failed ? 3 : 0);
 }
 

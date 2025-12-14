@@ -1,8 +1,11 @@
+import { vi } from 'vitest';
+// mock store hooks before importing modules that use them
+vi.mock('../../store/api2', () => ({ useDeleteToolMutation: vi.fn() }));
 import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import ToolEntry from '../../components/ToolEntry';
-import * as api from '../../store/api';
-import { describe, test, expect, vi } from 'vitest';
+import * as api from '../../store/api2';
+import { describe, test, expect } from 'vitest';
 
 describe('ToolEntry', () => {
   test('renders and handles delete', async () => {
@@ -10,7 +13,7 @@ describe('ToolEntry', () => {
     const onDeleted = vi.fn();
 
     const deleteTrigger = vi.fn().mockReturnValue({ unwrap: () => Promise.resolve() });
-    (api as any).useDeleteToolMutation = () => [deleteTrigger, { isLoading: false }];
+    vi.mocked(api.useDeleteToolMutation).mockReturnValue([deleteTrigger, { isLoading: false }] as any);
     const oldConfirm = global.confirm;
     (global as any).confirm = () => true;
 

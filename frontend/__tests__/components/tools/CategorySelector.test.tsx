@@ -30,7 +30,7 @@ describe('CategorySelector', () => {
       <Formik
         initialValues={{ categories: [] }}
         initialErrors={{ categories: 'Pick at least one' }}
-        initialTouched={{ categories: true }}
+        initialTouched={{ categories: true } as any}
         onSubmit={() => {}}
       >
         <CategorySelector categories={categories} selectedCategories={[]} onToggle={() => {}} />

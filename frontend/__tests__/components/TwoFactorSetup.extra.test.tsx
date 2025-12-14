@@ -5,11 +5,13 @@ import { vi } from 'vitest';
 // qrcode mock variations will be defined per-test using vi.doMock inlined factories
 
 describe('TwoFactorSetup extra branches', () => {
-  beforeEach(() => vi.resetModules());
+  beforeEach(() => {
+    vi.resetModules();
+  });
 
   test('shows Error when query returns error', async () => {
     // mock store hooks with an error
-    vi.doMock('../../store/api', () => ({
+    vi.doMock('../../store/api2', () => ({
       useGet2faSecretQuery: () => ({
         data: null,
         isLoading: false,
@@ -39,7 +41,7 @@ describe('TwoFactorSetup extra branches', () => {
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    vi.doMock('../../store/api', () => ({
+    vi.doMock('../../store/api2', () => ({
       useGet2faSecretQuery: () => ({
         data: { provisioning_uri: 'otpauth://x', secret_mask: 'm' },
         isLoading: false,
@@ -66,7 +68,7 @@ describe('TwoFactorSetup extra branches', () => {
     const mockUnwrap = vi.fn().mockResolvedValue({ recovery_codes: ['a', 'b'] });
     const enableFn = vi.fn().mockReturnValue({ unwrap: mockUnwrap });
 
-    vi.doMock('../../store/api', () => ({
+    vi.doMock('../../store/api2', () => ({
       useGet2faSecretQuery: () => ({ data: null, isLoading: false, error: null, refetch: vi.fn() }),
       useEnable2faMutation: () => [enableFn, { isLoading: false, error: null }],
     }));

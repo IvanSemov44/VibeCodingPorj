@@ -11,7 +11,7 @@ import {
   useGetStatsQuery,
   useCreateEntryMutation,
   useDeleteEntryMutation,
-} from '../store/api';
+} from '../store/api2';
 
 export interface JournalFilters {
   search?: string;
@@ -64,8 +64,11 @@ export function useJournal(
   const entries = (entriesQuery.data as JournalEntry[]) ?? [];
   const stats = (statsQuery.data as JournalStats) ?? null;
   type MutationResultLike = { isLoading?: boolean; error?: { message?: string } | null };
-  const loading =
-    entriesQuery.isLoading || (createResult as MutationResultLike).isLoading || (deleteResult as MutationResultLike).isLoading;
+  const loading = Boolean(
+    entriesQuery.isLoading ||
+      (createResult as MutationResultLike).isLoading ||
+      (deleteResult as MutationResultLike).isLoading,
+  );
   const error =
     (entriesQuery.error as unknown as { message?: string })?.message ??
     (createResult as MutationResultLike)?.error?.message ??

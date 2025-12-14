@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useGetToolQuery } from '../../../store/api';
+import { useGetToolQuery } from '../../../store/api2';
 
 // types in this file are inferred from API responses — no local aliases needed
 
@@ -27,15 +27,20 @@ export default function ToolDetailPage(): React.ReactElement | null {
     );
   if (!tool) return null;
 
+  const t = tool as unknown as Record<string, unknown>;
+  const url = typeof t.url === 'string' ? t.url : undefined;
+  const name = t.name == null ? '' : String(t.name);
+  const description = t.description == null ? '' : String(t.description);
+
   return (
     <div className="max-w-[900px] my-6 mx-auto">
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h1 className="m-0">{tool.name}</h1>
-          <div className="text-gray-500">{tool.description}</div>
+          <h1 className="m-0">{name}</h1>
+          <div className="text-gray-500">{description}</div>
         </div>
         <div className="flex gap-2">
-          <a href={tool.url} target="_blank" rel="noreferrer">
+          <a href={url} target="_blank" rel="noreferrer">
             <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
               Visit
             </button>
@@ -50,9 +55,9 @@ export default function ToolDetailPage(): React.ReactElement | null {
 
       <div className="mt-4">
         <strong>Documentation:</strong>{' '}
-        {tool.docs_url ? (
+        {t.docs_url ? (
           <a
-            href={tool.docs_url}
+            href={t.docs_url as string}
             target="_blank"
             rel="noreferrer"
             className="text-accent hover:text-accent-hover"
@@ -66,29 +71,40 @@ export default function ToolDetailPage(): React.ReactElement | null {
 
       <div className="mt-4">
         <strong>Usage</strong>
-        <div className="mt-2">{tool.usage || '—'}</div>
+        <div className="mt-2">{t.usage ? String(t.usage) : '—'}</div>
       </div>
 
-      {tool.examples && (
+      {Boolean(t.examples) && (
         <div className="mt-4">
           <strong>Examples</strong>
-          <div className="mt-2">{tool.examples}</div>
+          <div className="mt-2">{String(t.examples)}</div>
         </div>
       )}
 
       <div className="mt-4">
         <strong>Categories</strong>
-        <div className="mt-2">{(tool.categories || []).map((c) => c.name).join(', ') || '—'}</div>
+        <div className="mt-2">
+          {((t.categories as unknown as Array<{ name?: string }>) || [])
+            .map((c) => c.name)
+            .join(', ') || '—'}
+        </div>
       </div>
 
       <div className="mt-4">
         <strong>Roles</strong>
-        <div className="mt-2">{(tool.roles || []).map((r) => r.name).join(', ') || '—'}</div>
+        <div className="mt-2">
+          {((t.roles as unknown as Array<{ name?: string }>) || []).map((r) => r.name).join(', ') ||
+            '—'}
+        </div>
       </div>
 
       <div className="mt-4">
         <strong>Tags</strong>
-        <div className="mt-2">{(tool.tags || []).map((t) => t.name).join(', ') || '—'}</div>
+        <div className="mt-2">
+          {((t.tags as unknown as Array<{ name?: string }>) || [])
+            .map((t2) => t2.name)
+            .join(', ') || '—'}
+        </div>
       </div>
 
       {tool.screenshots && tool.screenshots.length > 0 && (

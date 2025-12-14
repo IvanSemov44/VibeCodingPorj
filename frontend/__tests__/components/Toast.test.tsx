@@ -9,7 +9,9 @@ function TestAdd() {
 }
 
 describe('Toast', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('shows a toast when addToast is called and can be dismissed', async () => {
     renderWithProviders(

@@ -4,7 +4,7 @@ import { server } from './mockServer';
 
 // Provide a global React variable for tests that expect the classic JSX runtime
 import * as React from 'react';
-((globalThis as unknown) as { React?: typeof React }).React = React;
+(globalThis as unknown as { React?: typeof React }).React = React;
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 afterEach(() => server.resetHandlers());

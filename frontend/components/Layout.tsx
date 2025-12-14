@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/api';
+import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/api2';
 import { useAppTheme } from '../hooks/useAppTheme';
 import type { User } from '../lib/types';
 
@@ -17,7 +17,9 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
     async function fetchUser() {
       try {
-        await csrfTrigger().unwrap().catch(() => {});
+        await csrfTrigger()
+          .unwrap()
+          .catch(() => {});
         const res = await refetch();
         const u = res?.data ?? data;
         if (!mounted) return;

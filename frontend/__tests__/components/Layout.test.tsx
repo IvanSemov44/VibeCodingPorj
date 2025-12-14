@@ -5,7 +5,7 @@ import Layout from '../../components/Layout';
 import * as api from '../../lib/api';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
-vi.mock('../../store/api', () => ({
+vi.mock('../../store/api2', () => ({
   useGetUserQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }),
   useGetCsrfMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],
   useLogoutMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],

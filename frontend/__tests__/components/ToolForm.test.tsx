@@ -4,7 +4,7 @@ import { renderWithProviders } from '../../tests/test-utils';
 import { vi } from 'vitest';
 
 // mock react-query hooks used inside ToolForm
-vi.mock('../../store/api', () => ({
+vi.mock('../../store/api2', () => ({
   useCreateToolMutation: vi.fn(),
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
@@ -19,7 +19,7 @@ import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
-} from '../../store/api';
+} from '../../store/api2';
 
 describe('ToolForm', () => {
   beforeEach(() => {

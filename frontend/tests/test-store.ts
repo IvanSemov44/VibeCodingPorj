@@ -1,18 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
-import type { PreloadedState } from '@reduxjs/toolkit';
 
 /**
  * Create a test store with optional reducers and preloadedState.
  * Tests can pass a reducers map to exercise slices during integration tests.
  */
-export function createTestStore(
-  reducers: Record<string, unknown> = {},
-  preloadedState?: PreloadedState<Record<string, unknown>>,
-) {
+export function createTestStore(reducers: Record<string, any> = {}, preloadedState?: any) {
   return configureStore({
-    reducer: reducers,
-    preloadedState,
-  });
+    // keep this flexible for tests; cast to any to satisfy configureStore signature
+    reducer: reducers as any,
+    preloadedState: preloadedState as any,
+  }) as any;
 }
 
 export type TestStore = ReturnType<typeof createTestStore>;

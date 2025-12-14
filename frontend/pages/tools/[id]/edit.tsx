@@ -6,7 +6,7 @@ import {
   useGetRolesQuery,
   useGetCsrfMutation,
   useGetTagsQuery,
-} from '../../../store/api';
+} from '../../../store/api2';
 import ToolForm from '../../../components/ToolForm';
 import { Tool } from '../../../lib/types';
 
@@ -23,11 +23,11 @@ export default function EditToolPage(): React.ReactElement | null {
   useEffect(() => {
     if (!id) return;
     (async () => {
-        try {
-          await csrfTrigger().unwrap();
-        } catch {
-          // ignore
-        }
+      try {
+        await csrfTrigger().unwrap();
+      } catch {
+        // ignore
+      }
     })();
   }, [id, csrfTrigger]);
 

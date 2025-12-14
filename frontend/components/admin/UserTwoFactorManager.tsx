@@ -4,7 +4,7 @@ import {
   useGetUser2faQuery,
   useSetUser2faMutation,
   useDisableUser2faMutation,
-} from '../../store/api';
+} from '../../store/api2';
 
 type Status = {
   two_factor_type: string | null;

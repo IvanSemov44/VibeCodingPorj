@@ -7,7 +7,17 @@ import type { Store } from '@reduxjs/toolkit';
 
 export function createQueryClientForTest() {
   return new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+    defaultOptions: {
+      queries: {
+        retry: false,
+        refetchInterval: false,
+        cacheTime: 0,
+        staleTime: Infinity,
+      },
+      mutations: {
+        retry: false,
+      },
+    },
   });
 }
 

@@ -30,11 +30,13 @@ export function useToast() {
   const dispatch = useDispatch();
   const addToast = (message: string, type: ToastType = 'info', duration = 3000) => {
     // dispatch action (slice's prepare sets id)
-    const action = addToastAction(message, type, duration) as unknown as { payload: ToastItem };
-    dispatch(action);
+    const action = addToastAction(message, type, duration) as ReturnType<typeof addToastAction>;
+    // cast to a minimal action shape so Dispatch typing is satisfied without using `any`
+    const dispatched = action as unknown as { type: string; payload?: ToastItem };
+    dispatch(dispatched as unknown as ReturnType<typeof addToastAction>);
     // schedule removal
     if (duration > 0) {
-      const id = action.payload.id as number;
+      const id = dispatched.payload?.id as number;
       setTimeout(() => dispatch(removeToastAction(id)), duration);
     }
   };

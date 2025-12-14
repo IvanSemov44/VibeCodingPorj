@@ -27,11 +27,7 @@ function runCommands() {
   running = true;
   log('Changes detected — running typecheck, lint (fix), and prettier...');
 
-  const cmds = [
-    'npm run typecheck',
-    'npm run lint:fix',
-    'npm run format'
-  ];
+  const cmds = ['npm run typecheck', 'npm run lint:fix', 'npm run format'];
 
   const runSequential = (list) => {
     if (list.length === 0) {

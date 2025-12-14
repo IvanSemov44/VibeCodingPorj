@@ -1,10 +1,6 @@
 {
   "markerPatterns": ["[ai]", "[auto]"],
   "authorEmailPatterns": ["ai-agent", "bot@", "automation@"],
-  "commands": [
-    "npm run typecheck",
-    "npm run lint:fix",
-    "npm run format"
-  ],
+  "commands": ["npm run typecheck", "npm run lint:fix", "npm run format"],
   "amendOnFix": true
 }

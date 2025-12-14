@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useGetTagsQuery } from '../store/api';
+import { useGetTagsQuery } from '../store/api2';
 
 type ExternalOption = string | { name?: string };
 

@@ -3,7 +3,7 @@ import { renderWithProviders } from '../../../tests/test-utils';
 import ProfileCard from '../../../components/dashboard/ProfileCard';
 
 const mockUser = {
-  id: 'u1',
+  id: 1,
   name: 'Test User',
   email: 'test@example.com',
   roles: ['admin', 'editor'],

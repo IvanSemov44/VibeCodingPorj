@@ -3,8 +3,8 @@ import { renderWithProviders } from '../../../tests/test-utils';
 import StatsGrid from '../../../components/dashboard/StatsGrid';
 
 const mockStats = [
-  { label: 'Users', value: 123, color: '#4caf50', icon: <div>icon</div> },
-  { label: 'Sessions', value: 456, color: '#2196f3', icon: <div>icon</div> },
+  { label: 'Users', value: 123, color: '#4caf50', icon: 'icon' },
+  { label: 'Sessions', value: 456, color: '#2196f3', icon: 'icon' },
 ];
 
 test('renders StatsGrid smoke', () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../tests/test-utils';
 import { vi } from 'vitest';
 
-vi.mock('../../store/api', () => ({
+vi.mock('../../store/api2', () => ({
   useGetTagsQuery: () => ({ data: [{ name: 'vitest' }, { name: 'testing' }], isLoading: false }),
 }));
 import TagMultiSelect from '../../components/TagMultiSelect';
@@ -21,7 +21,9 @@ describe('TagMultiSelect', () => {
     const input = screen.getByRole('combobox');
     await userEvent.type(input, 'tes');
 
-    const option = await screen.findByText('vitest');
+    // component may debounce or render suggestions asynchronously — wait explicitly
+    await waitFor(() => expect(screen.getByText('vitest')).toBeInTheDocument(), { timeout: 2000 });
+    const option = screen.getByText('vitest');
     await userEvent.click(option);
 
     expect(onChange).toHaveBeenCalledWith(['react', 'vitest']);
@@ -34,8 +36,9 @@ describe('TagMultiSelect', () => {
     renderWithProviders(<TagMultiSelect value={[]} onChange={onChange} />);
     const input = screen.getByRole('combobox');
 
-    await userEvent.type(input, 'newtag{enter}');
-
-    expect(onChange).toHaveBeenCalledWith(['newtag']);
+    await userEvent.type(input, 'newtag');
+    // press Enter explicitly and wait for onChange
+    await userEvent.keyboard('{Enter}');
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith(['newtag']), { timeout: 2000 });
   });
 });

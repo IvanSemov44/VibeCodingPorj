@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useGetCsrfMutation, useLoginMutation } from '../store/api';
+import { useGetCsrfMutation, useLoginMutation } from '../store/api2';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
