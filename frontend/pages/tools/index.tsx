@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { getTools, getCategories, getRoles, getTags } from '../../lib/api';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  useGetToolsQuery,
+  useGetCategoriesQuery,
+  useGetRolesQuery,
+  useGetTagsQuery,
+} from '../../store/api';
 import { Tool, Category, Tag, Role, PaginationMeta } from '../../lib/types';
 import Link from 'next/link';
 import ToolEntry from '../../components/ToolEntry';
@@ -21,53 +26,41 @@ export default function ToolsIndex(): React.ReactElement {
   const [selectedRole, setSelectedRole] = useState<string>('');
 
   useEffect(() => {
-    load(page);
-    (async () => {
-      try {
-        const c = await getCategories();
-        setCategories(c || []);
-        const r = await getRoles();
-        setRoles(r || []);
-        const t = await getTags();
-        setTags(t || []);
-      } catch (err) {
-        console.error('Failed to load categories/roles/tags', err);
-      }
-    })();
+    // initial load handled by React Query hooks below
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function load(p = 1) {
-    setLoading(true);
-    try {
-      const params: Record<string, string | number | boolean> = {};
-      if (q) params.q = q;
-      if (p && p > 1) params.page = p;
-      if (selectedCategory) params.category = selectedCategory;
-      if (selectedRole) params.role = selectedRole;
-      if (selectedTags && selectedTags.length > 0) params.tags = selectedTags.join(',');
-      params.per_page = perPage;
-      const res = await getTools(params);
-      setTools(res.data || []);
-      setMeta(res.meta || null);
-      const current = res.meta?.current_page ?? p;
-      setPage(current);
-      setError('');
-    } catch (err) {
-      console.error(err);
-      setError('Unable to load tools (network error)');
-    } finally {
-      setLoading(false);
-    }
-  }
+  // Debounce search input
+  const [qDebounced, setQDebounced] = useState(q);
+  useEffect(() => {
+    const t = setTimeout(() => setQDebounced(q), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  const params = useMemo(() => {
+    const p: Record<string, any> = {};
+    if (qDebounced) p.q = qDebounced;
+    if (page && page > 1) p.page = page;
+    if (selectedCategory) p.category = selectedCategory;
+    if (selectedRole) p.role = selectedRole;
+    if (selectedTags && selectedTags.length > 0) p.tags = selectedTags.join(',');
+    p.per_page = perPage;
+    return p;
+  }, [qDebounced, page, selectedCategory, selectedRole, selectedTags, perPage]);
+
+  const { data: toolsRes, isLoading, error: queryError, refetch } = useGetToolsQuery(params, {
+    keepPreviousData: true,
+  });
+
+  const toolsData = toolsRes?.data || [];
+  const metaData = toolsRes?.meta || null;
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setPage(1);
-      load(1);
-    }, 300);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (metaData && metaData.current_page) setPage(metaData.current_page);
+  }, [metaData]);
+
+  useEffect(() => {
+    setPage(1);
   }, [q]);
 
   function clearFilters() {
@@ -76,7 +69,7 @@ export default function ToolsIndex(): React.ReactElement {
     setSelectedRole('');
     setSelectedTags([]);
     setPage(1);
-    load(1);
+    refetch();
   }
 
   return (
@@ -155,45 +148,48 @@ export default function ToolsIndex(): React.ReactElement {
         </div>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div>Loading...</div>
-      ) : error ? (
-        <div className="p-3 bg-red-100 text-red-700 rounded-md">Unable to load tools. {error}</div>
+      ) : queryError ? (
+        <div className="p-3 bg-red-100 text-red-700 rounded-md">Unable to load tools. {String(queryError)}</div>
       ) : (
         <div>
-          {tools.length === 0 ? (
+          {toolsData.length === 0 ? (
             <div>No tools yet.</div>
           ) : (
             <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
-              {tools.map((t) => (
-                <ToolEntry key={t.id} tool={t} onDeleted={() => load()} />
+              {toolsData.map((t) => (
+                <ToolEntry key={t.id} tool={t} onDeleted={() => refetch()} />
               ))}
             </div>
           )}
 
-          {meta && meta.last_page > 1 && (
+          {metaData && metaData.last_page > 1 && (
             <div className="flex gap-2 mt-3 items-center flex-wrap">
               <button
-                onClick={() => load(Math.max(1, (meta.current_page || page) - 1))}
-                disabled={!((meta.current_page || page) > 1)}
+                onClick={() => {
+                  const pn = Math.max(1, (metaData.current_page || page) - 1);
+                  setPage(pn);
+                }}
+                disabled={!((metaData.current_page || page) > 1)}
                 className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               >
                 Prev
               </button>
-              {Array.from({ length: meta.last_page }, (_, i) => i + 1).map((pn) => (
+              {Array.from({ length: metaData.last_page }, (_, i) => i + 1).map((pn) => (
                 <button
                   key={pn}
-                  onClick={() => load(pn)}
+                  onClick={() => setPage(pn)}
                   className={`py-1.5 px-2 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors ${
-                    (meta.current_page || page) === pn ? 'font-bold' : 'font-normal'
+                    (metaData.current_page || page) === pn ? 'font-bold' : 'font-normal'
                   }`}
                 >
                   {pn}
                 </button>
               ))}
               <button
-                onClick={() => load(Math.min(meta.last_page, (meta.current_page || page) + 1))}
-                disabled={!((meta.current_page || page) < meta.last_page)}
+                onClick={() => setPage(Math.min(metaData.last_page, (metaData.current_page || page) + 1))}
+                disabled={!((metaData.current_page || page) < metaData.last_page)}
                 className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               >
                 Next

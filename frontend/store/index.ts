@@ -1,12 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import journalReducer from './journalSlice';
+// journal reducer removed - journal data now managed by React Query hooks
 import themeReducer from './themeSlice';
 import toastReducer from './toastSlice';
 
 // Redux store with journal and theme reducers
 export const store = configureStore({
   reducer: {
-    journal: journalReducer,
     theme: themeReducer,
     toast: toastReducer,
   },

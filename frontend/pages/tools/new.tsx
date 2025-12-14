@@ -1,28 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ToolForm from '../../components/ToolForm';
-import { getCsrf, getCategories, getRoles, getTags } from '../../lib/api';
+import { useGetCsrfMutation, useGetCategoriesQuery, useGetRolesQuery, useGetTagsQuery } from '../../store/api';
 import { Category, Tag, Role } from '../../lib/types';
 
 export default function NewToolPage(): React.ReactElement {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
+  const [csrfTrigger] = useGetCsrfMutation();
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: roles = [] } = useGetRolesQuery();
+  const { data: tags = [] } = useGetTagsQuery();
 
   useEffect(() => {
-    async function load() {
+    // ensure CSRF is initialized for forms
+    (async () => {
       try {
-        await getCsrf();
-        const [catsRes, rolesRes] = await Promise.all([getCategories(), getRoles()]);
-        setCategories(catsRes || []);
-        setRoles(rolesRes || []);
-        const t = await getTags();
-        setTags(t || []);
+        await csrfTrigger().unwrap();
       } catch {
-        // ignore list-loading errors
+        // ignore
       }
-    }
-    load();
-  }, []);
+    })();
+  }, [csrfTrigger]);
 
   return (
     <div className="max-w-[900px] my-6 mx-auto">
@@ -30,7 +26,7 @@ export default function NewToolPage(): React.ReactElement {
       <ToolForm
         categories={categories}
         roles={roles}
-        allTags={tags.map((t) => t.name)}
+        allTags={Array.isArray(tags) ? tags.map((t) => t.name) : []}
         onSaved={() => (window.location.href = '/tools')}
       />
     </div>

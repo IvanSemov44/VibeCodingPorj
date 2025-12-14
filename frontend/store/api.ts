@@ -82,6 +82,15 @@ export function useCreateToolMutation() {
   return [trigger, m as any] as const;
 }
 
+export function useGetToolsQuery(params?: Record<string, any>, options?: any) {
+  const key = ['tools', params ?? null];
+  return useQuery({
+    queryKey: key,
+    queryFn: async () => api.getTools(params ?? {}),
+    ...(options || {}),
+  } as any);
+}
+
 export function useUpdateToolMutation() {
   const qc = useQueryClient();
   const m = useMutation<any, Error, { id: string | number; body: any }>({

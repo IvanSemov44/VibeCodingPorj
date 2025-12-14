@@ -4,12 +4,25 @@ namespace Database\Seeders;
 
 use App\Models\Tool;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ToolSeeder extends Seeder
 {
     public function run(): void
     {
+        // Avoid running sample-heavy seeders in production by default
+        if (app()->environment('production') && ! filter_var(env('ALLOW_SEED_IN_PRODUCTION', 'false'), FILTER_VALIDATE_BOOLEAN)) {
+            return;
+        }
+
         // Create example tools (includes many entries to exercise pagination)
+        DB::transaction(function () {
+            $this->runTools();
+        });
+    }
+
+    protected function runTools(): void
+    {
         $tools = [
             ['name' => 'OpenAI Playground', 'url' => 'https://platform.openai.com/playground', 'docs_url' => 'https://platform.openai.com/docs', 'description' => 'Interactive environment to test OpenAI models', 'usage' => 'Use to test prompts and model behavior'],
             ['name' => 'Hugging Face', 'url' => 'https://huggingface.co', 'docs_url' => 'https://huggingface.co/docs', 'description' => 'Model hub and inference API', 'usage' => 'Search and host models'],
@@ -58,27 +71,26 @@ class ToolSeeder extends Seeder
             if (rand(0, 1) === 1) {
                 $t['screenshots'][] = "https://picsum.photos/seed/{$slug}-2/800/480";
             }
-
             $tool = Tool::firstOrCreate(['name' => $t['name']], $t);
 
-            // Attach a random category (or none)
+            // Attach a random category (or none) without detaching existing relations
             if (! empty($categoryIds)) {
                 $randCat = [$categoryIds[array_rand($categoryIds)]];
-                $tool->categories()->sync($randCat);
+                $tool->categories()->syncWithoutDetaching($randCat);
             }
 
-            // Attach 0-3 random tags
+            // Attach 0-3 random tags without detaching existing ones
             if (! empty($tagIds)) {
                 shuffle($tagIds);
                 $take = rand(0, min(3, count($tagIds)));
-                $tool->tags()->sync(array_slice($tagIds, 0, $take));
+                $tool->tags()->syncWithoutDetaching(array_slice($tagIds, 0, $take));
             }
 
-            // Attach 0-2 random roles
+            // Attach 0-2 random roles without detaching existing ones
             if (! empty($roleIds)) {
                 shuffle($roleIds);
                 $rTake = rand(0, min(2, count($roleIds)));
-                $tool->roles()->sync(array_slice($roleIds, 0, $rTake));
+                $tool->roles()->syncWithoutDetaching(array_slice($roleIds, 0, $rTake));
             }
         }
     }
