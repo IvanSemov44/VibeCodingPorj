@@ -1,3 +1,14 @@
+{{-- Removed: API-only backend. If you need this view later, restore from history. --}}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Disabled</title>
+    </head>
+    <body>
+        <h1>Disabled: API-only backend</h1>
+    </body>
+    </html>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
