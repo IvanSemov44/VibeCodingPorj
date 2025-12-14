@@ -1,7 +1,10 @@
 # Environment files
 .env.local
 .env.production
-/.env
+# Ignore local .env files (keep examples in repo)
+.env
+frontend/.env
+backend/.env
 
 # Node modules
 frontend/node_modules/
