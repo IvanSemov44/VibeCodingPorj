@@ -18,48 +18,17 @@ const themeSlice = createSlice({
   reducers: {
     setTheme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
-
-      // Update localStorage (side effect - consider using middleware in production)
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('theme', action.payload);
-      }
-
-      // Update DOM attribute
-      if (typeof document !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', action.payload);
-      }
     },
 
     toggleTheme: (state) => {
       const newTheme: Theme = state.theme === 'light' ? 'dark' : 'light';
       state.theme = newTheme;
-
-      // Update localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('theme', newTheme);
-      }
-
-      // Update DOM attribute
-      if (typeof document !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', newTheme);
-      }
     },
 
     initializeTheme: (state) => {
-      // Load theme from localStorage
-      if (typeof window !== 'undefined') {
-        const savedTheme = localStorage.getItem('theme') as Theme | null;
-        const theme = savedTheme || 'light';
-        state.theme = theme;
-        state.mounted = true;
-
-        // Set DOM attribute
-        if (typeof document !== 'undefined') {
-          document.documentElement.setAttribute('data-theme', theme);
-        }
-      } else {
-        state.mounted = true;
-      }
+      // initialize only marks mounted; reading persisted value should be
+      // performed by the `useTheme` hook on the client so reducers stay pure.
+      state.mounted = true;
     },
   },
 });
