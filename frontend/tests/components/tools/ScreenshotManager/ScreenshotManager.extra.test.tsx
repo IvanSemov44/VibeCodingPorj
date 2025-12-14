@@ -19,7 +19,7 @@ import ScreenshotManager from '../../../../components/tools/ScreenshotManager';
 import { renderWithProviders } from '../../../../tests/test-utils';
 import { deleteToolScreenshot, getCsrf } from '../../../../lib/api';
 
-describe.skip('ScreenshotManager edge cases', () => {
+describe('ScreenshotManager edge cases', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // default global confirm/alert

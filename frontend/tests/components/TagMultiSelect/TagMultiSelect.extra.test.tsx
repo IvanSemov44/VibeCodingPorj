@@ -6,7 +6,7 @@ vi.mock('../../../store/api2', () => ({
   useGetTagsQuery: () => ({ data: [{ name: 'tag1' }], isLoading: false }),
 }));
 
-test.skip('renders TagMultiSelect input', async () => {
+test('renders TagMultiSelect input', async () => {
   console.debug('TagMultiSelect.extra test start');
   render(<TagMultiSelect value={[]} onChange={() => {}} options={['tag1']} />);
   console.debug('rendered TagMultiSelect');
