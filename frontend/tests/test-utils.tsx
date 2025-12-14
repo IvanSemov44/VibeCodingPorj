@@ -11,7 +11,6 @@ export function createQueryClientForTest() {
       queries: {
         retry: false,
         refetchInterval: false,
-        cacheTime: 0,
         staleTime: Infinity,
       },
       mutations: {

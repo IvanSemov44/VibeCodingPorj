@@ -5,7 +5,7 @@ import { vi, describe, test, expect } from 'vitest';
 
 // We'll test the hook by mocking the RTK Query hooks it relies on
 vi.mock('../../store/api2', () => ({
-    useGetEntriesQuery: () => ({
+  useGetEntriesQuery: () => ({
     data: [
       {
         id: 9,

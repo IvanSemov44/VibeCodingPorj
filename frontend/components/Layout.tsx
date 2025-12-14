@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/api2';
 import { useAppTheme } from '../hooks/useAppTheme';
@@ -12,16 +12,31 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
   const [loading, setLoading] = useState<boolean>(true);
   const { theme, toggleTheme } = useAppTheme();
 
+  // Keep stable refs to the latest `csrfTrigger` and `data` so the main
+  // effect can depend only on `refetch` (prevents unnecessary re-runs).
+  type CsrfTrigger = (() => { unwrap: () => Promise<unknown> }) | undefined;
+  const csrfTriggerRef = useRef<CsrfTrigger>(csrfTrigger as CsrfTrigger);
+  const dataRef = useRef(data);
+
+  useEffect(() => {
+    csrfTriggerRef.current = csrfTrigger;
+  }, [csrfTrigger]);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
   useEffect(() => {
     let mounted = true;
 
     async function fetchUser() {
       try {
-        await csrfTrigger()
-          .unwrap()
-          .catch(() => {});
+        const trigger = csrfTriggerRef.current;
+        if (trigger) {
+          await trigger().unwrap().catch(() => {});
+        }
         const res = await refetch();
-        const u = res?.data ?? data;
+        const u = res?.data ?? dataRef.current;
         if (!mounted) return;
         setUser((u as User) || null);
       } catch (err) {
@@ -46,7 +61,7 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
       mounted = false;
       window.removeEventListener('user:login', onLoginEvent);
     };
-  }, [csrfTrigger, data, refetch]);
+  }, [refetch]);
 
   async function handleLogout() {
     try {

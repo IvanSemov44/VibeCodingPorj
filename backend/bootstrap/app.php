@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
@@ -31,3 +31,19 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+
+// Explicitly bind the application's kernel implementations so the
+// app's `App\\Console\\Kernel` (which sets our FixedContainerCommandLoader)
+// is used instead of the framework default. This ensures console commands
+// resolved from the container have their `$laravel` property set.
+$app->singleton(
+    \Illuminate\Contracts\Http\Kernel::class,
+    \App\Http\Kernel::class
+);
+
+$app->singleton(
+    \Illuminate\Contracts\Console\Kernel::class,
+    \App\Console\Kernel::class
+);
+
+return $app;

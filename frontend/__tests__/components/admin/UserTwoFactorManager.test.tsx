@@ -176,4 +176,3 @@ describe('UserTwoFactorManager', () => {
     expect(getByText(/bad/)).toBeTruthy();
   });
 });
-
