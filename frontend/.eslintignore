@@ -1,6 +1,0 @@
-# Ignore frontend build artifacts and generated files
-full-stack-starter-kit/frontend/.next
-full-stack-starter-kit/frontend/.next/**
-full-stack-starter-kit/frontend/node_modules
-full-stack-starter-kit/frontend/dist
-full-stack-starter-kit/frontend/build

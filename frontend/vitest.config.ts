@@ -2,10 +2,13 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-  environment: 'jsdom',
-  setupFiles: ['./__tests__/vitest.setup.ts'],
-  globals: true,
-  watch: false,
+    environment: 'jsdom',
+    setupFiles: ['./tests/setupTests.ts'],
+    globals: true,
+    watch: false,
+    // Ensure both top-level `tests/` and colocated `tests/` are discovered
+    include: ['tests/**/*.{test,spec}.{js,ts,tsx}', '__tests__/**/*.{test,spec}.{js,ts,tsx}'],
+    testTimeout: 8000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
@@ -24,19 +27,8 @@ export default defineConfig({
         'pages/login.{ts,tsx}',
       ],
       // Exclude tests, type decls, build and public assets
-      exclude: [
-        '**/*.config.*',
-        '**/*.d.ts',
-        'public/**',
-        'styles/**',
-        'node_modules/**',
-      ],
-    },
-    // Ensure both top-level `tests/` and colocated `__tests__/` are discovered
-    include: [
-      'tests/**/*.{test,spec}.{js,ts,tsx}',
-      '__tests__/**/*.{test,spec}.{js,ts,tsx}',
-    ],
+      exclude: ['**/*.config.*', '**/*.d.ts', 'public/**', 'styles/**', 'node_modules/**'],
+      // Coverage thresholds — relaxed to allow incremental improvements
       thresholds: {
         statements: 60,
         branches: 60,

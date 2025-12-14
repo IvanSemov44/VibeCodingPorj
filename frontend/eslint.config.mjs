@@ -49,7 +49,7 @@ const eslintConfig = [
   // Test file overrides - allow more flexibility in tests
   {
     files: [
-      '**/__tests__/**',
+      '**/tests/**',
       '**/*.{test,spec}.{ts,tsx,js,jsx}',
       '**/*.test.*',
       '**/*.spec.*',
