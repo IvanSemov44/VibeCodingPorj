@@ -1,140 +1,118 @@
 import React from 'react';
-import { renderWithProviders, screen } from '../../tests/test-utils';
+import { renderWithProviders, screen, waitFor } from '../../tests/test-utils';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { vi, describe, test, beforeEach, expect } from 'vitest';
 
-describe.skip('JournalSection branch coverage', () => {
+// Create mock functions that can be reassigned per test
+const mockState = {
+  createEntry: vi.fn(),
+  deleteEntry: vi.fn(),
+  addToast: vi.fn(),
+  entries: [] as any[],
+};
+
+vi.mock('../../components/Toast', () => ({
+  useToast: () => ({ addToast: mockState.addToast }),
+}));
+
+vi.mock('../../hooks/useJournal', () => ({
+  useJournal: () => ({
+    get entries() { return mockState.entries; },
+    get stats() {
+      return {
+        total: mockState.entries.length,
+        xp: mockState.entries.reduce((sum: number, e: any) => sum + (e.xp || 0), 0)
+      };
+    },
+    loading: false,
+    get createEntry() { return mockState.createEntry; },
+    get deleteEntry() { return mockState.deleteEntry; },
+    loadData: vi.fn(),
+    refreshStats: vi.fn(),
+  }),
+}));
+
+import JournalSection from '../../components/JournalSection';
+
+describe('JournalSection branch coverage', () => {
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
+    mockState.createEntry = vi.fn();
+    mockState.deleteEntry = vi.fn();
+    mockState.addToast = vi.fn();
+    mockState.entries = [];
+
+    // Mock window.confirm to always return true
+    vi.stubGlobal('confirm', vi.fn(() => true));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   test('createEntry failure surfaces error and toast', async () => {
-    // per-test mocks
-    const addToast = vi.fn();
-    vi.doMock('../../components/Toast', () => ({ useToast: () => ({ addToast }) }));
+    mockState.createEntry.mockRejectedValue(new Error('create-fail'));
 
-    const createFail = vi.fn().mockRejectedValue(new Error('create-fail'));
-    vi.doMock('../../hooks/useJournal', () => ({
-      useJournal: () => ({
-        entries: [],
-        stats: { total: 0, xp: 0 },
-        loading: false,
-        createEntry: createFail,
-        deleteEntry: vi.fn(),
-        loadData: vi.fn(),
-        refreshStats: vi.fn(),
-      }),
-    }));
-
-    vi.doMock('../../components/journal/JournalForm', () => ({
-      default: ({ onSubmit }: any) => (
-        <div>
-          <button onClick={() => onSubmit({ title: '', content: '', xp: 0 })}>submit-empty</button>
-          <button onClick={() => onSubmit({ title: 'T', content: 'C', xp: 5 })}>submit-ok</button>
-        </div>
-      ),
-    }));
-
-    const { default: JournalSection } = await import('../../components/JournalSection');
-    const { render } = await import('@testing-library/react');
     renderWithProviders(<JournalSection />);
 
-    // open the form and trigger failing create
-    await (
-      await import('@testing-library/user-event')
-    ).default.click(screen.getByText(/new entry/i));
-    await (
-      await import('@testing-library/user-event')
-    ).default.click(screen.getByText('submit-ok'));
+    // Click "New Entry" button to open the form
+    const newEntryBtn = screen.getByText(/new entry/i);
+    await userEvent.click(newEntryBtn);
 
-    expect(createFail).toHaveBeenCalled();
-    await screen.findAllByText(/create-fail/);
-    expect(addToast).toHaveBeenCalled();
+    // Fill in form fields - use placeholder text
+    const titleInput = screen.getByPlaceholderText(/What did you accomplish/i);
+    const contentInput = screen.getByPlaceholderText(/Describe your journey/i);
+
+    await userEvent.type(titleInput, 'Test Title');
+    await userEvent.type(contentInput, 'Test Content');
+
+    // Submit form
+    const submitBtn = screen.getByRole('button', { name: /save entry/i });
+    await userEvent.click(submitBtn);
+
+    await waitFor(() => expect(mockState.createEntry).toHaveBeenCalled());
+    await waitFor(() => expect(mockState.addToast).toHaveBeenCalled());
   });
 
   test('deleteEntry failure shows error toast', async () => {
-    vi.resetModules();
-    const addToast = vi.fn();
-    vi.doMock('../../components/Toast', () => ({ useToast: () => ({ addToast }) }));
+    mockState.deleteEntry.mockRejectedValue(new Error('del-fail'));
+    mockState.entries = [
+      {
+        id: 5,
+        title: 'Test Entry',
+        content: 'test content',
+        xp: 10,
+        created_at: new Date().toISOString(),
+      },
+    ];
 
-    const deleteFail = vi.fn().mockRejectedValue(new Error('del-fail'));
-    vi.doMock('../../hooks/useJournal', () => ({
-      useJournal: () => ({
-        entries: [{ id: 5, title: 'X', content: 'x', xp: 1, created_at: new Date().toISOString() }],
-        stats: { total: 1, xp: 1 },
-        loading: false,
-        createEntry: vi.fn(),
-        deleteEntry: deleteFail,
-        loadData: vi.fn(),
-        refreshStats: vi.fn(),
-      }),
-    }));
-
-    vi.doMock('../../components/journal/JournalList', () => ({
-      default: ({ entries, hasFilters, onDelete }: any) => (
-        <div>
-          <div>entries:{entries.length}</div>
-          <div>hasFilters:{String(Boolean(hasFilters))}</div>
-          <button onClick={() => onDelete?.(5)}>delete-5</button>
-        </div>
-      ),
-    }));
-
-    const { default: JournalSection } = await import('../../components/JournalSection');
     renderWithProviders(<JournalSection />);
 
-    await (await import('@testing-library/user-event')).default.click(screen.getByText('delete-5'));
+    // Find and click delete button - it has title "Delete entry" and shows 🗑️
+    const deleteBtn = screen.getByTitle('Delete entry');
+    await userEvent.click(deleteBtn);
 
-    expect(deleteFail).toHaveBeenCalledWith(5);
-    expect(addToast).toHaveBeenCalled();
+    await waitFor(() => expect(mockState.deleteEntry).toHaveBeenCalledWith(5));
+    await waitFor(() => expect(mockState.addToast).toHaveBeenCalled());
   });
 
-  test('clear filters toggles hasFilters prop on JournalList', async () => {
-    vi.resetModules();
-    vi.doMock('../../components/Toast', () => ({ useToast: () => ({ addToast: vi.fn() }) }));
-
-    vi.doMock('../../hooks/useJournal', () => ({
-      useJournal: () => ({
-        entries: [],
-        stats: { total: 0, xp: 0 },
-        loading: false,
-        createEntry: vi.fn(),
-        deleteEntry: vi.fn(),
-        loadData: vi.fn(),
-        refreshStats: vi.fn(),
-      }),
-    }));
-
-    vi.doMock('../../components/journal/JournalFilters', () => ({
-      default: ({ onSearchChange, onClearFilters }: any) => (
-        <div>
-          <button onClick={() => onSearchChange('q')}>set-search</button>
-          <button onClick={() => onClearFilters()}>clear-filters</button>
-        </div>
-      ),
-    }));
-
-    vi.doMock('../../components/journal/JournalList', () => ({
-      default: ({ entries, hasFilters, onDelete }: any) => (
-        <div>
-          <div>entries:{entries.length}</div>
-          <div>hasFilters:{String(Boolean(hasFilters))}</div>
-        </div>
-      ),
-    }));
-
-    const { default: JournalSection } = await import('../../components/JournalSection');
+  test('filters update hasFilters state', async () => {
     renderWithProviders(<JournalSection />);
 
-    expect(screen.getByText(/hasFilters:false/i)).toBeInTheDocument();
-    await (
-      await import('@testing-library/user-event')
-    ).default.click(screen.getByText('set-search'));
-    expect(screen.getByText(/hasFilters:true/i)).toBeInTheDocument();
-    await (
-      await import('@testing-library/user-event')
-    ).default.click(screen.getByText('clear-filters'));
-    expect(screen.getByText(/hasFilters:false/i)).toBeInTheDocument();
+    // Find search input
+    const searchInput = screen.getByPlaceholderText(/search/i);
+
+    // Type in search to set filters
+    await userEvent.type(searchInput, 'test query');
+
+    // Verify search is applied (component should show filtered state)
+    await waitFor(() => expect(searchInput).toHaveValue('test query'));
+
+    // Clear filters
+    const clearBtn = screen.getByRole('button', { name: /clear/i });
+    await userEvent.click(clearBtn);
+
+    // Verify filters cleared
+    await waitFor(() => expect(searchInput).toHaveValue(''));
   });
 });

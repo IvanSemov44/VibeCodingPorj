@@ -23,11 +23,20 @@ import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
+  useGetTagsQuery,
 } from '../../store/api2';
 
-describe.skip('ToolForm additional branches', () => {
+describe('ToolForm additional branches', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    addToast.mockClear();
+
+    // Mock useGetTagsQuery to return empty data
+    (useGetTagsQuery as unknown as any).mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+    });
   });
 
   test('create path success without files shows created toast and calls onSaved', async () => {

@@ -13,6 +13,7 @@ abstract class BaseService
      * Execute a database transaction.
      *
      * @template T
+     *
      * @param  callable(): T  $callback
      * @return T
      *
@@ -32,13 +33,14 @@ abstract class BaseService
         ?object $user = null,
         array $properties = []
     ): void {
-        $activity = activity()
+        $logger = activity()
             ->performedOn($model)
-            ->withProperties($properties)
-            ->log($event);
+            ->withProperties($properties);
 
         if ($user !== null) {
-            $activity->causedBy($user);
+            $logger->causedBy($user);
         }
+
+        $logger->log($event);
     }
 }

@@ -28,8 +28,7 @@ final readonly class ToolData
         public array $tags = [],
         public array $roleIds = [],
         public array $screenshots = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Create from request data.

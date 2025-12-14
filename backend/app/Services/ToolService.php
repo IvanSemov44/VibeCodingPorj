@@ -1,159 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\Tag;
+use App\Actions\Tool\ApproveToolAction;
+use App\Actions\Tool\CreateToolAction;
+use App\Actions\Tool\DeleteToolAction;
+use App\Actions\Tool\UpdateToolAction;
+use App\DataTransferObjects\ToolData;
 use App\Models\Tool;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
-class ToolService
+final class ToolService extends BaseService
 {
+    public function __construct(
+        private readonly CreateToolAction $createAction,
+        private readonly UpdateToolAction $updateAction,
+        private readonly DeleteToolAction $deleteAction,
+        private readonly ApproveToolAction $approveAction,
+    ) {}
+
     /**
      * Create a new tool.
-     *
-     * @param  \App\Models\User|null  $user
      */
-    public function create(array $data, $user = null): Tool
+    public function create(ToolData $data, ?object $user = null): Tool
     {
-        $data['slug'] = Str::slug($data['name']);
-
-        return DB::transaction(function () use ($data, $user) {
-            $tool = Tool::create($data);
-
-            // Sync relationships
-            if (! empty($data['categories'])) {
-                $tool->categories()->sync($data['categories']);
-            }
-
-            if (! empty($data['tags'])) {
-                $tool->tags()->sync($this->resolveTagIds($data['tags']));
-            }
-
-            if (! empty($data['roles'])) {
-                $tool->roles()->sync($data['roles']);
-            }
-
-            // Log activity
-            if ($user) {
-                activity()
-                    ->performedOn($tool)
-                    ->causedBy($user)
-                    ->withProperties(['name' => $tool->name])
-                    ->log('tool_created');
-            }
-
-            return $tool->load(['categories', 'tags', 'roles']);
-        });
+        return $this->createAction->execute($data, $user);
     }
 
     /**
      * Update an existing tool.
-     *
-     * @param  \App\Models\User|null  $user
      */
-    public function update(Tool $tool, array $data, $user = null): Tool
+    public function update(Tool $tool, ToolData $data, ?object $user = null): Tool
     {
-        if (isset($data['name'])) {
-            $data['slug'] = Str::slug($data['name']);
-        }
-
-        return DB::transaction(function () use ($tool, $data, $user) {
-            $oldData = $tool->toArray();
-            $tool->update($data);
-
-            // Sync relationships if provided
-            if (isset($data['categories'])) {
-                $tool->categories()->sync($data['categories']);
-            }
-
-            if (isset($data['tags'])) {
-                $tool->tags()->sync($this->resolveTagIds($data['tags']));
-            }
-
-            if (isset($data['roles'])) {
-                $tool->roles()->sync($data['roles']);
-            }
-
-            // Log activity
-            if ($user) {
-                activity()
-                    ->performedOn($tool)
-                    ->causedBy($user)
-                    ->withProperties([
-                        'old' => $oldData,
-                        'new' => $tool->getChanges(),
-                    ])
-                    ->log('tool_updated');
-            }
-
-            return $tool->fresh(['categories', 'tags', 'roles']);
-        });
+        return $this->updateAction->execute($tool, $data, $user);
     }
 
     /**
      * Delete a tool.
-     *
-     * @param  \App\Models\User|null  $user
      */
-    public function delete(Tool $tool, $user = null): bool
+    public function delete(Tool $tool, ?object $user = null): bool
     {
-        return DB::transaction(function () use ($tool, $user) {
-            $toolData = $tool->toArray();
-
-            // Log before deletion
-            if ($user) {
-                activity()
-                    ->performedOn($tool)
-                    ->causedBy($user)
-                    ->withProperties(['tool' => $toolData])
-                    ->log('tool_deleted');
-            }
-
-            return $tool->delete();
-        });
-    }
-
-    /**
-     * Resolve tag IDs from tag names (create if not exists).
-     */
-    protected function resolveTagIds(array $tags): array
-    {
-        $tagIds = [];
-
-        foreach ($tags as $tag) {
-            if (is_numeric($tag)) {
-                // Already an ID
-                $tagIds[] = $tag;
-            } else {
-                // Tag name - find or create
-                $tagModel = Tag::firstOrCreate(
-                    ['slug' => Str::slug($tag)],
-                    ['name' => $tag]
-                );
-                $tagIds[] = $tagModel->id;
-            }
-        }
-
-        return $tagIds;
+        return $this->deleteAction->execute($tool, $user);
     }
 
     /**
      * Approve a tool (admin action).
-     *
-     * @param  \App\Models\User  $user
      */
-    public function approve(Tool $tool, $user): Tool
+    public function approve(Tool $tool, object $user): Tool
     {
-        $tool->update([
-            'status' => 'approved',
-        ]);
-
-        activity()
-            ->performedOn($tool)
-            ->causedBy($user)
-            ->log('tool_approved');
-
-        return $tool;
+        return $this->approveAction->execute($tool, $user);
     }
 }

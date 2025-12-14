@@ -1,6 +1,8 @@
 import React from 'react';
-import { vi, afterEach } from 'vitest';
+import { vi, afterEach, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { server } from './mockServer';
 
 // Make React available globally for tests
 (globalThis as unknown as { React?: typeof React }).React = React;
@@ -28,10 +30,16 @@ console.error = (...args: any[]) => {
 	originalError(...args);
 };
 
+// MSW server lifecycle
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+
 // Global test cleanup
 afterEach(() => {
 	cleanup();
 	vi.useRealTimers();
 	vi.restoreAllMocks();
 	vi.clearAllMocks();
+	server.resetHandlers();
 });
+
+afterAll(() => server.close());

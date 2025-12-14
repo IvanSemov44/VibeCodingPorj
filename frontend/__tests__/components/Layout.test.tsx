@@ -5,15 +5,23 @@ import Layout from '../../components/Layout';
 import * as api from '../../lib/api';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
+const mockUseGetUserQuery = vi.fn();
+const mockUseGetCsrfMutation = vi.fn();
+const mockUseLogoutMutation = vi.fn();
+
 vi.mock('../../store/api2', () => ({
-  useGetUserQuery: () => ({ data: null, isLoading: false, refetch: vi.fn() }),
-  useGetCsrfMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],
-  useLogoutMutation: () => [() => ({ unwrap: () => Promise.resolve() }), {}],
+  useGetUserQuery: () => mockUseGetUserQuery(),
+  useGetCsrfMutation: () => mockUseGetCsrfMutation(),
+  useLogoutMutation: () => mockUseLogoutMutation(),
 }));
 
 describe('Layout', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // default mocks (no user)
+    mockUseGetUserQuery.mockReturnValue({ data: null, isLoading: false, refetch: vi.fn() });
+    mockUseGetCsrfMutation.mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
+    mockUseLogoutMutation.mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
   });
 
   it('renders children, title and footer year', async () => {
@@ -33,7 +41,11 @@ describe('Layout', () => {
   });
 
   it('shows dashboard and logout when user present, login otherwise', async () => {
-    // mocked via store/api hooks above (override by mocking module if needed)
+    mockUseGetUserQuery.mockReturnValue({
+      data: { id: 1, email: 'test@example.com', name: 'Test User' },
+      isLoading: false,
+      refetch: vi.fn().mockResolvedValue({ data: { id: 1, email: 'test@example.com', name: 'Test User' } }),
+    });
 
     renderWithProviders(
       <ThemeInitializer>
@@ -68,7 +80,11 @@ describe('Layout', () => {
   });
 
   it('calls logout and navigates to /login', async () => {
-    // mocked via store/api hooks above
+    mockUseGetUserQuery.mockReturnValue({
+      data: { id: 1, email: 'test@example.com', name: 'Test User' },
+      isLoading: false,
+      refetch: vi.fn().mockResolvedValue({ data: { id: 1, email: 'test@example.com', name: 'Test User' } }),
+    });
 
     const orig = window.location;
     // override location href for test

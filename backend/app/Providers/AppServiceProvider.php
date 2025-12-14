@@ -25,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Prevent lazy loading in development to catch N+1 queries
+        Model::preventLazyLoading(! app()->isProduction());
+
         // Register model observer for activity logging on key models
         \App\Models\User::observe(ModelActivityObserver::class);
 

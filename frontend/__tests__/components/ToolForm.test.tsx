@@ -63,6 +63,20 @@ describe('ToolForm', () => {
   });
 
   test('renders form with Save Tool button and NameField', () => {
+    // ensure all hooks exist so component destructuring doesn't fail
+    (useCreateToolMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useUpdateToolMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
+      vi.fn(),
+      { isLoading: false, error: null },
+    ]);
+
     renderWithProviders(<ToolForm categories={[]} roles={[]} allTags={[]} />);
 
     expect(screen.getByText(/save tool/i)).toBeInTheDocument();

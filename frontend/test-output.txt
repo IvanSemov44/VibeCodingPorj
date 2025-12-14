@@ -1,0 +1,86 @@
+
+> vibecode-full-stack-starter-kit-frontend@0.1.0 test:ci
+> vitest run --reporter default
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mC:/Users/ivans/Desktop/Dev/VibeCodingProj/full-stack-starter-kit/frontend[39m
+
+ [32mΓ£ô[39m __tests__/lib/errors.test.ts [2m ([22m[2m8 tests[22m[2m)[22m[90m 14[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/api.test.ts [2m ([22m[2m3 tests[22m[2m)[22m[90m 32[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/TwoFactorSetup.test.tsx [2m ([22m[2m3 tests[22m[2m)[22m[90m 129[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/lib/api.unit.test.ts [2m ([22m[2m3 tests[22m[2m)[22m[90m 107[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/TwoFactorSetup.extra.test.tsx [2m ([22m[2m3 tests[22m[2m)[22m[90m 267[2mms[22m[39m
+ [2m[90mΓåô[39m[22m __tests__/components/JournalSection.branches.test.tsx [2m ([22m[2m3 tests[22m [2m|[22m [33m3 skipped[39m[2m)[22m
+ [32mΓ£ô[39m __tests__/components/admin/UserTwoFactorManager.test.tsx [2m ([22m[2m6 tests[22m[2m)[22m[90m 202[2mms[22m[39m
+ [2m[90mΓåô[39m[22m __tests__/components/ToolForm.branches3.test.tsx [2m ([22m[2m2 tests[22m [2m|[22m [33m2 skipped[39m[2m)[22m
+ [32mΓ£ô[39m __tests__/components/tools/ScreenshotManager.extra.test.tsx [2m ([22m[2m6 tests[22m[2m)[22m[90m 268[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/ToolForm.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 290[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/hooks/useJournal.extra.test.tsx [2m ([22m[2m7 tests[22m[2m)[22m[33m 517[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/ToolForm.branches2.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[33m 374[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/JournalSection.extra.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[33m 491[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Layout.test.tsx [2m ([22m[2m4 tests[22m[2m)[22m[33m 437[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/tools/ScreenshotManager.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[33m 1160[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/context/ThemeContext.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 225[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/hooks/useAsync.test.tsx [2m ([22m[2m3 tests[22m[2m)[22m[90m 51[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/JournalEntry.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[33m 400[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/hooks/useJournal.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 84[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Input.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[33m 333[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/lib/utils.test.ts [2m ([22m[2m4 tests[22m[2m)[22m[90m 34[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/JournalForm.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[33m 801[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/ErrorBoundary.extra.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 165[2mms[22m[39m
+stderr | __tests__/components/ErrorBoundary.test.tsx > ErrorBoundary > shows fallback UI when child throws and resets on Try Again
+Error: boom
+    at Bomb (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\__tests__\components\Bomb.tsx:9:11)
+    at Object.react-stack-bottom-frame (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:23863:20)
+    at renderWithHooks (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:5529:22)
+    at updateFunctionComponent (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:8897:19)
+    at beginWork (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:10522:18)
+    at runWithFiberInDEV (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:1522:13)
+    at performUnitOfWork (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:15140:22)
+    at workLoopSync (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:14956:41)
+    at renderRootSync (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:14936:11)
+    at performWorkOnRoot (C:\Users\ivans\Desktop\Dev\VibeCodingProj\full-stack-starter-kit\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:14462:44) {
+  [stack]: [Getter/Setter],
+  [message]: 'boom'
+}
+
+The above error occurred in the <Bomb> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+
+
+ [32mΓ£ô[39m __tests__/components/tools/URLFields.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 153[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/ErrorBoundary.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[33m 332[2mms[22m[39m
+ [2m[90mΓåô[39m[22m __tests__/components/ToolForm.branches.test.tsx [2m ([22m[2m1 test[22m [2m|[22m [33m1 skipped[39m[2m)[22m
+ [32mΓ£ô[39m __tests__/components/ToolEntry.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 262[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/tools/CategorySelector.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 294[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/pages/login.integration.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[33m 1438[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/tools/RoleSelector.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 232[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Loading.test.tsx [2m ([22m[2m3 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Button.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 203[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/tools/NameField.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 164[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/schemas.test.ts [2m ([22m[2m2 tests[22m[2m)[22m[90m 41[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Toast.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[33m 472[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/TagSelector.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[33m 312[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/TwoFactorSetup.extra2.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 212[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/JournalSection.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 163[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/TwoFactorSetup.enable.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 115[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Alert.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 291[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/tools/TextAreaField.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 139[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Card.test.tsx [2m ([22m[2m2 tests[22m[2m)[22m[90m 98[2mms[22m[39m
+ [2m[90mΓåô[39m[22m __tests__/components/ToolForm.extra.test.tsx [2m ([22m[2m1 test[22m [2m|[22m [33m1 skipped[39m[2m)[22m
+ [32mΓ£ô[39m __tests__/components/XPSlider.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 137[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/MoodSelector.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 275[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/Badge.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 70[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/dashboard/RoleCard.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 46[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/dashboard/ProfileCard.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 84[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/JournalSection.present.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 202[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/dashboard/WelcomeHeader.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 56[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/JournalSection.extra2.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 206[2mms[22m[39m
+ [2m[90mΓåô[39m[22m __tests__/components/TagMultiSelect.extra.test.tsx [2m ([22m[2m1 test[22m [2m|[22m [33m1 skipped[39m[2m)[22m
+ [32mΓ£ô[39m __tests__/components/dashboard/StatsGrid.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 81[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/journalSlice.test.ts [2m ([22m[2m1 test[22m[2m)[22m[90m 6[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/lib/classNames.test.ts [2m ([22m[2m1 test[22m[2m)[22m[90m 5[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/dashboard/ActivityFeed.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 79[2mms[22m[39m
+ [32mΓ£ô[39m __tests__/components/dashboard/QuickActions.test.tsx [2m ([22m[2m1 test[22m[2m)[22m[90m 38[2mms[22m[39m

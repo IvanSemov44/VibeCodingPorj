@@ -30,4 +30,37 @@ class Kernel extends ConsoleKernel
     {
         // load(__DIR__.'/Commands');
     }
+
+    /**
+     * Get the Artisan application instance.
+     *
+     * Override to fix Laravel 12 command loader issue where setLaravel() is not called.
+     */
+    protected function getArtisan()
+    {
+        if (is_null($this->artisan)) {
+            $application = new \Illuminate\Console\Application($this->app, $this->events, $this->app->version());
+            $application->resolveCommands($this->commands);
+
+            // Get the command map using reflection
+            $reflection = new \ReflectionObject($application);
+            $property = $reflection->getProperty('commandMap');
+            $property->setAccessible(true);
+            $commandMap = $property->getValue($application);
+
+            // Use our fixed command loader instead of the default one
+            $application->setCommandLoader(
+                new FixedContainerCommandLoader($this->app, $commandMap)
+            );
+
+            if ($this->symfonyDispatcher instanceof \Illuminate\Contracts\Events\Dispatcher) {
+                $application->setDispatcher($this->symfonyDispatcher);
+                $application->setSignalsToDispatchEvent();
+            }
+
+            $this->artisan = $application;
+        }
+
+        return $this->artisan;
+    }
 }
