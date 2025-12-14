@@ -1,6 +1,6 @@
 # Docker Compose Configuration for vibecode-full-stack-starter-kit
 # Tech Stack: Laravel Backend + Next.js Frontend
-# Assigned ports: 8200-8205
+# Assigned ports: 8200-8204
 # 
 # Usage:
 #   docker compose up -d
@@ -171,21 +171,6 @@ services:
     command: redis-server --appendonly yes --requirepass "vibecode-full-stack-starter-kit_redis_pass"
     volumes:
       - vibecode-full-stack-starter-kit_redis_data:/data
-    restart: unless-stopped
-    networks:
-      - vibecode-full-stack-starter-kit_network
-
-  # Development Tools Container
-  tools:
-    image: alpine:latest
-    container_name: vibecode-full-stack-starter-kit_tools
-    ports:
-      - "8205:8080"  # Tools/utilities port
-    volumes:
-      - ./tools:/workspace:cached
-      - ./backend:/var/www/html:ro
-      - ./frontend:/app:ro
-    command: tail -f /dev/null  # Keep container running
     restart: unless-stopped
     networks:
       - vibecode-full-stack-starter-kit_network

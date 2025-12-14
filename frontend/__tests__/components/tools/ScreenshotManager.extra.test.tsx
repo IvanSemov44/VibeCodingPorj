@@ -147,7 +147,7 @@ describe('ScreenshotManager edge cases', () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
     (deleteToolScreenshot as jest.MockedFunction<any>).mockRejectedValue(new Error('delete-failed'));
-
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     renderWithProviders(
       <Formik initialValues={{ screenshots: ['a'] }} onSubmit={() => {}}>
         {() => (
@@ -164,5 +164,6 @@ describe('ScreenshotManager edge cases', () => {
 
     await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalled());
     expect(global.alert).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 });

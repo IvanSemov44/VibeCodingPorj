@@ -15,6 +15,7 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText(/ok/)).toBeInTheDocument();
 
     // render with a throwing child and verify fallback
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     rerender(
       <ErrorBoundary>
         <Bomb />
@@ -22,6 +23,7 @@ describe('ErrorBoundary', () => {
     );
 
     expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
+    spy.mockRestore();
 
     const tryBtn = screen.getByText(/try again/i);
     await act(async () => {

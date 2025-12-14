@@ -2,12 +2,13 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from '../../tests/test-utils'
 import { vi } from 'vitest'
 
-vi.mock('../../lib/api', () => ({
-  // Provide a minimal get2faSecret implementation used by internal queries
-  get2faSecret: async () => ({ otpauth: 'otpauth://app', recoveryCodes: ['r1', 'r2'] }),
-  useGet2faSecretQuery: () => ({ data: { otpauth: 'otpauth://app', recoveryCodes: ['r1', 'r2'] }, isLoading: false }),
-  useEnable2faMutation: () => [async () => ({ recoveryCodes: ['r1', 'r2'] }), { isLoading: false }],
+vi.mock('../../store/api', () => ({
+  useGet2faSecretQuery: () => ({ data: { provisioning_uri: 'otpauth://app', secret_mask: '****' }, isLoading: false }),
+  useEnable2faMutation: () => [() => ({ unwrap: () => Promise.resolve({ recovery_codes: ['r1', 'r2'] }) }), { isLoading: false }],
 }))
+
+// prevent QR generation from trying to use canvas in jsdom
+vi.mock('qrcode', () => ({ default: { toCanvas: () => {} } }));
 
 test('renders Two-Factor secret UI when secret present', async () => {
   const { default: TwoFactorSetup } = await import('../../components/TwoFactorSetup')

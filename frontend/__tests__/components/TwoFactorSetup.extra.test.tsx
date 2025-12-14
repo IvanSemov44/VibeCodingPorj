@@ -27,6 +27,8 @@ describe('TwoFactorSetup extra branches', () => {
       },
     }));
 
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     vi.doMock('../../store/api', () => ({
       useGet2faSecretQuery: () => ({ data: { provisioning_uri: 'otpauth://x', secret_mask: 'm' }, isLoading: false, error: null, refetch: vi.fn() }),
       useEnable2faMutation: () => [vi.fn(), { isLoading: false, error: null }],
@@ -38,6 +40,7 @@ describe('TwoFactorSetup extra branches', () => {
     // canvas should be present even if QR generation logged an error
     expect(container.querySelector('canvas')).toBeTruthy();
     expect(getByText(/Two-Factor Authentication/)).toBeTruthy();
+    consoleSpy.mockRestore();
   });
 
   test('renders recovery codes after enable unwrap resolves', async () => {

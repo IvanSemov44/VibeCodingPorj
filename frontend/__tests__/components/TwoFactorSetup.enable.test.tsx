@@ -2,10 +2,9 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from '../../tests/test-utils'
 import { vi } from 'vitest'
 
-vi.mock('../../lib/api', () => ({
-  useGet2faSecretQuery: () => ({ data: null, isLoading: false }),
-  useEnable2faMutation: () => [async () => ({ recoveryCodes: ['one','two'] }), { isLoading: false }],
-  get2faSecret: async () => ({ otpauth: 'otpauth://app', recoveryCodes: ['one','two'] }),
+vi.mock('../../store/api', () => ({
+  useGet2faSecretQuery: () => ({ data: { provisioning_uri: 'otpauth://app', secret_mask: '****' }, isLoading: false }),
+  useEnable2faMutation: () => [() => ({ unwrap: () => Promise.resolve({ recovery_codes: ['one', 'two'] }) }), { isLoading: false }],
 }))
 
 vi.mock('qrcode', () => ({ toCanvas: () => {} }))

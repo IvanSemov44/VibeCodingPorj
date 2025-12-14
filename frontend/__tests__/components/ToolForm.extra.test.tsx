@@ -2,7 +2,10 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from '../../tests/test-utils'
 import { vi } from 'vitest'
 
-vi.mock('../../lib/api', () => ({
+vi.mock('../../store/api', () => ({
+  useCreateToolMutation: () => [() => ({ unwrap: () => Promise.resolve() }), { isLoading: false }],
+  useUpdateToolMutation: () => [() => ({ unwrap: () => Promise.resolve() }), { isLoading: false }],
+  useUploadToolScreenshotsMutation: () => [() => ({ unwrap: () => Promise.resolve() }), { isLoading: false }],
   useGetTagsQuery: () => ({ data: [], isLoading: false }),
 }))
 

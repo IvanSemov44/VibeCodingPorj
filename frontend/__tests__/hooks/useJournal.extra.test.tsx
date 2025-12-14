@@ -129,10 +129,12 @@ describe('useJournal extra', () => {
     );
     const { unmount } = renderWithProviders(<Consumer />);
     const handlers = (global as any).__TEST_HANDLERS;
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     if (handlers && handlers.createEntry) {
       await handlers.createEntry({ title: 't', content: 'c', xp: 1 } as any).catch(() => {});
     }
     expect(failFn).toHaveBeenCalled();
+    spy.mockRestore();
     unmount();
   });
 
@@ -154,10 +156,12 @@ describe('useJournal extra', () => {
     );
     const { unmount } = renderWithProviders(<Consumer />);
     const handlers = (global as any).__TEST_HANDLERS;
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     if (handlers && handlers.deleteEntry) {
       await handlers.deleteEntry(5).catch(() => {});
     }
     expect(errFn).toHaveBeenCalled();
+    spy.mockRestore();
     unmount();
   });
 
