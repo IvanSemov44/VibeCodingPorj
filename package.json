@@ -1,0 +1,14 @@
+{
+  "name": "vibecode-full-stack-starter-kit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-stack starter kit with frontend and backend",
+  "scripts": {
+    "check": "node quality-check.js",
+    "check:frontend": "cd frontend && npm run check",
+    "check:backend": "cd backend && composer run check",
+    "find:unused": "node find-unused.js",
+    "find:frontend": "cd frontend && npm run find:unused",
+    "find:backend": "cd backend && composer run find:unused"
+  }
+}

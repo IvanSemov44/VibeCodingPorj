@@ -5,7 +5,12 @@
       "Bash(ls:*)",
       "Bash(docker-compose up:*)",
       "Bash(docker-compose:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "Bash(find:*)",
+      "Bash(truncate:*)",
+      "Bash(npm install:*)",
+      "Bash(composer require:*)",
+      "Bash(npm run find:unused-exports:*)"
     ]
   }
 }

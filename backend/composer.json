@@ -93,6 +93,10 @@
         "analyse": [
             "./vendor/bin/phpstan analyse"
         ],
+        "find:unused": [
+            "@php artisan ide-helper:models --nowrite",
+            "./vendor/bin/phpstan analyse --level=max"
+        ],
         "ide-helper": [
             "@php artisan ide-helper:generate",
             "@php artisan ide-helper:models --nowrite",
@@ -101,6 +105,16 @@
         "quality": [
             "@lint",
             "@analyse"
+        ],
+        "check": [
+            "@lint:test",
+            "@analyse",
+            "@test"
+        ],
+        "check:fix": [
+            "@lint",
+            "@analyse",
+            "@test"
         ]
     },
     "extra": {

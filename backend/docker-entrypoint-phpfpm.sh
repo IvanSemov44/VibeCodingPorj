@@ -17,6 +17,22 @@ while ! php -r "try { new PDO(sprintf('mysql:host=%s;dbname=%s;port=%s', getenv(
 done
 
 echo "Running migrations and seeders (if any)..."
+# Ensure .env exists and APP_KEY is set before running migrations
+if [ ! -f .env ]; then
+  if [ -f env.template ]; then
+    echo "Creating .env from env.template"
+    cp env.template .env
+  else
+    echo "Warning: env.template not found; creating empty .env"
+    touch .env
+  fi
+fi
+
+# If APP_KEY is missing or empty, generate one now so it's available during startup
+if ! grep -q '^APP_KEY=' .env || grep -q '^APP_KEY=$' .env; then
+  echo "APP_KEY missing or empty — generating application key"
+  php artisan key:generate --force || echo "php artisan key:generate failed"
+fi
 # Ensure doctrine/dbal is present for migrations that use Doctrine schema helpers
 if [ ! -d vendor/doctrine/dbal ]; then
   echo "doctrine/dbal not found in vendor; installing via composer..."
