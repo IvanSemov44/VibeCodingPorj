@@ -35,7 +35,16 @@ export function renderWithProviders(
     );
   }
 
-  return { ...render(ui, { wrapper: Wrapper }), queryClient, store: usedStore };
+  // prefer the dedicated test root container when present to avoid leaking global event listeners
+  // and to make cleanup predictable across tests
+  const testRoot = document.querySelector('[data-test-root]') as HTMLElement | null;
+  let mountNode: HTMLElement | undefined = undefined;
+  if (testRoot) {
+    mountNode = document.createElement('div');
+    testRoot.appendChild(mountNode);
+  }
+  const result = { ...render(ui, { wrapper: Wrapper, container: mountNode }), queryClient, store: usedStore };
+  return result;
 }
 
 export * from '@testing-library/react';

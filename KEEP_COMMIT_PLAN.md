@@ -92,4 +92,11 @@ Steps
       - Commit: `4ce173b` — message: "Import full-stack-starter-kit into root repo (removed nested .git)".
       - Note: The nested repository's local history was preserved in safety branches (`keep-8b2c4e3c`, `backup-before-reset`) before removal. The root repo now contains the `full-stack-starter-kit` files as tracked content.
 
+   12. Remove duplicate `full-stack-starter-kit` folder (keep root layout)
+      Status: COMPLETED (2025-12-14)
+      - Action: Removed the duplicate `full-stack-starter-kit` folder from the workspace and committed the deletion to `main`.
+      - Commit: `b1691cc` — message: "Remove nested duplicate: delete full-stack-starter-kit".
+      - Backup: An attempt was made to create `full-stack-starter-kit-backup.zip` but it failed due to a locked file; the folder was removed after clearing the locked file. The inner repository's history is still preserved in `keep-8b2c4e3c` and `backup-before-reset` if recovery is needed.
+
+
 
