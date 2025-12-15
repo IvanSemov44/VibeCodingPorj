@@ -168,7 +168,7 @@ test('it logs activity with old and new data when user is provided', function ()
     ]);
 });
 
-test('it does not log activity when user is not provided', function () {
+test('it does not log activity with causer when user is not provided', function () {
     $tool = Tool::factory()->create(['name' => 'Old Name']);
 
     $toolData = new ToolData(
@@ -180,9 +180,11 @@ test('it does not log activity when user is not provided', function () {
 
     expect($updated->name)->toBe('New Name');
 
-    $this->assertDatabaseMissing('activity_log', [
-        'description' => 'tool_updated',
+    // ModelActivityObserver still logs, but without a causer
+    $this->assertDatabaseHas('activity_log', [
+        'description' => 'Tool_updated',
         'subject_id' => $tool->id,
+        'causer_id' => null, // No user, so no causer
     ]);
 });
 

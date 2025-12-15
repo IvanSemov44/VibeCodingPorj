@@ -17,7 +17,7 @@ test('it approves a tool', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $approved = $action->execute($tool, $user);
 
     expect($approved->status)->toBe(ToolStatus::APPROVED);
@@ -35,7 +35,7 @@ test('it changes status from pending to approved', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $approved = $action->execute($tool, $user);
 
     expect($approved->status)->toBe(ToolStatus::APPROVED);
@@ -48,7 +48,7 @@ test('it changes status from rejected to approved', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $approved = $action->execute($tool, $user);
 
     expect($approved->status)->toBe(ToolStatus::APPROVED);
@@ -61,7 +61,7 @@ test('it logs activity with user', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $action->execute($tool, $user);
 
     $this->assertDatabaseHas('activity_log', [
@@ -80,7 +80,7 @@ test('it returns the updated tool', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $result = $action->execute($tool, $user);
 
     expect($result)->toBeInstanceOf(Tool::class);
@@ -97,7 +97,7 @@ test('it updates existing tool instance', function () {
     $originalId = $tool->id;
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $approved = $action->execute($tool, $user);
 
     // Refresh the original instance
@@ -116,7 +116,7 @@ test('it only updates status field', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $approved = $action->execute($tool, $user);
 
     // Other fields should remain unchanged
@@ -132,7 +132,7 @@ test('it can approve already approved tool', function () {
 
     $user = User::factory()->create();
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $approved = $action->execute($tool, $user);
 
     // Should remain approved
@@ -147,7 +147,7 @@ test('activity log includes tool information', function () {
 
     $user = User::factory()->create(['name' => 'Approver User']);
 
-    $action = new ApproveToolAction();
+    $action = new ApproveToolAction;
     $action->execute($tool, $user);
 
     $activity = \Spatie\Activitylog\Models\Activity::where('subject_id', $tool->id)

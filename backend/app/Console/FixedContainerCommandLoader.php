@@ -25,9 +25,6 @@ class FixedContainerCommandLoader extends ContainerCommandLoader
 
     /**
      * Create a new command loader instance.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @param  array  $commandMap
      */
     public function __construct(Container $container, array $commandMap)
     {
@@ -37,9 +34,6 @@ class FixedContainerCommandLoader extends ContainerCommandLoader
 
     /**
      * Resolve a command from the container.
-     *
-     * @param  string  $name
-     * @return \Symfony\Component\Console\Command\Command
      */
     public function get(string $name): SymfonyCommand
     {

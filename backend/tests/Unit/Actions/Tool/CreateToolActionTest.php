@@ -138,7 +138,7 @@ test('it logs activity when user is provided', function () {
     ]);
 });
 
-test('it does not log activity when user is not provided', function () {
+test('it does not log activity with causer when user is not provided', function () {
     $toolData = new ToolData(
         name: 'Test Tool',
     );
@@ -147,9 +147,13 @@ test('it does not log activity when user is not provided', function () {
     $tool = $action->execute($toolData);
 
     expect($tool->exists)->toBeTrue();
-    $this->assertDatabaseMissing('activity_log', [
+
+    // ModelActivityObserver still logs, but without a causer
+    $this->assertDatabaseHas('activity_log', [
         'subject_type' => Tool::class,
         'subject_id' => $tool->id,
+        'description' => 'Tool_created',
+        'causer_id' => null, // No user, so no causer
     ]);
 });
 

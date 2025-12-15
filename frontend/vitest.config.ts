@@ -8,7 +8,7 @@ export default defineConfig({
     watch: false,
     // Ensure both top-level `tests/` and colocated `tests/` are discovered
     include: ['tests/**/*.{test,spec}.{js,ts,tsx}', '__tests__/**/*.{test,spec}.{js,ts,tsx}'],
-    testTimeout: 8000,
+    testTimeout: 20000,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],

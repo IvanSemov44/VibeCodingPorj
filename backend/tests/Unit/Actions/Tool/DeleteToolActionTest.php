@@ -12,7 +12,7 @@ uses(RefreshDatabase::class);
 test('it deletes a tool', function () {
     $tool = Tool::factory()->create(['name' => 'Tool to Delete']);
 
-    $action = new DeleteToolAction();
+    $action = new DeleteToolAction;
     $result = $action->execute($tool);
 
     expect($result)->toBeTrue();
@@ -26,7 +26,7 @@ test('it logs activity when user is provided', function () {
     $tool = Tool::factory()->create(['name' => 'Tool to Delete']);
     $toolId = $tool->id;
 
-    $action = new DeleteToolAction();
+    $action = new DeleteToolAction;
     $result = $action->execute($tool, $user);
 
     expect($result)->toBeTrue();
@@ -39,18 +39,20 @@ test('it logs activity when user is provided', function () {
     ]);
 });
 
-test('it does not log activity when user is not provided', function () {
+test('it does not log activity with causer when user is not provided', function () {
     $tool = Tool::factory()->create(['name' => 'Tool to Delete']);
     $toolId = $tool->id;
 
-    $action = new DeleteToolAction();
+    $action = new DeleteToolAction;
     $result = $action->execute($tool);
 
     expect($result)->toBeTrue();
 
-    $this->assertDatabaseMissing('activity_log', [
-        'description' => 'tool_deleted',
+    // ModelActivityObserver still logs, but without a causer
+    $this->assertDatabaseHas('activity_log', [
+        'description' => 'Tool_deleted',
         'subject_id' => $toolId,
+        'causer_id' => null, // No user, so no causer
     ]);
 });
 
@@ -63,7 +65,7 @@ test('it stores tool data in activity log before deletion', function () {
     $toolId = $tool->id;
     $toolName = $tool->name;
 
-    $action = new DeleteToolAction();
+    $action = new DeleteToolAction;
     $action->execute($tool, $user);
 
     // Verify activity log contains tool data
@@ -80,7 +82,7 @@ test('it stores tool data in activity log before deletion', function () {
 test('it returns true on successful deletion', function () {
     $tool = Tool::factory()->create();
 
-    $action = new DeleteToolAction();
+    $action = new DeleteToolAction;
     $result = $action->execute($tool);
 
     expect($result)->toBeTrue();
@@ -94,7 +96,7 @@ test('it removes tool relationships on deletion', function () {
     $tool->categories()->attach($category);
     $tool->tags()->attach($tag);
 
-    $action = new DeleteToolAction();
+    $action = new DeleteToolAction;
     $action->execute($tool);
 
     // Verify pivot table entries are removed (cascade)

@@ -16,7 +16,7 @@ try {
     }
 
     $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-    echo "Kernel class: " . get_class($kernel) . "\n";
+    echo 'Kernel class: '.get_class($kernel)."\n";
 
     $kernel->bootstrap();
     echo "✓ Kernel bootstrapped\n";
@@ -24,12 +24,12 @@ try {
     // Try running config:clear
     echo "\nAttempting to run config:clear...\n";
     $input = new \Symfony\Component\Console\Input\ArrayInput(['command' => 'config:clear']);
-    $output = new \Symfony\Component\Console\Output\BufferedOutput();
+    $output = new \Symfony\Component\Console\Output\BufferedOutput;
 
     $status = $kernel->handle($input, $output);
 
     echo "Exit status: $status\n";
-    echo "Output:\n" . $output->fetch() . "\n";
+    echo "Output:\n".$output->fetch()."\n";
 
     if ($status === 0) {
         echo "\n✓ SUCCESS! Command executed without errors!\n";
@@ -38,6 +38,6 @@ try {
     }
 
 } catch (Exception $e) {
-    echo "\n✗ Error: " . $e->getMessage() . "\n";
-    echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+    echo "\n✗ Error: ".$e->getMessage()."\n";
+    echo 'File: '.$e->getFile().':'.$e->getLine()."\n";
 }
