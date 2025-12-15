@@ -43,7 +43,11 @@ export function renderWithProviders(
     mountNode = document.createElement('div');
     testRoot.appendChild(mountNode);
   }
-  const result = { ...render(ui, { wrapper: Wrapper, container: mountNode }), queryClient, store: usedStore };
+  const result = {
+    ...render(ui, { wrapper: Wrapper, container: mountNode }),
+    queryClient,
+    store: usedStore,
+  };
   return result;
 }
 

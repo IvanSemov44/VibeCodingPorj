@@ -130,7 +130,7 @@ export default function ToolsIndex(): React.ReactElement {
         <div className="min-w-[240px] max-w-[360px] flex-1">
           <TagMultiSelect
             value={selectedTags}
-            onChange={(vals) => {
+            onChange={(vals: string[]) => {
               setSelectedTags(vals);
               setPage(1);
               refetch();

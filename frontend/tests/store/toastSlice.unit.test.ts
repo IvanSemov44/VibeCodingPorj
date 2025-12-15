@@ -10,7 +10,12 @@ describe('toastSlice reducers', () => {
   });
 
   it('removeToast removes by id', () => {
-    const initial = { toasts: [{ id: 1, message: 'x', type: 'info', duration: 1 }, { id: 2, message: 'y', type: 'info', duration: 1 }] } as any;
+    const initial = {
+      toasts: [
+        { id: 1, message: 'x', type: 'info', duration: 1 },
+        { id: 2, message: 'y', type: 'info', duration: 1 },
+      ],
+    } as any;
     const state = reducer(initial, removeToast(1));
     expect(state.toasts.find((t: any) => t.id === 1)).toBeUndefined();
     expect(state.toasts.length).toBe(1);

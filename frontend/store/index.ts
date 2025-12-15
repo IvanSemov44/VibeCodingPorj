@@ -1,3 +1,5 @@
+export * from './domains/user';
+export * from './queryKeys';
 import { configureStore } from '@reduxjs/toolkit';
 // journal reducer removed - journal data now managed by React Query hooks
 import themeReducer from './themeSlice';

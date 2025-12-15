@@ -25,9 +25,19 @@ describe('TwoFactorSetup', () => {
 
   it('renders enable button when no data and then shows recovery codes after enable', async () => {
     const api = await import('../../store/api2');
-    vi.mocked(api.useGet2faSecretQuery).mockReturnValue({ data: null, error: null, isLoading: false, refetch: vi.fn() } as any);
-    const enableTrigger = vi.fn(() => ({ unwrap: () => Promise.resolve({ recovery_codes: ['r1', 'r2'] }) }));
-    vi.mocked(api.useEnable2faMutation).mockReturnValue([enableTrigger, { isLoading: false, error: null }] as any);
+    vi.mocked(api.useGet2faSecretQuery).mockReturnValue({
+      data: null,
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    } as any);
+    const enableTrigger = vi.fn(() => ({
+      unwrap: () => Promise.resolve({ recovery_codes: ['r1', 'r2'] }),
+    }));
+    vi.mocked(api.useEnable2faMutation).mockReturnValue([
+      enableTrigger,
+      { isLoading: false, error: null },
+    ] as any);
 
     renderWithProviders(<TwoFactorSetup />);
 

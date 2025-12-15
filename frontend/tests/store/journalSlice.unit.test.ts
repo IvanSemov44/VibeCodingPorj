@@ -1,7 +1,13 @@
-import reducer, { setEntries, addEntry, removeEntry, setLoading, setError } from '../../store/journalSlice';
+import reducer, {
+  setEntries,
+  addEntry,
+  removeEntry,
+  setLoading,
+  setError,
+} from '../../store/journalSlice';
 
 describe('journalSlice reducers', () => {
-  const sample = { id: 1, title: 'First', content: 'x' };
+  const sample = { id: 1, title: 'First', content: 'x', created_at: new Date().toISOString() };
 
   it('setEntries replaces entries', () => {
     const state = reducer(undefined, setEntries([sample]));
@@ -16,7 +22,14 @@ describe('journalSlice reducers', () => {
   });
 
   it('removeEntry removes by id', () => {
-    const initial = { entries: [{ id: 1, title: 'First' }, { id: 2, title: 'Two' }], loading: false, error: null } as any;
+    const initial = {
+      entries: [
+        { id: 1, title: 'First', created_at: new Date().toISOString() },
+        { id: 2, title: 'Two', created_at: new Date().toISOString() },
+      ],
+      loading: false,
+      error: null,
+    } as any;
     const state = reducer(initial, removeEntry(1));
     expect(state.entries.find((e: any) => e.id === 1)).toBeUndefined();
     expect(state.entries.length).toBe(1);

@@ -6,7 +6,7 @@
   "scripts": {
     "check": "node quality-check.js",
     "check:frontend": "cd frontend && npm run check",
-    "check:backend": "cd backend && composer run check",
+    "check:backend": "node ./scripts/check-backend.js",
     "find:unused": "node find-unused.js",
     "find:frontend": "cd frontend && npm run find:unused",
     "find:backend": "cd backend && composer run find:unused"

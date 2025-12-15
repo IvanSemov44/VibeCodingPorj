@@ -15,7 +15,7 @@ describe.skip('TagMultiSelect unit tests (skipped - flaky)', () => {
 
   it('removes a tag when remove button clicked', async () => {
     const onChange = vi.fn();
-    renderWithProviders(<TagMultiSelect value={["a", "b"]} onChange={onChange} options={[]} />);
+    renderWithProviders(<TagMultiSelect value={['a', 'b']} onChange={onChange} options={[]} />);
 
     // remove the first tag
     const removeButtons = screen.getAllByRole('button', { name: /Remove/i });

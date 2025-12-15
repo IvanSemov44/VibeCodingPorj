@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderWithProviders, screen } from '../../test-utils';
+import { renderWithProviders, screen, userEvent } from '../../test-utils';
 import { vi } from 'vitest';
 import { ToastContainer, useToast } from '../../../components/Toast';
 import { addToast as addToastAction } from '../../../store/toastSlice';
@@ -8,8 +8,9 @@ import { act } from 'react-dom/test-utils';
 
 describe('Toast component and hook', () => {
   beforeEach(() => {
-    // ensure clean store state
+    // ensure clean store state and mocks
     store.dispatch({ type: 'toast/clearToasts' });
+    vi.clearAllMocks();
   });
 
   it('renders a toast from the store and allows manual removal', async () => {
@@ -35,18 +36,14 @@ describe('Toast component and hook', () => {
     try {
       const TestComp = () => {
         const { addToast } = useToast();
-        return (
-          <button onClick={() => addToast('from-hook', 'info', 1000)}>
-            fire
-          </button>
-        );
+        return <button onClick={() => addToast('from-hook', 'info', 1000)}>fire</button>;
       };
 
       renderWithProviders(
         <>
           <TestComp />
           <ToastContainer />
-        </>
+        </>,
       );
 
       const btn = screen.getByText('fire');
@@ -68,23 +65,13 @@ describe('Toast component and hook', () => {
       vi.useRealTimers();
     }
   });
-});
-import React from 'react';
-import { renderWithProviders, screen, userEvent } from '../../../tests/test-utils';
-import { vi } from 'vitest';
-import { ToastContainer, useToast } from '../../../components/Toast';
 
-function TestAdd() {
-  const { addToast } = useToast();
-  return <button onClick={() => addToast('hello', 'success', 0)}>Add</button>;
-}
+  it('shows a toast when addToast is called and can be dismissed (userEvent)', async () => {
+    function TestAdd() {
+      const { addToast } = useToast();
+      return <button onClick={() => addToast('hello', 'success', 0)}>Add</button>;
+    }
 
-describe('Toast', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('shows a toast when addToast is called and can be dismissed', async () => {
     renderWithProviders(
       <>
         <ToastContainer />
