@@ -135,7 +135,7 @@ export default function ToolForm({
         {({ values, setFieldValue, isSubmitting }) => (
           <Form>
             {error && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-200 text-red-800 rounded-lg text-sm">
+              <div className="mb-4 rounded-lg text-sm alert-error p-3">
                 {error}
               </div>
             )}

@@ -59,7 +59,7 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
   if (isLoading) return <div>Loading...</div>;
   if (error || setTypeMutation.error || disableMutation.error)
     return (
-      <div className="text-red-600">
+      <div className="text-[var(--danger)]">
         Error:{' '}
         {(error as unknown as { message?: string })?.message ??
           (setTypeMutation.error as unknown as { message?: string })?.message ??
@@ -88,37 +88,37 @@ export default function UserTwoFactorManager({ userId }: { userId: string }) {
       <div className="mt-3 flex gap-2 flex-wrap">
         <button
           onClick={() => setType('totp')}
-          className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+          className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer hover:bg-accent-hover transition-colors"
         >
           Enable TOTP
         </button>
         <button
           onClick={() => setType('email')}
-          className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+          className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer hover:bg-accent-hover transition-colors"
         >
           Set Email OTP
         </button>
         <button
           onClick={() => setType('telegram')}
-          className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+          className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer hover:bg-accent-hover transition-colors"
         >
           Set Telegram OTP
         </button>
         <button
           onClick={() => setType('none')}
-          className="py-1 px-2 bg-gray-600 text-white text-sm rounded border-none cursor-pointer hover:bg-gray-700 transition-colors"
+          className="py-1 px-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm rounded border-none cursor-pointer hover:bg-[var(--bg-tertiary)] transition-colors"
         >
           Set None
         </button>
         <button
           onClick={disable}
-          className="py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors"
+          className="py-1 px-2 bg-[var(--danger)] text-white text-sm rounded border-none cursor-pointer hover:bg-[var(--danger-hover)] transition-colors"
         >
           Disable 2FA
         </button>
       </div>
 
-      {message && <div className="mt-2 text-green-600">{message}</div>}
+      {message && <div className="mt-2 text-[var(--alert-success-text)]">{message}</div>}
     </div>
   );
 }

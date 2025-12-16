@@ -81,7 +81,7 @@ export default function ToolsIndex(): React.ReactElement {
       <div className="flex justify-between items-center flex-wrap gap-4">
         <h1 className="mb-4">AI Tools</h1>
         <Link href="/tools/new">
-          <button className="py-2 px-3 rounded-md bg-blue-600 text-white border-none cursor-pointer hover:bg-blue-700 transition-colors">
+          <button className="py-2 px-3 rounded-md bg-[var(--accent)] text-white border-none cursor-pointer hover:bg-[var(--accent-hover)] transition-colors">
             Add Tool
           </button>
         </Link>
@@ -92,19 +92,19 @@ export default function ToolsIndex(): React.ReactElement {
           placeholder="Search by name..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          className="w-full p-2.5 rounded-md border border-gray-200 box-border"
+          className="w-full p-2.5 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] box-border"
         />
       </div>
 
       <div className="flex gap-3 mb-3 items-center flex-wrap">
-        <select
+          <select
           value={selectedCategory}
           onChange={(e) => {
             setSelectedCategory(e.target.value);
             setPage(1);
             refetch();
           }}
-          className="p-2 rounded-md border border-gray-200"
+          className="p-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
         >
           <option value="">All categories</option>
           {categories.map((c) => (
@@ -120,7 +120,7 @@ export default function ToolsIndex(): React.ReactElement {
             setPage(1);
             refetch();
           }}
-          className="p-2 rounded-md border border-gray-200"
+          className="p-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
         >
           <option value="">All roles</option>
           {roles.map((r) => (
@@ -145,7 +145,7 @@ export default function ToolsIndex(): React.ReactElement {
         <div className="ml-auto">
           <button
             onClick={clearFilters}
-            className="py-1.5 px-2.5 rounded-md bg-gray-100 border border-gray-200 cursor-pointer hover:bg-gray-200 transition-colors"
+            className="py-1.5 px-2.5 rounded-md bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-tertiary)] transition-colors"
           >
             Clear filters
           </button>
@@ -155,7 +155,7 @@ export default function ToolsIndex(): React.ReactElement {
       {isLoading ? (
         <div>Loading...</div>
       ) : queryError ? (
-        <div className="p-3 bg-red-100 text-red-700 rounded-md">
+        <div className="p-3 rounded-md alert-error">
           Unable to load tools. {String(queryError)}
         </div>
       ) : (
@@ -178,7 +178,7 @@ export default function ToolsIndex(): React.ReactElement {
                   setPage(pn);
                 }}
                 disabled={!((metaData.current_page || page) > 1)}
-                className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                className="py-1.5 px-2.5 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--bg-secondary)] transition-colors"
               >
                 Prev
               </button>
@@ -186,9 +186,9 @@ export default function ToolsIndex(): React.ReactElement {
                 <button
                   key={pn}
                   onClick={() => setPage(pn)}
-                  className={`py-1.5 px-2 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors ${
-                    (metaData.current_page || page) === pn ? 'font-bold' : 'font-normal'
-                  }`}
+                  className={`py-1.5 px-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors ${
+                      (metaData.current_page || page) === pn ? 'font-bold' : 'font-normal'
+                    }`}
                 >
                   {pn}
                 </button>
@@ -198,7 +198,7 @@ export default function ToolsIndex(): React.ReactElement {
                   setPage(Math.min(metaData.last_page, (metaData.current_page || page) + 1))
                 }
                 disabled={!((metaData.current_page || page) < metaData.last_page)}
-                className="py-1.5 px-2.5 rounded-md border border-gray-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                className="py-1.5 px-2.5 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--bg-secondary)] transition-colors"
               >
                 Next
               </button>

@@ -87,7 +87,7 @@ export default function AdminCategories(): React.ReactElement {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="mt-1 p-2 border border-gray-200 rounded-md"
+            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--primary-bg)] text-[var(--text-primary)]"
           />
         </div>
         <div className="mt-2">
@@ -96,21 +96,21 @@ export default function AdminCategories(): React.ReactElement {
           <input
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            className="mt-1 p-2 border border-gray-200 rounded-md"
+            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--primary-bg)] text-[var(--text-primary)]"
           />
         </div>
         <div className="mt-3">
           <button
             type="submit"
             disabled={saving}
-            className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors"
+            className="py-2 px-3 bg-[var(--accent)] text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--accent-hover)] transition-colors"
           >
             {saving ? 'Saving...' : 'Create'}
           </button>
         </div>
       </form>
 
-      {error && <div className="text-red-600">{error}</div>}
+      {error && <div className="text-[var(--danger)]">{error}</div>}
 
       {isLoading ? (
         <div>Loading...</div>
@@ -118,9 +118,9 @@ export default function AdminCategories(): React.ReactElement {
         <table className="border-0 w-full">
           <thead>
             <tr className="text-left">
-              <th className="p-2 border-b border-gray-200">Name</th>
-              <th className="p-2 border-b border-gray-200">Slug</th>
-              <th className="p-2 border-b border-gray-200">Actions</th>
+              <th className="p-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">Name</th>
+              <th className="p-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">Slug</th>
+              <th className="p-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -161,13 +161,13 @@ function CategoryRow({
   }
 
   return (
-    <tr className="border-b border-gray-100">
+    <tr className="border-b border-[var(--border-color)]">
       <td className="p-2">
         {editing ? (
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="p-1 border border-gray-200 rounded"
+            className="p-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)]"
           />
         ) : (
           category.name
@@ -178,7 +178,7 @@ function CategoryRow({
           <input
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            className="p-1 border border-gray-200 rounded"
+            className="p-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)]"
           />
         ) : (
           category.slug
@@ -190,13 +190,13 @@ function CategoryRow({
             <button
               onClick={save}
               disabled={saving}
-              className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors"
+              className="py-1 px-2 bg-[var(--success)] text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-[var(--success-hover)] transition-colors"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors"
+              className="ml-2 py-1 px-2 bg-[var(--secondary-bg)] text-[var(--text-primary)] text-sm rounded border-none cursor-pointer hover:bg-[var(--secondary-bg-hover)] transition-colors"
             >
               Cancel
             </button>
@@ -205,13 +205,13 @@ function CategoryRow({
           <>
             <button
               onClick={() => setEditing(true)}
-              className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+              className="py-1 px-2 bg-[var(--accent)] text-white text-sm rounded border-none cursor-pointer hover:bg-[var(--accent-hover)] transition-colors"
             >
               Edit
             </button>
             <button
               onClick={() => onDelete(category.id)}
-              className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors"
+              className="ml-2 py-1 px-2 bg-[var(--danger)] text-white text-sm rounded border-none cursor-pointer hover:bg-[var(--danger-hover)] transition-colors"
             >
               Delete
             </button>

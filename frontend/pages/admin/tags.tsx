@@ -87,7 +87,7 @@ export default function AdminTags(): React.ReactElement {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="mt-1 p-2 border border-gray-200 rounded-md"
+            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--bg-primary)] text-[var(--text-primary)]"
           />
         </div>
         <div className="mt-2">
@@ -96,7 +96,7 @@ export default function AdminTags(): React.ReactElement {
           <input
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            className="mt-1 p-2 border border-gray-200 rounded-md"
+            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--bg-primary)] text-[var(--text-primary)]"
           />
         </div>
         <div className="mt-3">
@@ -110,7 +110,7 @@ export default function AdminTags(): React.ReactElement {
         </div>
       </form>
 
-      {error && <div className="text-red-600">{error}</div>}
+      {error && <div className="text-[var(--alert-error-text)]">{error}</div>}
 
       {isLoading ? (
         <div>Loading...</div>
@@ -118,9 +118,9 @@ export default function AdminTags(): React.ReactElement {
         <table className="border-0 w-full">
           <thead>
             <tr className="text-left">
-              <th className="p-2 border-b border-gray-200">Name</th>
-              <th className="p-2 border-b border-gray-200">Slug</th>
-              <th className="p-2 border-b border-gray-200">Actions</th>
+              <th className="p-2 border-b border-[var(--border-color)]">Name</th>
+              <th className="p-2 border-b border-[var(--border-color)]">Slug</th>
+              <th className="p-2 border-b border-[var(--border-color)]">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -156,13 +156,13 @@ function TagRow({
   }
 
   return (
-    <tr className="border-b border-gray-100">
+    <tr className="border-b border-[var(--border-color)]">
       <td className="p-2">
         {editing ? (
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="p-1 border border-gray-200 rounded"
+            className="p-1 border border-[var(--border-color)] rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
           />
         ) : (
           tag.name
@@ -173,7 +173,7 @@ function TagRow({
           <input
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            className="p-1 border border-gray-200 rounded"
+            className="p-1 border border-[var(--border-color)] rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
           />
         ) : (
           tag.slug
@@ -185,13 +185,13 @@ function TagRow({
             <button
               onClick={save}
               disabled={saving}
-              className="py-1 px-2 bg-green-600 text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-green-700 transition-colors"
+              className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-accent-hover transition-colors"
             >
               {saving ? 'Saving...' : 'Save'}
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="ml-2 py-1 px-2 bg-gray-200 text-gray-800 text-sm rounded border-none cursor-pointer hover:bg-gray-300 transition-colors"
+              className="ml-2 py-1 px-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm rounded border-none cursor-pointer hover:bg-[var(--bg-tertiary)] transition-colors"
             >
               Cancel
             </button>
@@ -200,7 +200,7 @@ function TagRow({
           <>
             <button
               onClick={() => setEditing(true)}
-              className="py-1 px-2 bg-blue-600 text-white text-sm rounded border-none cursor-pointer hover:bg-blue-700 transition-colors"
+              className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer hover:bg-accent-hover transition-colors"
             >
               Edit
             </button>

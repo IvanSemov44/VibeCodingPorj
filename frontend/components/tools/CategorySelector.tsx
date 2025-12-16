@@ -36,8 +36,8 @@ export default function CategorySelector({
               onClick={() => toggleCategory(c.id)}
               className={`px-2.5 py-1.5 rounded-md border-none cursor-pointer text-[13px] font-medium transition-all ${
                 isSelected
-                  ? 'bg-[#059669] text-white'
-                  : 'bg-gray-100 text-inherit hover:bg-gray-200'
+                  ? 'bg-accent text-white'
+                  : 'bg-[var(--bg-secondary)] text-inherit hover:bg-[var(--bg-tertiary)]'
               }`}
             >
               {c.name}

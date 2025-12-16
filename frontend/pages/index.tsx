@@ -15,13 +15,13 @@ export default function Home(): React.ReactElement {
           <div className="flex gap-3">
             <Link
               href="/register"
-              className="py-3 px-[18px] bg-accent text-white rounded-lg no-underline font-semibold transition-colors hover:bg-accent-hover"
+              className="py-3 px-[18px] bg-[var(--accent)] text-white rounded-lg no-underline font-semibold transition-colors hover:bg-[var(--accent-hover)]"
             >
               Get Started
             </Link>
             <Link
               href="/login"
-              className="py-3 px-[18px] bg-transparent text-primary-text rounded-lg no-underline font-semibold border border-border transition-all hover:border-accent hover:text-accent"
+              className="py-3 px-[18px] bg-transparent text-[var(--text-primary)] rounded-lg no-underline font-semibold border border-[var(--border-color)] transition-all hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               Sign In
             </Link>

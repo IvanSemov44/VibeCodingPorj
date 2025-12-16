@@ -56,7 +56,7 @@ export default function JournalForm({
       <h3 className="m-0 mb-4 text-lg font-semibold text-primary-text">✨ Record Your Adventure</h3>
 
       {error && (
-        <div className="p-3 bg-[#ef444420] border border-[#ef4444] rounded-lg text-[#ef4444] text-sm mb-4">
+        <div className="p-3 rounded-lg text-sm alert-error mb-4">
           {error}
         </div>
       )}

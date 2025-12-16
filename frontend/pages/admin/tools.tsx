@@ -95,7 +95,7 @@ export default function AdminToolsPage() {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border">
+          <table className="min-w-full bg-[var(--card-bg)] border border-[var(--border-color)]">
             <thead>
               <tr>
                 <th className="p-2 text-left">Name</th>
@@ -111,20 +111,20 @@ export default function AdminToolsPage() {
                   <td className="p-2">{t.user?.name ?? t.author_name}</td>
                   <td className="p-2">{t.status ?? (t.is_approved ? 'Approved' : 'Unknown')}</td>
                   <td className="p-2">
-                    <a href={`/tools/${t.slug ?? t.id}`} className="text-primary mr-2">
+                      <a href={`/tools/${t.slug ?? t.id}`} className="text-[var(--accent)] mr-2">
                       View
                     </a>
                     {t.status === 'pending' || t.is_pending ? (
                         isAdmin ? (
                           <>
                             <button
-                              className="ml-2 px-2 py-1 bg-green-500 text-white rounded"
+                              className="ml-2 px-2 py-1 bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-hover)]"
                               onClick={() => requestApprove(t)}
                             >
                               Approve
                             </button>
                             <button
-                              className="ml-2 px-2 py-1 bg-red-500 text-white rounded"
+                              className="ml-2 px-2 py-1 bg-[var(--danger)] text-white rounded hover:bg-[var(--danger-hover)]"
                               onClick={() => setRejectingTool(t)}
                             >
                               Reject
@@ -146,15 +146,15 @@ export default function AdminToolsPage() {
       {!pendingMode && (
         <div className="mt-4 flex items-center gap-2">
           <button
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
             onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: Math.max(1, Number(payload?.meta?.current_page || 1) - 1) } })}
             disabled={(payload?.meta?.current_page || 1) <= 1}
           >
             Previous
           </button>
-          <div>Page {payload?.meta?.current_page || 1} of {payload?.meta?.last_page || '-'}</div>
+          <div className="text-[var(--text-primary)]">Page {payload?.meta?.current_page || 1} of {payload?.meta?.last_page || '-'}</div>
           <button
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
             onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: Number(payload?.meta?.current_page || 1) + 1 } })}
             disabled={payload?.meta?.current_page >= payload?.meta?.last_page}
           >
@@ -170,14 +170,14 @@ export default function AdminToolsPage() {
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full border rounded p-2 h-24"
+              className="w-full border border-[var(--border-color)] rounded p-2 h-24 bg-[var(--primary-bg)] text-[var(--text-primary)]"
             />
             <div className="mt-3 flex justify-end gap-2">
-              <button className="px-3 py-2 bg-gray-200 rounded" onClick={() => setRejectingTool(null)}>
+              <button className="px-3 py-2 bg-[var(--secondary-bg)] rounded text-[var(--text-primary)]" onClick={() => setRejectingTool(null)}>
                 Cancel
               </button>
               <button
-                className="px-3 py-2 bg-red-500 text-white rounded"
+                className="px-3 py-2 bg-[var(--danger)] text-white rounded"
                 onClick={async () => {
                   await handleReject(rejectingTool.id, rejectReason || undefined);
                   setRejectingTool(null);

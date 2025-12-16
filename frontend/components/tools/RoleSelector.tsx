@@ -35,8 +35,8 @@ export default function RoleSelector({
               onClick={() => toggleRole(r.id)}
               className={`px-2.5 py-1.5 rounded-md border-none cursor-pointer text-[13px] font-medium transition-all ${
                 isSelected
-                  ? 'bg-[#2563eb] text-white'
-                  : 'bg-gray-100 text-inherit hover:bg-gray-200'
+                  ? 'bg-accent text-white'
+                  : 'bg-[var(--bg-secondary)] text-inherit hover:bg-[var(--bg-tertiary)]'
               }`}
             >
               {r.name}

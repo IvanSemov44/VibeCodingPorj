@@ -35,7 +35,7 @@ export default function TextAreaField({
         rows={rows}
         className="w-full px-3 py-2 bg-primary-bg border border-border rounded-md text-sm text-primary-text outline-none focus:border-accent transition-colors resize-y font-[inherit]"
       />
-      <div className="text-xs text-gray-500 mt-1 text-right">
+      <div className="text-xs text-[var(--text-secondary)] mt-1 text-right">
         {(value || '').length}/{maxLength}
       </div>
       <ErrorMessage name={name} component="div" className="error" />

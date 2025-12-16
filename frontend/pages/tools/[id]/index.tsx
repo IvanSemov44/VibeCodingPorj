@@ -36,17 +36,17 @@ export default function ToolDetailPage(): React.ReactElement | null {
     <div className="max-w-[900px] my-6 mx-auto">
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h1 className="m-0">{name}</h1>
-          <div className="text-gray-500">{description}</div>
+          <h1 className="m-0 text-[var(--text-primary)]">{name}</h1>
+          <div className="text-[var(--text-secondary)]">{description}</div>
         </div>
         <div className="flex gap-2">
           <a href={url} target="_blank" rel="noreferrer">
-            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+            <button className="py-2 px-3 rounded-md border border-[var(--border-color)] cursor-pointer hover:bg-[var(--secondary-bg-hover)] transition-colors bg-[var(--primary-bg)] text-[var(--text-primary)]">
               Visit
             </button>
           </a>
           <Link href={`/tools/${tool.id}/edit`}>
-            <button className="py-2 px-3 rounded-md border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+            <button className="py-2 px-3 rounded-md border border-[var(--border-color)] cursor-pointer hover:bg-[var(--secondary-bg-hover)] transition-colors bg-[var(--primary-bg)] text-[var(--text-primary)]">
               Edit
             </button>
           </Link>
@@ -60,7 +60,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
             href={t.docs_url as string}
             target="_blank"
             rel="noreferrer"
-            className="text-accent hover:text-accent-hover"
+            className="text-[var(--accent)] hover:text-[var(--accent-hover)]"
           >
             Open docs
           </a>
@@ -112,13 +112,13 @@ export default function ToolDetailPage(): React.ReactElement | null {
           <strong>Screenshots</strong>
           <div className="flex gap-2 mt-2 flex-wrap">
             {tool.screenshots.map((s) => (
-              <Image
+                <Image
                 key={s}
                 src={s}
                 alt="screenshot"
                 width={240}
                 height={160}
-                className="object-cover rounded-md border border-gray-200"
+                className="object-cover rounded-md border border-[var(--border-color)]"
               />
             ))}
           </div>

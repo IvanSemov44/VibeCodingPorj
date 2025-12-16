@@ -117,7 +117,7 @@ export default function ScreenshotManager({
                 alt="screenshot"
                 width={120}
                 height={80}
-                className="object-cover rounded-md border border-gray-300"
+                className="object-cover rounded-md border border-[var(--border-color)]"
               />
               <button
                 type="button"

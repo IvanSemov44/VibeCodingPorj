@@ -13,12 +13,39 @@
   --border-hover: #cbd5e1;
   --accent-primary: #0070f3;
   --accent-hover: #0051cc;
+  /* Compatibility aliases used by components */
+  --accent: var(--accent-primary);
+  --accent-hover: var(--accent-hover);
+  --primary-bg: var(--bg-primary);
+  --secondary-bg: var(--bg-secondary);
+  --secondary-bg-hover: #f1f5f9;
+  --success: #16a34a; /* green-600 */
+  --success-hover: #15803d; /* green-700 */
+  --danger: #ef4444; /* red-500 */
+  --danger-hover: #dc2626; /* red-600 */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --card-bg: #ffffff;
   --header-bg: #ffffff;
   --footer-bg: #f9fafb;
+
+  /* Alert colors */
+  --alert-success-bg: #ecfdf5;
+  --alert-success-border: #bbf7d0;
+  --alert-success-text: #065f46;
+
+  --alert-error-bg: #fef2f2;
+  --alert-error-border: #fecaca;
+  --alert-error-text: #991b1b;
+
+  --alert-warning-bg: #fffbeb;
+  --alert-warning-border: #fef3c7;
+  --alert-warning-text: #92400e;
+
+  --alert-info-bg: #eff6ff;
+  --alert-info-border: #bfdbfe;
+  --alert-info-text: #1e3a8a;
 }
 
 :root[data-theme='dark'] {
@@ -32,12 +59,39 @@
   --border-hover: #475569;
   --accent-primary: #3b82f6;
   --accent-hover: #2563eb;
+  /* Compatibility aliases used by components */
+  --accent: var(--accent-primary);
+  --accent-hover: var(--accent-hover);
+  --primary-bg: var(--bg-primary);
+  --secondary-bg: var(--bg-secondary);
+  --secondary-bg-hover: #2b3440;
+  --success: #059669; /* green-500 adjusted for dark */
+  --success-hover: #047857; /* green-600 */
+  --danger: #ef4444; /* keep red visible in dark */
+  --danger-hover: #dc2626;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
   --card-bg: #1e293b;
   --header-bg: #1e293b;
   --footer-bg: #0f172a;
+
+  /* Alert colors - adjusted for dark */
+  --alert-success-bg: #052e1f20;
+  --alert-success-border: #064e3b40;
+  --alert-success-text: #bbf7d0;
+
+  --alert-error-bg: #3f1a1a20;
+  --alert-error-border: #7f1d1d40;
+  --alert-error-text: #fecaca;
+
+  --alert-warning-bg: #3f341e20;
+  --alert-warning-border: #63572a40;
+  --alert-warning-text: #fef3c7;
+
+  --alert-info-bg: #0f172a20;
+  --alert-info-border: #1e3a8a40;
+  --alert-info-text: #bfdbfe;
 }
 
 body {
@@ -74,4 +128,26 @@ button {
 
 :root[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
+}
+
+/* Alert utility classes that respect theme variables */
+.alert-success {
+  background: var(--alert-success-bg);
+  border: 1px solid var(--alert-success-border);
+  color: var(--alert-success-text);
+}
+.alert-error {
+  background: var(--alert-error-bg);
+  border: 1px solid var(--alert-error-border);
+  color: var(--alert-error-text);
+}
+.alert-warning {
+  background: var(--alert-warning-bg);
+  border: 1px solid var(--alert-warning-border);
+  color: var(--alert-warning-text);
+}
+.alert-info {
+  background: var(--alert-info-bg);
+  border: 1px solid var(--alert-info-border);
+  color: var(--alert-info-text);
 }
