@@ -30,7 +30,6 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
       alert('Failed to delete');
     }
   };
-
   return (
     <div className="bg-[var(--card-bg)] border border-border rounded-xl p-4 transition-all hover:shadow-md">
       <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -56,6 +55,7 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
             <div className="text-sm text-secondary-text line-clamp-2">{tool.description ?? ''}</div>
           </div>
         </div>
+
         <div className="flex items-center gap-2 flex-shrink-0">
           {tool.url ? (
             <a
@@ -69,23 +69,24 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
           ) : (
             <span className="px-3 py-1.5 text-sm font-medium text-tertiary-text">Visit</span>
           )}
-          {canManage ? (
-            <>
-              <Link href={`/tools/${tool.id}/edit`}>
-                <button className="px-3 py-1.5 bg-accent text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-accent-hover">
-                  Edit
-                </button>
-              </Link>
-              <button
-                onClick={handleDelete}
-                className="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-red-600"
-              >
-                Delete
-              </button>
-            </>
-          ) : null}
         </div>
       </div>
+
+      {canManage ? (
+        <div className="mt-3 flex items-center justify-end gap-2">
+          <Link href={`/tools/${tool.id}/edit`}>
+            <button className="px-3 py-1 text-sm rounded-md border border-transparent bg-accent text-white hover:bg-accent-hover transition-colors">
+              Edit
+            </button>
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1 text-sm rounded-md border border-red-300 text-red-700 hover:bg-red-50 transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

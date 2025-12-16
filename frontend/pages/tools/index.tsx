@@ -42,6 +42,8 @@ export default function ToolsIndex(): React.ReactElement {
     if (selectedRole) p.role = selectedRole;
     if (selectedTags && selectedTags.length > 0) p.tags = selectedTags.join(',');
     p.per_page = perPage;
+    // Only show approved tools on the public tools listing
+    p.status = 'approved';
     return p;
   }, [qDebounced, page, selectedCategory, selectedRole, selectedTags, perPage]);
 

@@ -41,6 +41,18 @@ final class ToolController extends Controller
             $query->whereHas('roles', fn ($r) => $r->where('name', $role));
         }
 
+        // Allow filtering by status (approved, pending, rejected)
+        if ($status = $request->query('status')) {
+            $allowed = [
+                ToolStatus::APPROVED->value,
+                ToolStatus::PENDING->value,
+                ToolStatus::REJECTED->value,
+            ];
+            if (in_array($status, $allowed, true)) {
+                $query->where('status', $status);
+            }
+        }
+
         // Support single `tag` or comma-separated `tags` parameter for filtering
         if ($tag = $request->query('tag')) {
             $query->whereHas('tags', fn ($t) => $t->where('slug', $tag)->orWhere('name', $tag));

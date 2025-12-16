@@ -1,4 +1,3 @@
-remove edit and delete button for not authorized user for tool list
 Page Tools list only approved tools
 admin/tool show images
 update pagination logic for Active Users and Tools and Pending Tool Approvals
@@ -11,3 +10,5 @@ Add ban/activate actions for users listed on the Admin Users page.
 
 
 DONE:
+remove edit and delete button for not authorized user for tool list
+Page Tools list only approved tools
