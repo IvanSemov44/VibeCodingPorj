@@ -74,8 +74,9 @@ Route::middleware([
         Route::get('2fa/qr-svg', [\App\Http\Controllers\Api\TwoFactorController::class, 'qrSvg']);
 
         // Admin routes: user management and tool approvals
-        // Note: RBAC enforced via controller policies/Gates; middleware removed to simplify testing.
-        Route::prefix('admin')->group(function () {
+        // Protect admin API endpoints with explicit middleware so only
+        // users with the `admin` or `owner` role can access them.
+        Route::middleware('admin_or_owner')->prefix('admin')->group(function () {
             Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store']);
             Route::post('users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
             Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserController::class, 'activate']);

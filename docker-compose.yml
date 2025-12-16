@@ -1,10 +1,10 @@
 # Docker Compose Configuration for vibecode-full-stack-starter-kit
 # Tech Stack: Laravel Backend + Next.js Frontend
 # Assigned ports: 8200-8204
-# 
+#
 # Usage:
 #   docker compose up -d
-#   docker compose logs -f  
+#   docker compose logs -f
 #   docker compose down
 
 services:
@@ -22,7 +22,7 @@ services:
     entrypoint: ["/bin/sh", "/app/docker-entrypoint.sh"]
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:8201/api
+      - NEXT_PUBLIC_API_URL=http://backend/api
       - LIGHTNING_CSS_USE_WASM=1
       - WATCHPACK_POLLING=true
     restart: unless-stopped

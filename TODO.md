@@ -6,6 +6,8 @@ update all component have dark mode
 Add server-side protection UI (hide actions when user is not admin).
 Add ban/activate actions for users listed on the Admin Users page.
 
+Add server-side unit tests for EnsureAdminOrOwner middleware.
+Add an e2e test that logs in and verifies /admin access.
 
 DONE:
 remove edit and delete button for not authorized user for tool list

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGetAdminUsersQuery } from '../../../store/domains';
-import AdminGuard from '../../../components/admin/AdminGuard';
+// AdminGuard removed: rely on Next middleware for server-side protection
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -16,8 +16,7 @@ export default function AdminUsersPage() {
   const meta = (data && (data as any).meta) || {};
 
   return (
-    <AdminGuard>
-      <div>
+    <div>
         <h1 className="text-2xl font-bold mb-4">Active Users</h1>
 
       <div className="mb-4 flex gap-2">
@@ -86,6 +85,5 @@ export default function AdminUsersPage() {
         </button>
       </div>
       </div>
-    </AdminGuard>
   );
 }
