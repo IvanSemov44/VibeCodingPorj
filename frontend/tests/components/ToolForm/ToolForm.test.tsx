@@ -9,6 +9,8 @@ vi.mock('../../../store/domains', () => ({
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
   useGetTagsQuery: vi.fn(),
+  useDeleteToolScreenshotMutation: vi.fn(),
+  useGetCsrfMutation: vi.fn(),
 }));
 
 // mock toast
@@ -19,11 +21,18 @@ import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
+  useDeleteToolScreenshotMutation,
+  useGetCsrfMutation,
 } from '../../../store/domains';
 
 describe('ToolForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (useDeleteToolScreenshotMutation as unknown as any).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ]);
+    (useGetCsrfMutation as unknown as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
   });
 
   test('submits create mutation when creating a new tool', async () => {

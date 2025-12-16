@@ -2,7 +2,7 @@ import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../../tests/test-utils';
 import { act } from '@testing-library/react';
 import ErrorBoundary from '../../../components/ErrorBoundary';
-import { describe, test, expect } from 'vitest';
+import { vi, describe, test, expect } from 'vitest';
 import Bomb from '../Bomb';
 
 describe('ErrorBoundary', () => {

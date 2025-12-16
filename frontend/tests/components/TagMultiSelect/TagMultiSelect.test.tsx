@@ -6,32 +6,26 @@ import { fireEvent } from '@testing-library/react';
 vi.mock('../../../store/domains', () => ({
   useGetTagsQuery: () => ({ data: [{ name: 'vitest' }, { name: 'testing' }], isLoading: false }),
 }));
-// Temporarily stop the global MSW server for this unit test file to avoid
-// cross-test open-handle issues when running this file in isolation.
+// This test mocks `useGetTagsQuery` directly; do not manipulate the global MSW server here.
+// Manipulating the shared MSW server can cause race conditions when Vitest runs files in parallel.
+// If a test file truly needs isolated MSW control, add a dedicated setup for that file.
+// (See tests/setupTests.ts for global server lifecycle.)
 import { server } from '../../../tests/mockServer';
 import TagMultiSelect from '../../../components/TagMultiSelect';
 
 describe('TagMultiSelect', () => {
   beforeAll(() => {
-    try {
-      server.close();
-    } catch (e) {
-      // ignore if server wasn't running
-    }
+    // Intentionally left blank: do not close the shared MSW server here.
   });
 
   afterAll(() => {
-    try {
-      server.listen({ onUnhandledRequest: 'warn' });
-    } catch (e) {
-      // ignore if cannot restart
-    }
+    // Intentionally left blank: do not restart the shared MSW server here.
   });
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it.skip('renders existing tags and adds suggestion on click', async () => {
+  it('renders existing tags and adds suggestion on click', async () => {
     console.debug('TagMultiSelect.test: start first case');
     const onChange = vi.fn();
     render(
@@ -56,7 +50,7 @@ describe('TagMultiSelect', () => {
     console.debug('first case done');
   });
 
-  it.skip('creates a new tag when pressing Enter', async () => {
+  it('creates a new tag when pressing Enter', async () => {
     console.debug('TagMultiSelect.test: start second case');
     const onChange = vi.fn();
     render(<TagMultiSelect value={[]} onChange={onChange} options={[]} />);

@@ -30,15 +30,18 @@ describe('useAsync', () => {
 describe('useDebounce', () => {
   test('debounces value', async () => {
     vi.useFakeTimers();
-    const { result, rerender } = renderHook(({ v, d }) => useDebounce(v, d), {
-      initialProps: { v: 'a', d: 50 },
-    });
-    expect(result.current).toBe('a');
-    rerender({ v: 'b', d: 50 });
-    act(() => {
-      vi.advanceTimersByTime(60);
-    });
-    expect(result.current).toBe('b');
-    vi.useRealTimers();
+    try {
+      const { result, rerender } = renderHook(({ v, d }) => useDebounce(v, d), {
+        initialProps: { v: 'a', d: 50 },
+      });
+      expect(result.current).toBe('a');
+      rerender({ v: 'b', d: 50 });
+      act(() => {
+        vi.advanceTimersByTime(60);
+      });
+      expect(result.current).toBe('b');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

@@ -13,21 +13,28 @@ vi.mock('../../../store/domains', () => ({
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
   useGetTagsQuery: vi.fn(),
+  useGetCsrfMutation: vi.fn(),
+  useDeleteToolScreenshotMutation: vi.fn(),
 }));
 
-// ensure csrf call doesn't fail
-vi.mock('../../../lib/api', () => ({ getCsrf: vi.fn() }));
 
 import ToolForm from '../../../components/ToolForm';
 import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
+  useGetCsrfMutation,
+  useDeleteToolScreenshotMutation,
 } from '../../../store/domains';
 
 describe('ToolForm branch coverage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (useGetCsrfMutation as unknown as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
+    (useDeleteToolScreenshotMutation as unknown as any).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ]);
   });
 
   test('update path uploads files and shows updated toast', async () => {

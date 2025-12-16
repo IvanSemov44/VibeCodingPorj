@@ -6,7 +6,8 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { ErrorMessage } from 'formik';
-import { deleteToolScreenshot, getCsrf } from '../../lib/api';
+import { useDeleteToolScreenshotMutation } from '../../store/domains';
+import { useGetCsrfMutation } from '../../store/domains';
 
 interface ScreenshotManagerProps {
   screenshots: string[];
@@ -46,6 +47,9 @@ export default function ScreenshotManager({
     setScreenshotUrl('');
   };
 
+  const [deleteTrigger] = useDeleteToolScreenshotMutation();
+  const [csrfTrigger] = useGetCsrfMutation();
+
   const handleDelete = async (screenshotUrl: string) => {
     if (!toolId) {
       onScreenshotsChange(screenshots.filter((x) => x !== screenshotUrl));
@@ -56,14 +60,14 @@ export default function ScreenshotManager({
 
     setDeleting(true);
     try {
-      const body = await deleteToolScreenshot(toolId, screenshotUrl);
+      const body = await deleteTrigger({ id: toolId, url: screenshotUrl }).unwrap();
       const updated = body?.screenshots || screenshots.filter((x) => x !== screenshotUrl);
       onScreenshotsChange(updated);
     } catch (err: unknown) {
       if (hasStatus(err) && err.status === 401) {
         try {
-          await getCsrf();
-          const body2 = await deleteToolScreenshot(toolId, screenshotUrl);
+          await csrfTrigger().unwrap();
+          const body2 = await deleteTrigger({ id: toolId, url: screenshotUrl }).unwrap();
           const updated2 = body2?.screenshots || screenshots.filter((x) => x !== screenshotUrl);
           onScreenshotsChange(updated2);
         } catch (err2: unknown) {

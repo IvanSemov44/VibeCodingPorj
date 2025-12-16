@@ -48,6 +48,23 @@ export function useUploadToolScreenshotsMutation() {
   });
 }
 
+export function useDeleteToolScreenshotMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<{ screenshots?: string[] }, Error, { id: string | number; url: string }>({
+    mutationFn: async ({ id, url }) => api.deleteToolScreenshot(id, url),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOL, String(vars.id)] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
+    },
+  });
+
+  const trigger = ({ id, url }: { id: string | number; url: string }) => ({
+    unwrap: () => m.mutateAsync({ id, url }),
+  });
+
+  return [trigger, m] as const;
+}
+
 export function useDeleteToolMutation() {
   const qc = useQueryClient();
   const m = useMutation<void, Error, string | number>({

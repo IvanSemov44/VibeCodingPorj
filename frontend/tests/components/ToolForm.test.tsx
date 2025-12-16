@@ -27,7 +27,7 @@ describe('ToolForm', () => {
     root?.remove();
   });
 
-  it.skip('submits create flow and calls create trigger', async () => {
+  it('submits create flow and calls create trigger', async () => {
     const api = await import('../../store/domains');
     const createTrigger = vi.fn(() => ({ unwrap: () => Promise.resolve({ id: 123 }) }));
     vi.mocked(api.useCreateToolMutation).mockReturnValue([createTrigger, {}] as any);

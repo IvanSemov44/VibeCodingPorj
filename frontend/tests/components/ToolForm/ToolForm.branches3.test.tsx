@@ -7,32 +7,32 @@ import { vi } from 'vitest';
 const addToast = vi.fn();
 vi.mock('../../../components/Toast', () => ({ useToast: () => ({ addToast }) }));
 
-// mock react-query hooks used inside ToolForm
+// mock react-query hooks used inside ToolForm (register mocks before importing module)
 vi.mock('../../../store/domains', () => ({
   useCreateToolMutation: vi.fn(),
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
   useGetTagsQuery: vi.fn(),
+  useGetCsrfMutation: vi.fn(),
+  useDeleteToolScreenshotMutation: vi.fn(),
 }));
 
-// ensure csrf call doesn't fail
-vi.mock('../../../lib/api', () => ({ getCsrf: vi.fn() }));
-
 import ToolForm from '../../../components/ToolForm';
-import {
-  useCreateToolMutation,
-  useUpdateToolMutation,
-  useUploadToolScreenshotsMutation,
-  useGetTagsQuery,
-} from '../../../store/domains';
+import * as domains from '../../../store/domains';
 
 describe('ToolForm additional branches', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     addToast.mockClear();
+    (domains.useGetCsrfMutation as unknown as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
+
+    (domains.useDeleteToolScreenshotMutation as unknown as any).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ]);
 
     // Mock useGetTagsQuery to return empty data
-    (useGetTagsQuery as unknown as any).mockReturnValue({
+    (domains.useGetTagsQuery as unknown as any).mockReturnValue({
       data: [],
       isLoading: false,
       error: null,
@@ -42,17 +42,17 @@ describe('ToolForm additional branches', () => {
   test('create path success without files shows created toast and calls onSaved', async () => {
     const mockCreateUnwrap = vi.fn().mockResolvedValue({ id: 11, name: 'New Tool' });
     const createFn = vi.fn().mockReturnValue({ unwrap: mockCreateUnwrap });
-    (useCreateToolMutation as unknown as any).mockReturnValue([
+    (domains.useCreateToolMutation as unknown as any).mockReturnValue([
       createFn,
       { isLoading: false, error: null },
     ]);
 
     // ensure update/upload exist
-    (useUpdateToolMutation as unknown as any).mockReturnValue([
+    (domains.useUpdateToolMutation as unknown as any).mockReturnValue([
       vi.fn(),
       { isLoading: false, error: null },
     ]);
-    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
+    (domains.useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
       vi.fn(),
       { isLoading: false, error: null },
     ]);
@@ -79,17 +79,17 @@ describe('ToolForm additional branches', () => {
   test('update path failure surfaces error and sets error box', async () => {
     const mockUpdateUnwrap = vi.fn().mockRejectedValue(new Error('update-fail'));
     const updateFn = vi.fn().mockReturnValue({ unwrap: mockUpdateUnwrap });
-    (useUpdateToolMutation as unknown as any).mockReturnValue([
+    (domains.useUpdateToolMutation as unknown as any).mockReturnValue([
       updateFn,
       { isLoading: false, error: null },
     ]);
 
     // create/upload stubs
-    (useCreateToolMutation as unknown as any).mockReturnValue([
+    (domains.useCreateToolMutation as unknown as any).mockReturnValue([
       vi.fn(),
       { isLoading: false, error: null },
     ]);
-    (useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
+    (domains.useUploadToolScreenshotsMutation as unknown as any).mockReturnValue([
       vi.fn(),
       { isLoading: false, error: null },
     ]);

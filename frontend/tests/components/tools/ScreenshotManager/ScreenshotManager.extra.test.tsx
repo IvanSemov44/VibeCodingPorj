@@ -9,15 +9,15 @@ vi.mock('next/image', () => ({
   default: (props: any) => React.createElement('img', { src: props.src, alt: props.alt }),
 }));
 
-// Mock api helpers
-vi.mock('../../../../lib/api', () => ({
-  deleteToolScreenshot: vi.fn(),
-  getCsrf: vi.fn(),
+// Mock domain hooks
+vi.mock('../../../../store/domains', () => ({
+  useDeleteToolScreenshotMutation: vi.fn(),
+  useGetCsrfMutation: vi.fn(),
 }));
 
 import ScreenshotManager from '../../../../components/tools/ScreenshotManager';
 import { renderWithProviders } from '../../../../tests/test-utils';
-import { deleteToolScreenshot, getCsrf } from '../../../../lib/api';
+import * as domains from '../../../../store/domains';
 
 describe('ScreenshotManager edge cases', () => {
   beforeEach(() => {
@@ -25,6 +25,10 @@ describe('ScreenshotManager edge cases', () => {
     // default global confirm/alert
     global.confirm = vi.fn(() => true) as any;
     global.alert = vi.fn() as any;
+    // provide safe default hook returns so component can destructure
+    const defaultTrigger = () => ({ unwrap: () => Promise.resolve() });
+    vi.mocked(domains.useDeleteToolScreenshotMutation).mockReturnValue([defaultTrigger, {}] as any);
+    vi.mocked(domains.useGetCsrfMutation).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}] as any);
   });
 
   test('adds invalid url shows alert and does not call change', () => {
@@ -100,7 +104,9 @@ describe('ScreenshotManager edge cases', () => {
   test('delete with toolId performs API delete and updates', async () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
-    (deleteToolScreenshot as any).mockResolvedValue({ screenshots: ['b'] });
+    const mutateAsync = vi.fn().mockResolvedValue({ screenshots: ['b'] });
+    const trigger = vi.fn(() => ({ unwrap: () => mutateAsync() }));
+    vi.mocked(domains.useDeleteToolScreenshotMutation).mockReturnValue([trigger, {}] as any);
 
     const { getByText } = renderWithProviders(
       <Formik initialValues={{ screenshots: ['a', 'b'] }} onSubmit={() => {}}>
@@ -123,20 +129,22 @@ describe('ScreenshotManager edge cases', () => {
     ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
-    await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalled());
+    await waitFor(() => expect(trigger).toHaveBeenCalled());
     expect(onChange).toHaveBeenCalledWith(['b']);
   });
 
   test('delete 401 triggers getCsrf and retries', async () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
+    // first call rejects with object having status 401 then resolves
+    const mutateAsync = vi.fn();
+    mutateAsync.mockRejectedValueOnce({ status: 401 }).mockResolvedValueOnce({ screenshots: ['b'] });
+    const trigger = vi.fn(() => ({ unwrap: () => mutateAsync() }));
+    vi.mocked(domains.useDeleteToolScreenshotMutation).mockReturnValue([trigger, {}] as any);
 
-    // first call rejects with object having status 401
-    (deleteToolScreenshot as any)
-      .mockRejectedValueOnce({ status: 401 })
-      .mockResolvedValueOnce({ screenshots: ['b'] });
-    (getCsrf as any).mockResolvedValue({});
-
+    const csrfMutate = vi.fn().mockResolvedValue({});
+    const csrfTrigger = vi.fn(() => ({ unwrap: () => csrfMutate() }));
+    vi.mocked(domains.useGetCsrfMutation).mockReturnValue([csrfTrigger, {}] as any);
     renderWithProviders(
       <Formik initialValues={{ screenshots: ['a', 'b'] }} onSubmit={() => {}}>
         {() => (
@@ -158,15 +166,17 @@ describe('ScreenshotManager edge cases', () => {
     ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
-    await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalledTimes(2));
-    expect(getCsrf).toHaveBeenCalled();
+    await waitFor(() => expect(mutateAsync).toHaveBeenCalledTimes(2));
+    expect(csrfMutate).toHaveBeenCalled();
     expect(onChange).toHaveBeenCalledWith(['b']);
   });
 
   test('delete error shows alert', async () => {
     const onChange = vi.fn();
     const ref = { current: null } as any;
-    (deleteToolScreenshot as any).mockRejectedValue(new Error('delete-failed'));
+    const mutateAsync = vi.fn().mockRejectedValue(new Error('delete-failed'));
+    const trigger = vi.fn(() => ({ unwrap: () => mutateAsync() }));
+    vi.mocked(domains.useDeleteToolScreenshotMutation).mockReturnValue([trigger, {}] as any);
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     renderWithProviders(
       <Formik initialValues={{ screenshots: ['a'] }} onSubmit={() => {}}>
@@ -189,7 +199,7 @@ describe('ScreenshotManager edge cases', () => {
     ) as HTMLButtonElement;
     fireEvent.click(deleteBtn);
 
-    await waitFor(() => expect(deleteToolScreenshot).toHaveBeenCalled());
+    await waitFor(() => expect(mutateAsync).toHaveBeenCalled());
     expect(global.alert).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });

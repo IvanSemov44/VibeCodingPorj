@@ -8,6 +8,8 @@ vi.mock('../../../store/domains', () => ({
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
   useGetTagsQuery: vi.fn(),
+  useDeleteToolScreenshotMutation: vi.fn(),
+  useGetCsrfMutation: vi.fn(),
 }));
 
 import {
@@ -15,6 +17,8 @@ import {
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
   useGetTagsQuery,
+  useDeleteToolScreenshotMutation,
+  useGetCsrfMutation,
 } from '../../../store/domains';
 
 test('renders roles and categories sections when data present', () => {
@@ -26,6 +30,11 @@ test('renders roles and categories sections when data present', () => {
     { isLoading: false, error: null },
   ]);
   (useGetTagsQuery as any).mockReturnValue({ data: [], isLoading: false });
+  (useDeleteToolScreenshotMutation as any).mockReturnValue([
+    () => ({ unwrap: () => Promise.resolve() }),
+    {},
+  ]);
+  (useGetCsrfMutation as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
 
   const roles = [{ id: 1, name: 'admin' }];
   const categories = [{ id: 2, name: 'productivity' }];

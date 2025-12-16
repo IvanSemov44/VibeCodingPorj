@@ -1,10 +1,10 @@
 import React from 'react';
-import { renderWithProviders, screen, userEvent } from '../../test-utils';
+import { renderWithProviders, screen, userEvent, waitFor } from '../../test-utils';
 import { vi } from 'vitest';
 import { ToastContainer, useToast } from '../../../components/Toast';
 import { addToast as addToastAction } from '../../../store/toastSlice';
 import { store } from '../../../store';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 describe('Toast component and hook', () => {
   beforeEach(() => {
@@ -55,12 +55,12 @@ describe('Toast component and hook', () => {
       expect(screen.getByText('from-hook')).toBeTruthy();
 
       // advance timers to trigger removal and flush updates
-      act(() => vi.advanceTimersByTime(1100));
-
-      // toast should be removed
-      await vi.waitFor(() => {
-        expect(screen.queryByText('from-hook')).toBeNull();
+      await act(async () => {
+        vi.advanceTimersByTime(1100);
       });
+
+      // toast should be removed - check synchronously after advancing timers
+      expect(screen.queryByText('from-hook')).toBeNull();
     } finally {
       vi.useRealTimers();
     }
@@ -89,8 +89,9 @@ describe('Toast component and hook', () => {
     const close = screen.getByText('×');
     await userEvent.click(close);
 
-    // toast should be removed
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(screen.queryByText('hello')).toBeNull();
+    // toast should be removed - use waitFor instead of setTimeout
+    await waitFor(() => {
+      expect(screen.queryByText('hello')).toBeNull();
+    });
   });
 });
