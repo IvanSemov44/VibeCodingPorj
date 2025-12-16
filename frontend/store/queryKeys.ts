@@ -4,7 +4,9 @@ export const QUERY_KEYS = {
   STATS: 'stats',
   TOOLS: 'tools',
   TOOL: 'tool',
+  TWO_FA: '2fa',
   TAGS: 'tags',
+  ROLES: 'roles',
   CATEGORIES: 'categories',
 } as const;
 

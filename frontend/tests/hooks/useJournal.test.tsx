@@ -4,7 +4,7 @@ import { useJournal } from '../../hooks/useJournal';
 import { vi, describe, test, expect } from 'vitest';
 
 // We'll test the hook by mocking the RTK Query hooks it relies on
-vi.mock('../../store/api2', () => ({
+vi.mock('../../store/domains', () => ({
   useGetEntriesQuery: () => ({
     data: [
       {

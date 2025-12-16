@@ -1,10 +1,10 @@
 import { vi } from 'vitest';
 // mock store hooks before importing modules that use them
-vi.mock('../../../store/api2', () => ({ useDeleteToolMutation: vi.fn() }));
+vi.mock('../../../store/domains', () => ({ useDeleteToolMutation: vi.fn() }));
 import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../../tests/test-utils';
 import ToolEntry from '../../../components/ToolEntry';
-import * as api from '../../../store/api2';
+import * as api from '../../../store/domains';
 import { describe, test, expect } from 'vitest';
 
 describe('ToolEntry', () => {

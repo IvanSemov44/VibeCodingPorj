@@ -5,7 +5,7 @@ import {
   useGetCategoriesQuery,
   useGetRolesQuery,
   useGetTagsQuery,
-} from '../../store/api2';
+} from '../../store/domains';
 // types are inferred from API responses where needed
 
 export default function NewToolPage(): React.ReactElement {

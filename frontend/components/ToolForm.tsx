@@ -11,7 +11,7 @@ import {
   useCreateToolMutation,
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
-} from '../store/api2';
+} from '../store/domains';
 import { useToast } from './Toast';
 import TagMultiSelect from './TagMultiSelect';
 import NameField from './tools/NameField';

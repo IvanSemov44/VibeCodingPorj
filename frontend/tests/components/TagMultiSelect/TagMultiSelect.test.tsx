@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { fireEvent } from '@testing-library/react';
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGetTagsQuery: () => ({ data: [{ name: 'vitest' }, { name: 'testing' }], isLoading: false }),
 }));
 // Temporarily stop the global MSW server for this unit test file to avoid

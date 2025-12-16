@@ -2,11 +2,11 @@ import { screen, waitFor, render } from '@testing-library/react';
 import { vi, expect, test } from 'vitest';
 import TagMultiSelect from '../../../components/TagMultiSelect';
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGetTagsQuery: () => ({ data: [{ name: 'tag1' }], isLoading: false }),
 }));
 
-test.skip('renders TagMultiSelect input', async () => {
+test('renders TagMultiSelect input', async () => {
   console.debug('TagMultiSelect.extra test start');
   render(<TagMultiSelect value={[]} onChange={() => {}} options={['tag1']} />);
   console.debug('rendered TagMultiSelect');

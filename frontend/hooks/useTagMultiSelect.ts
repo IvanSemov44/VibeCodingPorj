@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import type * as React from 'react';
-import { useGetTagsQuery } from '../store/api2';
+import { useGetTagsQuery } from '../store/domains';
 
 /**
  * useTagMultiSelect

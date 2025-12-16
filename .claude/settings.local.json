@@ -10,7 +10,11 @@
       "Bash(truncate:*)",
       "Bash(npm install:*)",
       "Bash(composer require:*)",
-      "Bash(npm run find:unused-exports:*)"
+      "Bash(npm run find:unused-exports:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run check:frontend:*)",
+      "Bash(npx prettier:*)"
     ]
   }
 }

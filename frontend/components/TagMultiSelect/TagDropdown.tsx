@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { useTagMultiSelectContext } from './context';
 
@@ -40,14 +39,14 @@ export function TagDropdown({ children }: TagDropdownProps) {
     <div
       role="listbox"
       id={listId}
-      ref={ctx.floatingRefs?.setFloating as any}
-      style={{ ...(ctx.floatingStyles || {}), minWidth: '220px', zIndex: 9999 }}
+      ref={ctx.floatingRefs.setFloating}
+      style={{ ...ctx.floatingStyles, minWidth: '220px', zIndex: 9999 }}
       className="mt-1 bg-primary-bg border border-border rounded-lg shadow-lg"
     >
-      {ctx.filteredList.length > (ctx.virtualizeThreshold || 100) && ctx.virtualizer ? (
-        <div ref={ctx.parentRef as any} className="max-h-60 overflow-y-auto relative">
+      {ctx.filteredList.length > ctx.virtualizeThreshold ? (
+        <div ref={ctx.parentRef} className="max-h-60 overflow-y-auto relative">
           <div style={{ height: `${ctx.virtualizer.getTotalSize()}px`, position: 'relative' }}>
-            {ctx.virtualizer.getVirtualItems().map((virtualRow: any) => {
+            {ctx.virtualizer.getVirtualItems().map((virtualRow) => {
               const idx = virtualRow.index;
               const s = ctx.filteredList[idx];
               return (
@@ -93,6 +92,7 @@ export function TagDropdown({ children }: TagDropdownProps) {
           </React.Fragment>
         ) : (
           <div
+            id={`${listId}-option-${ctx.filteredList.length}`}
             role="option"
             aria-selected={ctx.activeIndex === ctx.filteredList.length}
             onMouseEnter={() => ctx.setActiveIndex(ctx.filteredList.length)}

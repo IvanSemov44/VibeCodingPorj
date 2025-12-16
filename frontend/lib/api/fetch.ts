@@ -18,7 +18,21 @@ export function currentXsrf(): string {
   return getCookie('XSRF-TOKEN') || csrfToken || '';
 }
 
-export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}): Promise<Response> {
+export type FetchOptions = {
+  timeoutMs?: number;
+};
+
+/**
+ * Fetch wrapper that attaches cookies and XSRF token and supports a request timeout.
+ * @param input Request URL or Request
+ * @param init Fetch init
+ * @param opts Optional wrapper options (timeoutMs)
+ */
+export async function fetchWithAuth(
+  input: RequestInfo,
+  init: RequestInit = {},
+  opts: FetchOptions = {},
+): Promise<Response> {
   // Ensure relative URLs are resolved against our API base when running in Node/tests
   if (typeof input === 'string' && input.startsWith('/')) {
     input = `${BASE}${input}`;
@@ -47,8 +61,27 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}):
   const tokenNow = currentXsrf();
   if (tokenNow) headers['X-XSRF-TOKEN'] = tokenNow;
 
-  const response = await fetch(input, Object.assign({}, init, { credentials: 'include', headers }));
-  return response;
+  // Support optional timeout via AbortController if `init.signal` is not already provided
+  let controller: AbortController | undefined;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const signal = init.signal as AbortSignal | undefined;
+  if (!signal) {
+    controller = new AbortController();
+    if (opts.timeoutMs && opts.timeoutMs > 0) {
+      timeoutId = setTimeout(() => controller?.abort(), opts.timeoutMs);
+    }
+  }
+
+  try {
+    const response = await fetch(
+      input,
+      Object.assign({}, init, { credentials: 'include', headers, signal: controller?.signal }),
+    );
+    return response;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
 }
 
 export async function parseJson<T>(res: Response): Promise<T> {

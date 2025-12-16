@@ -13,13 +13,13 @@ vi.mock('qrcode', async () => {
 });
 
 // mock react-query hooks from store/api2
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGet2faSecretQuery: vi.fn(),
   useEnable2faMutation: vi.fn(),
 }));
 
 import TwoFactorSetup from '../../../components/TwoFactorSetup';
-import { useGet2faSecretQuery, useEnable2faMutation } from '../../../store/api2';
+import { useGet2faSecretQuery, useEnable2faMutation } from '../../../store/domains';
 
 describe('TwoFactorSetup', () => {
   beforeEach(() => {

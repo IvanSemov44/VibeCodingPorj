@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
+import type { Virtualizer } from '@tanstack/react-virtual';
+import type { UseFloatingReturn } from '@floating-ui/react';
 
 export type TagMultiSelectContextValue = {
   // Selected tags
@@ -16,17 +17,17 @@ export type TagMultiSelectContextValue = {
   isLoading: boolean;
 
   // Refs
-  rootRef: React.RefObject<HTMLDivElement> | null;
-  inputRef: React.RefObject<HTMLInputElement> | null;
-  parentRef: React.RefObject<HTMLDivElement> | null;
+  rootRef: React.RefObject<HTMLDivElement | null>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  parentRef: React.RefObject<HTMLDivElement | null>;
   // Floating UI / virtualizer
-  floatingRefs?: any;
-  floatingStyles?: React.CSSProperties | undefined;
-  virtualizer?: any;
-  virtualizeThreshold?: number;
-  listId?: string;
-  inputId?: string;
-  allowCreate?: boolean;
+  floatingRefs: UseFloatingReturn['refs'];
+  floatingStyles: React.CSSProperties;
+  virtualizer: Virtualizer<HTMLDivElement, Element>;
+  virtualizeThreshold: number;
+  listId: string;
+  inputId: string;
+  allowCreate: boolean;
 
   // Handlers
   addTag: (tag: string) => void;
@@ -34,34 +35,12 @@ export type TagMultiSelectContextValue = {
   handleKey: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
-const throwErr = () => {
-  throw new Error('useTagMultiSelectContext must be used within TagMultiSelect provider');
+export const TagMultiSelectContext = React.createContext<TagMultiSelectContextValue | null>(null);
+
+export const useTagMultiSelectContext = () => {
+  const context = React.useContext(TagMultiSelectContext);
+  if (!context) {
+    throw new Error('useTagMultiSelectContext must be used within TagMultiSelect provider');
+  }
+  return context;
 };
-
-export const TagMultiSelectContext = React.createContext<TagMultiSelectContextValue>({
-  value: [],
-  input: '',
-  setInput: throwErr as unknown as (v: string) => void,
-  open: false,
-  setOpen: throwErr as unknown as (v: boolean) => void,
-  activeIndex: -1,
-  setActiveIndex: throwErr as unknown as (i: number) => void,
-  options: [],
-  filteredList: [],
-  isLoading: false,
-  rootRef: null,
-  inputRef: null,
-  parentRef: null,
-  floatingRefs: undefined,
-  floatingStyles: undefined,
-  virtualizer: undefined,
-  virtualizeThreshold: undefined,
-  listId: undefined,
-  inputId: undefined,
-  allowCreate: undefined,
-  addTag: throwErr as unknown as (tag: string) => void,
-  removeTag: throwErr as unknown as (tag: string) => void,
-  handleKey: throwErr as unknown as (e: React.KeyboardEvent<HTMLInputElement>) => void,
-});
-
-export const useTagMultiSelectContext = () => React.useContext(TagMultiSelectContext);

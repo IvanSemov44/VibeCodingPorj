@@ -9,7 +9,7 @@ const mockUseGetUserQuery = vi.fn();
 const mockUseGetCsrfMutation = vi.fn();
 const mockUseLogoutMutation = vi.fn();
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGetUserQuery: () => mockUseGetUserQuery(),
   useGetCsrfMutation: () => mockUseGetCsrfMutation(),
   useLogoutMutation: () => mockUseLogoutMutation(),

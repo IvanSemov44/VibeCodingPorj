@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../../tests/test-utils';
 import { vi } from 'vitest';
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGet2faSecretQuery: () => ({
     data: { provisioning_uri: 'otpauth://app', secret_mask: '****' },
     isLoading: false,

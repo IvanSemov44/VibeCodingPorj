@@ -1,14 +1,15 @@
 import React from 'react';
 import { renderWithProviders, screen, fireEvent, waitFor } from '../../../tests/test-utils';
+import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGetTagsQuery: () => ({ data: [{ name: 'vitest' }, { name: 'testing' }], isLoading: false }),
 }));
 
 import TagMultiSelect from '../../../components/TagMultiSelect';
 
-describe.skip('TagMultiSelect unit tests (skipped - flaky)', () => {
+describe('TagMultiSelect unit tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -65,5 +66,25 @@ describe.skip('TagMultiSelect unit tests (skipped - flaky)', () => {
     fireEvent.keyDown(input, { key: 'Enter' });
 
     await waitFor(() => expect(onChange).toHaveBeenCalled());
+  });
+
+  it('keyboard navigates to Create option and selects it', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    renderWithProviders(
+      <TagMultiSelect value={[]} onChange={onChange} allowCreate={true} options={['existing']} />,
+    );
+
+    const input = screen.getByRole('combobox');
+    await user.type(input, 'newitem');
+
+    // Open and move to Create option (existing filtered list length is 0 so Create is at index 0)
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(['newitem']);
+    });
   });
 });

@@ -6,7 +6,7 @@ import {
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
-} from '../../store/api2';
+} from '../../store/domains';
 
 export default function AdminCategories(): React.ReactElement {
   const [categories, setCategories] = useState<Category[]>([]);

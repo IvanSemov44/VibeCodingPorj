@@ -5,7 +5,7 @@ import { renderWithProviders, screen, userEvent } from '../test-utils';
 
 // Mock api hooks and toast
 vi.mock('../../components/Toast', () => ({ useToast: () => ({ addToast: vi.fn() }) }));
-vi.mock('../../store/api2', () => ({
+vi.mock('../../store/domains', () => ({
   useCreateToolMutation: vi.fn(),
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
@@ -28,7 +28,7 @@ describe('ToolForm', () => {
   });
 
   it.skip('submits create flow and calls create trigger', async () => {
-    const api = await import('../../store/api2');
+    const api = await import('../../store/domains');
     const createTrigger = vi.fn(() => ({ unwrap: () => Promise.resolve({ id: 123 }) }));
     vi.mocked(api.useCreateToolMutation).mockReturnValue([createTrigger, {}] as any);
     vi.mocked(api.useUpdateToolMutation).mockReturnValue([vi.fn(), {}] as any);

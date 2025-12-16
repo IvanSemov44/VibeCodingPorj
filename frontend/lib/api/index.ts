@@ -6,6 +6,7 @@ export * from './journal';
 export * from './twofactor';
 export * from './tools';
 export * from './admin';
+export * from './validation';
 
 // Provide a default export to support imports that expect a module default
 const apiDefault = {

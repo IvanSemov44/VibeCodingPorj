@@ -3,7 +3,7 @@ import { renderWithProviders, userEvent, screen } from '../../test-utils';
 import TagMultiSelect from '../../../components/TagMultiSelect';
 import { vi } from 'vitest';
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGetTagsQuery: vi.fn(() => ({
     data: [{ name: 'testing' }, { name: 'example' }],
     isLoading: false,

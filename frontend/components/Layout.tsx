@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/domains/user';
+import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/domains';
 import { useAppTheme } from '../hooks/useAppTheme';
 import type { User } from '../lib/types';
 

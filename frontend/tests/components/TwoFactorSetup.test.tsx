@@ -4,7 +4,7 @@ import { renderWithProviders, screen, userEvent } from '../test-utils';
 
 // Mock QRCode and api hooks
 vi.mock('qrcode', () => ({ toCanvas: (_c: any, _uri: string, _opts: any, cb: any) => cb(null) }));
-vi.mock('../../store/api2', () => ({
+vi.mock('../../store/domains', () => ({
   useGet2faSecretQuery: vi.fn(),
   useEnable2faMutation: vi.fn(),
 }));
@@ -24,7 +24,7 @@ describe('TwoFactorSetup', () => {
   });
 
   it('renders enable button when no data and then shows recovery codes after enable', async () => {
-    const api = await import('../../store/api2');
+    const api = await import('../../store/domains');
     vi.mocked(api.useGet2faSecretQuery).mockReturnValue({
       data: null,
       error: null,

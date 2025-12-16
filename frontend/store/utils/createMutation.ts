@@ -21,5 +21,6 @@ export function useCreateMutation<TVars = unknown, TData = unknown>({
     },
   });
 
-  return (arg: TVars) => ({ unwrap: () => m.mutateAsync(arg) });
+  const trigger = (arg: TVars) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m] as const;
 }

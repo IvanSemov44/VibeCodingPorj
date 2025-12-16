@@ -3,7 +3,7 @@ import { renderWithProviders } from '../../../tests/test-utils';
 import { expect, test, vi } from 'vitest';
 import ToolForm from '../../../components/ToolForm';
 
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useCreateToolMutation: vi.fn(),
   useUpdateToolMutation: vi.fn(),
   useUploadToolScreenshotsMutation: vi.fn(),
@@ -15,7 +15,7 @@ import {
   useUpdateToolMutation,
   useUploadToolScreenshotsMutation,
   useGetTagsQuery,
-} from '../../../store/api2';
+} from '../../../store/domains';
 
 test('renders roles and categories sections when data present', () => {
   // Setup mocks

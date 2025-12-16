@@ -11,7 +11,7 @@ import {
   useGetStatsQuery,
   useCreateEntryMutation,
   useDeleteEntryMutation,
-} from '../store/api2';
+} from '../store/domains';
 
 export interface JournalFilters {
   search?: string;
@@ -83,7 +83,7 @@ export function useJournal(
     // RTK Query automatically manages cache; to force refetch use entriesQuery.refetch and statsQuery.refetch
     try {
       await Promise.all([entriesQuery.refetch(), statsQuery.refetch()]);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to refetch journal data:', err);
       throw err;
     }
@@ -102,7 +102,7 @@ export function useJournal(
     async (data: JournalCreatePayload): Promise<JournalEntry | null> => {
       const result = await createEntryMutation(data)
         .unwrap()
-        .catch((err) => {
+        .catch((err: unknown) => {
           // rethrow after logging
           console.error('Failed to create entry', err);
           throw err;
@@ -120,7 +120,7 @@ export function useJournal(
     async (id: number | string): Promise<void> => {
       await deleteEntryMutation(id)
         .unwrap()
-        .catch((err) => {
+        .catch((err: unknown) => {
           console.error('Failed to delete entry', err);
           throw err;
         });

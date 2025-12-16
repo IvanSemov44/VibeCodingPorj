@@ -4,7 +4,7 @@ import {
   useGetCategoriesQuery,
   useGetRolesQuery,
   useGetTagsQuery,
-} from '../../store/api2';
+} from '../../store/domains';
 import Link from 'next/link';
 import ToolEntry from '../../components/ToolEntry';
 import TagMultiSelect from '../../components/TagMultiSelect';

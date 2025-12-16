@@ -1,5 +1,7 @@
 import type { Tool, ApiListResponse, ToolCreatePayload, ToolUpdatePayload } from '../types';
 import { fetchWithAuth, parseJson, parseListResponse } from './fetch';
+import { z } from 'zod';
+import { parseAndValidate } from './validation';
 
 export async function getTools(
   params: Record<string, string | number | boolean> = {},
@@ -16,11 +18,19 @@ export async function getTools(
 
 export async function getTool(id: number | string): Promise<Tool> {
   const res = await fetchWithAuth(`/api/tools/${id}`);
-  const parsed = await parseJson<unknown>(res);
-  if (parsed && typeof parsed === 'object' && 'data' in (parsed as Record<string, unknown>)) {
-    return (parsed as Record<string, unknown>).data as Tool;
-  }
-  return parsed as Tool;
+
+  // Example runtime schema for tool responses. Adjust as needed for stricter validation.
+  const ToolSchema = z
+    .object({
+      id: z.number(),
+      name: z.string().optional(),
+      description: z.string().nullable().optional(),
+      url: z.string().nullable().optional(),
+      screenshots: z.array(z.string()).optional(),
+    })
+    .passthrough();
+
+  return await parseAndValidate<Tool>(res, ToolSchema);
 }
 
 export async function createTool(data: ToolCreatePayload): Promise<Tool> {

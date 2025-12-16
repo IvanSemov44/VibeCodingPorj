@@ -6,7 +6,7 @@ import {
   useCreateTagMutation,
   useUpdateTagMutation,
   useDeleteTagMutation,
-} from '../../store/api2';
+} from '../../store/domains';
 
 export default function AdminTags(): React.ReactElement {
   const [tags, setTags] = useState<Tag[]>([]);

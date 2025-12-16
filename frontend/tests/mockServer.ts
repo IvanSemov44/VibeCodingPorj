@@ -58,6 +58,11 @@ const handlers = [
     res(ctx.status(200), ctx.json([{ id: 1, name: 'Tag' }])),
   ),
 
+  // Logout
+  rest.post(`${API_BASE}/api/logout`, (req, res, ctx) => {
+    return res(ctx.status(204));
+  }),
+
   // Generic fallback for unknown API calls to help debugging
   rest.all(`${API_BASE}/api/:path*`, (req, res, ctx) => {
     // Return 404 for unhandled endpoints so tests fail explicitly

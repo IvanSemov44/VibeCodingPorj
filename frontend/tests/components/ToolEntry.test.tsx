@@ -4,7 +4,7 @@ import { renderWithProviders, userEvent, screen } from '../test-utils';
 import ToolEntry from '../../components/ToolEntry';
 
 // Mock the API mutation hook used by the component
-vi.mock('../../store/api2', () => ({
+vi.mock('../../store/domains', () => ({
   useDeleteToolMutation: vi.fn(),
 }));
 
@@ -31,7 +31,7 @@ describe('ToolEntry', () => {
     } as any;
 
     // prepare the mocked hook to return a trigger whose unwrap resolves
-    const api = await import('../../store/api2');
+    const api = await import('../../store/domains');
     const mockedTrigger = vi.fn(() => ({ unwrap: () => Promise.resolve() }));
     vi.mocked(api.useDeleteToolMutation).mockReturnValue([mockedTrigger, {}] as any);
 
@@ -58,7 +58,7 @@ describe('ToolEntry', () => {
 
   it('alerts on delete failure', async () => {
     const tool = { id: 't2', name: 'Broken', description: '', screenshots: [] } as any;
-    const api = await import('../../store/api2');
+    const api = await import('../../store/domains');
     const mockedTrigger = vi.fn(() => ({ unwrap: () => Promise.reject(new Error('fail')) }));
     vi.mocked(api.useDeleteToolMutation).mockReturnValue([mockedTrigger, {}] as any);
 

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useId, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTagMultiSelect } from '../hooks/useTagMultiSelect';
 import { useFloating, offset, flip, size as floatingSize } from '@floating-ui/react';
-import { TagMultiSelectContext } from './TagMultiSelect/context';
+import { TagMultiSelectContext, type TagMultiSelectContextValue } from './TagMultiSelect/context';
 import { TagInput } from './TagMultiSelect/TagInput';
 import { TagList } from './TagMultiSelect/TagList';
 import { TagDropdown } from './TagMultiSelect/TagDropdown';
@@ -45,7 +44,7 @@ function TagMultiSelect({
   value = [],
   onChange,
   allowCreate = true,
-  placeholder = 'Add tags...',
+  placeholder: _placeholder = 'Add tags...',
   options: externalOptions = null,
   maxTags = 10,
   maxTagLength = 50,
@@ -54,9 +53,9 @@ function TagMultiSelect({
   id,
   label,
   className = '',
-  disabled = false,
-  'aria-label': ariaLabel,
-  'aria-labelledby': ariaLabelledby,
+  disabled: _disabled = false,
+  'aria-label': _ariaLabel,
+  'aria-labelledby': _ariaLabelledby,
   children,
 }: TagMultiSelectProps) {
   const generatedId = useId();
@@ -101,7 +100,7 @@ function TagMultiSelect({
     estimateSize: () => 40,
     overscan: 5,
   });
-  const providerValue = {
+  const providerValue: TagMultiSelectContextValue = {
     // selected value (from props)
     value,
     input,
@@ -126,7 +125,7 @@ function TagMultiSelect({
     addTag,
     removeTag,
     handleKey,
-  } as any;
+  };
 
   return (
     <TagMultiSelectContext.Provider value={providerValue}>
@@ -156,14 +155,15 @@ function TagMultiSelect({
 }
 
 // Attach static subcomponents for compound API with proper typing
-type CompoundTagMultiSelect = React.FC<TagMultiSelectProps> & {
+type CompoundTagMultiSelect = typeof TagMultiSelect & {
   Input: typeof TagInput;
   List: typeof TagList;
   Dropdown: typeof TagDropdown;
 };
 
-(TagMultiSelect as any).Input = TagInput;
-(TagMultiSelect as any).List = TagList;
-(TagMultiSelect as any).Dropdown = TagDropdown;
+const TagMultiSelectWithCompound = TagMultiSelect as CompoundTagMultiSelect;
+TagMultiSelectWithCompound.Input = TagInput;
+TagMultiSelectWithCompound.List = TagList;
+TagMultiSelectWithCompound.Dropdown = TagDropdown;
 
-export default TagMultiSelect as unknown as CompoundTagMultiSelect;
+export default TagMultiSelectWithCompound;

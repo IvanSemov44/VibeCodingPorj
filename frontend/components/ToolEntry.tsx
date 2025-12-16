@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useDeleteToolMutation } from '../store/api2';
+import { useDeleteToolMutation } from '../store/domains';
 import type { Tool } from '../lib/types';
 
 interface Props {

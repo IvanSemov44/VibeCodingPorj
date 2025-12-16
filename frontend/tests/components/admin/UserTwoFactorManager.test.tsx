@@ -10,7 +10,7 @@ vi.mock('qrcode', async () => ({
 }));
 
 // mock store hooks
-vi.mock('../../../store/api2', () => ({
+vi.mock('../../../store/domains', () => ({
   useGetUser2faQuery: vi.fn(),
   useSetUser2faMutation: vi.fn(),
   useDisableUser2faMutation: vi.fn(),
@@ -21,7 +21,7 @@ import {
   useGetUser2faQuery,
   useSetUser2faMutation,
   useDisableUser2faMutation,
-} from '../../../store/api2';
+} from '../../../store/domains';
 
 describe('UserTwoFactorManager', () => {
   beforeEach(() => {

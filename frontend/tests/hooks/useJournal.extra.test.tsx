@@ -2,11 +2,11 @@ import React from 'react';
 import { renderWithProviders, screen } from '../../tests/test-utils';
 import userEvent from '@testing-library/user-event';
 import { useJournal } from '../../hooks/useJournal';
-import * as api from '../../store/api2';
+import * as api from '../../store/domains';
 import { vi, describe, beforeEach, test, expect } from 'vitest';
 
 // Provide mocks we can reconfigure per-test
-vi.mock('../../store/api2', () => ({
+vi.mock('../../store/domains', () => ({
   useGetEntriesQuery: vi.fn((arg: any) => ({ data: [], isLoading: false, refetch: vi.fn() })),
   useGetStatsQuery: vi.fn(() => ({
     data: { total: 0, xp: 0 },

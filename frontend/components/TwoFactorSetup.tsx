@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import QRCode from 'qrcode';
-import { useGet2faSecretQuery, useEnable2faMutation } from '../store/api2';
+import { useGet2faSecretQuery, useEnable2faMutation } from '../store/domains';
 
 type SecretResp = {
   provisioning_uri: string | null;

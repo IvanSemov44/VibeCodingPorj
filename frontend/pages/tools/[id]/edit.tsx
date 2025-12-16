@@ -6,7 +6,7 @@ import {
   useGetRolesQuery,
   useGetCsrfMutation,
   useGetTagsQuery,
-} from '../../../store/api2';
+} from '../../../store/domains';
 import ToolForm from '../../../components/ToolForm';
 import { Tool } from '../../../lib/types';
 

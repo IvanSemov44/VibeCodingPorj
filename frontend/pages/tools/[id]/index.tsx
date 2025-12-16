@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useGetToolQuery } from '../../../store/api2';
+import { useGetToolQuery } from '../../../store/domains';
 
 // types in this file are inferred from API responses — no local aliases needed
 
