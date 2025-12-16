@@ -1,6 +1,6 @@
-add tags and categories to admin panel
+
 update pagination logic for Active Users and Tools and Pending Tool Approvals
-update all component have dark mode
+
 
 
 Add ban/activate actions for users listed on the Admin Users page.
@@ -13,3 +13,5 @@ remove edit and delete button for not authorized user for tool list
 Page Tools list only approved tools
 Add confirmation to Approve (toast + optimistic update) and show toasts on success/failure.
 Add server-side protection UI (hide actions when user is not admin).
+update all component have dark mode
+add tags and categories to admin panel
