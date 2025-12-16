@@ -8,6 +8,7 @@ use App\Enums\ToolDifficulty;
 use App\Enums\ToolStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tool extends Model
 {
@@ -23,17 +24,17 @@ class Tool extends Model
         'status' => ToolStatus::class,
     ];
 
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'category_tool');
     }
 
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'tag_tool');
     }
 
-    public function roles()
+    public function roles(): BelongsToMany
     {
         // Uses spatie/roles - many to many via role_tool
         return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'role_tool');

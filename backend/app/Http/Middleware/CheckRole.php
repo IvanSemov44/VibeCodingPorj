@@ -22,7 +22,7 @@ class CheckRole
         // Shortcut: check database pivot directly for 'owner' role to avoid
         // potential issues with role guard mismatches during testing.
         try {
-            if ($user && $user->id) {
+            if ($user->id) {
                 $ownerExists = DB::table('model_has_roles')
                     ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
                     ->where('model_has_roles.model_id', $user->id)

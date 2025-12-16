@@ -40,7 +40,8 @@ class FixedContainerCommandLoader extends ContainerCommandLoader
         $command = parent::get($name);
 
         // Fix: Set Laravel instance on command if it's a Laravel command
-        if ($command instanceof Command && method_exists($command, 'setLaravel')) {
+        if ($command instanceof Command) {
+            // Illuminate console commands expose setLaravel; call directly
             $command->setLaravel($this->laravel);
         }
 

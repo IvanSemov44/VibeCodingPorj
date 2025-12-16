@@ -4,6 +4,8 @@
 **Date:** 2025-12-15
 **Status:** Implementation Plan
 
+> Note: TagMultiSelect tests were re-skipped at the user's request (2025-12-15).
+
 ## Executive Summary
 
 The TagMultiSelect component is well-structured with solid fundamentals, but can be enhanced with modern React patterns, improved accessibility, better performance, and comprehensive testing. This document outlines a systematic approach to elevate the component to production-grade 2025 standards.
@@ -1109,13 +1111,13 @@ export default function TagMultiSelect({ ... }: TagMultiSelectProps) { ... }
 ## Implementation Checklist
 
 ### Phase 1: Critical Fixes (Week 1)
-- [ ] Fix keyboard navigation to "Create" option
-- [ ] Add `useMemo` for filtered list
-- [ ] Add `useCallback` for handlers
-- [ ] Fix conditional API fetching
-- [ ] Add basic error handling
-- [ ] Add input validation (max length, max tags)
-- [ ] Improve TypeScript types
+- [x] Fix keyboard navigation to "Create" option
+- [x] Add `useMemo` for filtered list
+- [x] Add `useCallback` for handlers
+- [x] Fix conditional API fetching
+- [x] Add basic error handling
+- [x] Add input validation (max length, max tags)
+- [x] Improve TypeScript types
 - [ ] Un-skip and fix all tests
 - [ ] Add test for keyboard navigation bug
 - [ ] Verify all tests pass
@@ -1136,6 +1138,14 @@ export default function TagMultiSelect({ ... }: TagMultiSelectProps) { ... }
 - [ ] Implement Floating UI (optional)
 - [ ] Create compound components (optional)
 - [ ] Add Storybook stories
+- [ ] Performance benchmarking
+- [ ] Accessibility audit with axe-core
+
+### Phase 3: Advanced Features (Week 3)
+- [x] Add virtual scrolling (optional)
+- [x] Implement Floating UI (optional)
+- [x] Create compound components (optional) — compound/slot API implemented with `TagMultiSelect.Input`, `TagMultiSelect.List`, `TagMultiSelect.Dropdown` and render-prop support
+- [x] Add Storybook stories
 - [ ] Performance benchmarking
 - [ ] Accessibility audit with axe-core
 

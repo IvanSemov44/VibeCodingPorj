@@ -24,8 +24,10 @@
     "check:all": "npm run typecheck && npm run format:check && npm run lint && npm run test:ci && npm run build"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.16",
     "@reduxjs/toolkit": "^2.5.0",
     "@tanstack/react-query": "^5.90.12",
+    "@tanstack/react-virtual": "^3.13.13",
     "formik": "^2.4.9",
     "next": "15.5.7",
     "qrcode": "^1.5.4",

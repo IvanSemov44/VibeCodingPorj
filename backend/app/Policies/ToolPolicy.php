@@ -26,7 +26,7 @@ class ToolPolicy
     /**
      * Any authenticated user may create a tool.
      */
-    public function create(User $user): bool
+    public function create(?User $user): bool
     {
         return $user !== null;
     }

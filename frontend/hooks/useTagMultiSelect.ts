@@ -1,6 +1,28 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useGetTagsQuery } from '../store/api2';
 
+/**
+ * useTagMultiSelect
+ *
+ * Hook that encapsulates the TagMultiSelect logic: managing input state,
+ * fetching or receiving options, filtering, keyboard navigation, validation,
+ * and add/remove handlers.
+ *
+ * The hook returns a small stable API intended for the presentational
+ * `TagMultiSelect` component and is fully typed.
+ *
+ * @param props.value - selected tags
+ * @param props.onChange - change callback
+ * @param props.allowCreate - whether creating new tags is allowed
+ * @param props.options - external options array (skips API when provided)
+ * @param props.maxTags - maximum number of allowed tags
+ * @param props.maxTagLength - maximum characters per tag
+ * @param props.tagPattern - validation RegExp for new tags
+ * @param props.onError - optional error callback for validation/API errors
+ *
+ * @returns An object with controlled state, refs and handlers used by the UI.
+ */
+
 type ExternalOption = string | { name: string };
 
 type UseTagMultiSelectProps = {

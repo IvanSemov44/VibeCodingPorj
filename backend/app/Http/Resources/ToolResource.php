@@ -4,6 +4,25 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Tool
+ *
+ * @property-read mixed $id
+ * @property-read mixed $name
+ * @property-read mixed $slug
+ * @property-read mixed $url
+ * @property-read mixed $docs_url
+ * @property-read mixed $description
+ * @property-read mixed $usage
+ * @property-read mixed $examples
+ * @property-read mixed $difficulty
+ * @property-read mixed $screenshots
+ * @property-read mixed $categories
+ * @property-read mixed $tags
+ * @property-read mixed $roles
+ * @property-read mixed $created_at
+ * @property-read mixed $updated_at
+ */
 class ToolResource extends JsonResource
 {
     public function toArray($request): array

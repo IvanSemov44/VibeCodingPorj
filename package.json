@@ -4,7 +4,7 @@
   "private": true,
   "description": "Full-stack starter kit with frontend and backend",
   "scripts": {
-    "check": "node quality-check.js",
+    "check": "npm run check:frontend && npm run check:backend",
     "check:frontend": "cd frontend && npm run check",
     "check:backend": "node ./scripts/check-backend.js",
     "find:unused": "node find-unused.js",

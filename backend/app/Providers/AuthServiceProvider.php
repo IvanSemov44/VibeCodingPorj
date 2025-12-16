@@ -21,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * The policy mappings for the application.
      *
-     * @var array
+     * @var array<class-string, class-string>
      */
     protected $policies = [
         User::class => UserPolicy::class,
@@ -42,7 +42,7 @@ class AuthServiceProvider extends ServiceProvider
         // by checking the authenticated user's permissions via Spatie's traits.
         Gate::before(function ($user, $ability) {
             try {
-                Log::info('gate_before_debug', ['user_id' => $user?->id ?? null, 'ability' => $ability, 'hasRoleMethod' => method_exists($user, 'hasRole')]);
+                Log::info('gate_before_debug', ['user_id' => $user?->id, 'ability' => $ability, 'hasRoleMethod' => method_exists($user, 'hasRole')]);
             } catch (\Exception $e) {
                 // ignore logging errors
             }

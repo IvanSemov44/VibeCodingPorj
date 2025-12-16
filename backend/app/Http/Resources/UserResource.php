@@ -5,6 +5,22 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\User
+ *
+ * @property-read mixed $id
+ * @property-read mixed $name
+ * @property-read mixed $email
+ * @property-read mixed $email_verified_at
+ * @property-read mixed $is_active
+ * @property-read mixed $two_factor_type
+ * @property-read mixed $telegram_verified
+ * @property-read mixed $last_login_at
+ * @property-read mixed $created_at
+ * @property-read mixed $updated_at
+ * @property-read mixed $roles
+ * @property-read mixed $permissions
+ */
 class UserResource extends JsonResource
 {
     /**

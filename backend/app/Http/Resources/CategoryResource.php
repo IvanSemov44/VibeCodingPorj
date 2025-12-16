@@ -5,6 +5,17 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Category
+ *
+ * @property-read mixed $id
+ * @property-read mixed $name
+ * @property-read mixed $slug
+ * @property-read mixed $description
+ * @property-read mixed $created_at
+ * @property-read mixed $updated_at
+ * @property-read mixed $tools_count
+ */
 class CategoryResource extends JsonResource
 {
     /**
