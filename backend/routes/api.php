@@ -79,6 +79,8 @@ Route::middleware([
         Route::middleware('admin_or_owner')->prefix('admin')->group(function () {
             Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store']);
             Route::post('users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
+            // Backwards-compatible alias used by frontend: /deactivate -> ban
+            Route::post('users/{user}/deactivate', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
             Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserController::class, 'activate']);
             Route::post('users/{user}/roles', [\App\Http\Controllers\Admin\UserController::class, 'setRoles']);
 

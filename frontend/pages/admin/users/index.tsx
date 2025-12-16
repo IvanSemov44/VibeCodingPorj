@@ -23,6 +23,7 @@ export default function AdminUsersPage() {
   const { addToast } = useToast();
   const [roleChangePending, setRoleChangePending] = useState<null | { userId: number | string; userName?: string; newRoleId?: number | string; newRoleName?: string }>(null);
   const [isSavingRole, setIsSavingRole] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<null | { type: 'activate' | 'deactivate'; userId: number | string; userName?: string }>(null);
 
   return (
     <div>
@@ -88,30 +89,14 @@ export default function AdminUsersPage() {
                   {u.is_active ? (
                     <button
                       className="px-2 py-1 bg-[var(--danger)] text-white rounded"
-                      onClick={async () => {
-                        try {
-                          await deactivateTrigger(u.id).unwrap();
-                          addToast('User deactivated', 'success');
-                        } catch (err) {
-                          console.error(err);
-                          addToast('Failed to deactivate', 'error');
-                        }
-                      }}
+                      onClick={() => setConfirmAction({ type: 'deactivate', userId: u.id, userName: u.name })}
                     >
                       Deactivate
                     </button>
                   ) : (
                     <button
                       className="px-2 py-1 bg-[var(--success)] text-white rounded"
-                      onClick={async () => {
-                        try {
-                          await activateTrigger(u.id).unwrap();
-                          addToast('User activated', 'success');
-                        } catch (err) {
-                          console.error(err);
-                          addToast('Failed to activate', 'error');
-                        }
-                      }}
+                      onClick={() => setConfirmAction({ type: 'activate', userId: u.id, userName: u.name })}
                     >
                       Activate
                     </button>
@@ -173,6 +158,43 @@ export default function AdminUsersPage() {
                 disabled={isSavingRole}
               >
                 {isSavingRole ? 'Saving…' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {confirmAction && (
+        <Modal onClose={() => setConfirmAction(null)}>
+          <div className="p-4">
+            <h2 className="text-lg font-bold mb-2">Confirm {confirmAction.type === 'deactivate' ? 'deactivation' : 'activation'}</h2>
+            <p className="mb-4">Are you sure you want to {confirmAction.type} <strong>{confirmAction.userName}</strong>?</p>
+            <div className="flex gap-2 justify-end">
+              <button
+                className="px-3 py-1 border rounded bg-[var(--primary-bg)]"
+                onClick={() => setConfirmAction(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-[var(--accent)] text-white"
+                onClick={async () => {
+                  if (!confirmAction) return;
+                  try {
+                    if (confirmAction.type === 'deactivate') {
+                      await deactivateTrigger(confirmAction.userId).unwrap();
+                      addToast('User deactivated', 'success');
+                    } else {
+                      await activateTrigger(confirmAction.userId).unwrap();
+                      addToast('User activated', 'success');
+                    }
+                    setConfirmAction(null);
+                  } catch (err) {
+                    console.error(err);
+                    addToast('Action failed', 'error');
+                  }
+                }}
+              >
+                Confirm
               </button>
             </div>
           </div>
