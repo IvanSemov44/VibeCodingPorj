@@ -6,11 +6,8 @@
 import React from 'react';
 import Card from '../Card';
 
-// Local actions used on admin dashboard. Exclude activity logs link intentionally.
-const ACTIONS = [
-  { icon: '📦', label: 'View Pending Tools', href: '/admin/tools?status=pending' },
-  { icon: '👥', label: 'Manage Users', href: '/admin/users' },
-]
+// Local actions used on admin dashboard. (Currently no quick actions configured.)
+const ACTIONS: Array<{ icon: string; label: string; href: string }> = [];
 
 interface ActionButtonProps {
   icon: string;
@@ -30,11 +27,15 @@ export default function QuickActions(): React.ReactElement {
   return (
     <Card title="Quick Actions">
       <div className="flex flex-col gap-3">
-        {ACTIONS.map((action) => (
-          <a key={action.label} href={action.href}>
-            <ActionButton icon={action.icon} label={action.label} />
-          </a>
-        ))}
+        {ACTIONS.length === 0 ? (
+          <div className="text-sm text-gray-500">No quick actions configured.</div>
+        ) : (
+          ACTIONS.map((action) => (
+            <a key={action.label} href={action.href}>
+              <ActionButton icon={action.icon} label={action.label} />
+            </a>
+          ))
+        )}
       </div>
     </Card>
   );

@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
         // Ensure permissions and owner assignment exist
         $this->call(\Database\Seeders\PermissionSeeder::class);
         $this->call(\Database\Seeders\OwnerPermissionSeeder::class);
+        // Base recent activity rows for admin dashboard
+        $this->call(\Database\Seeders\ActivitySeeder::class);
     }
 }

@@ -1,4 +1,5 @@
 
+show more information in recent activities
 update pagination logic for Active Users and Tools and Pending Tool Approvals
 
 
@@ -14,3 +15,4 @@ update all component have dark mode
 add tags and categories to admin panel
 better role choice
 Add ban/activate actions for users listed on the Admin Users page.
+add base seed data for recent activities 
