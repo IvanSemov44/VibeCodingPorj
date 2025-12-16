@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { useGetAdminUsersQuery } from '../../../store/domains';
+import { useGetAdminUsersQuery, useActivateUserMutation, useDeactivateUserMutation, useGetRolesQuery, useSetUserRolesMutation } from '../../../store/domains';
+import { useToast } from '../../../components/Toast';
+import Modal from '../../../components/Modal';
 // AdminGuard removed: rely on Next middleware for server-side protection
 
 export default function AdminUsersPage() {
@@ -14,6 +16,13 @@ export default function AdminUsersPage() {
 
   const users = (data && (data as any).data) || [];
   const meta = (data && (data as any).meta) || {};
+  const { data: rolesList } = useGetRolesQuery();
+  const [activateTrigger, activateMutation] = useActivateUserMutation();
+  const [deactivateTrigger, deactivateMutation] = useDeactivateUserMutation();
+  const [setRolesTrigger, setRolesMutation] = useSetUserRolesMutation();
+  const { addToast } = useToast();
+  const [roleChangePending, setRoleChangePending] = useState<null | { userId: number | string; userName?: string; newRoleId?: number | string; newRoleName?: string }>(null);
+  const [isSavingRole, setIsSavingRole] = useState(false);
 
   return (
     <div>
@@ -59,8 +68,55 @@ export default function AdminUsersPage() {
               <tr key={u.id} className="border-t border-[var(--border-color)]">
                 <td className="p-2 text-[var(--text-primary)]">{u.name}</td>
                 <td className="p-2 text-[var(--text-primary)]">{u.email}</td>
-                <td className="p-2 text-[var(--text-primary)]">{(u.roles || []).map((r: any) => r?.name).filter(Boolean).join(', ')}</td>
-                <td className="p-2 text-[var(--text-primary)]">{u.is_active ? 'Active' : 'Inactive'}</td>
+                <td className="p-2 text-[var(--text-primary)]">
+                  <select
+                    className="p-1 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded"
+                    value={(u.roles && u.roles[0] && String(u.roles[0].id)) || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const role = Array.isArray(rolesList) ? rolesList.find((rr: any) => String(rr.id) === val) : null;
+                      setRoleChangePending({ userId: u.id, userName: u.name, newRoleId: val ? Number(val) : undefined, newRoleName: role?.name });
+                    }}
+                  >
+                    <option value="">(none)</option>
+                    {Array.isArray(rolesList) && rolesList.map((r: any) => (
+                      <option key={r.id} value={String(r.id)}>{r.name}</option>
+                    ))}
+                  </select>
+                </td>
+                <td className="p-2 text-[var(--text-primary)]">
+                  {u.is_active ? (
+                    <button
+                      className="px-2 py-1 bg-[var(--danger)] text-white rounded"
+                      onClick={async () => {
+                        try {
+                          await deactivateTrigger(u.id).unwrap();
+                          addToast('User deactivated', 'success');
+                        } catch (err) {
+                          console.error(err);
+                          addToast('Failed to deactivate', 'error');
+                        }
+                      }}
+                    >
+                      Deactivate
+                    </button>
+                  ) : (
+                    <button
+                      className="px-2 py-1 bg-[var(--success)] text-white rounded"
+                      onClick={async () => {
+                        try {
+                          await activateTrigger(u.id).unwrap();
+                          addToast('User activated', 'success');
+                        } catch (err) {
+                          console.error(err);
+                          addToast('Failed to activate', 'error');
+                        }
+                      }}
+                    >
+                      Activate
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -84,6 +140,44 @@ export default function AdminUsersPage() {
           Next
         </button>
       </div>
-      </div>
+
+      {roleChangePending && (
+        <Modal onClose={() => setRoleChangePending(null)}>
+          <div className="p-4">
+            <h2 className="text-lg font-bold mb-2">Confirm role change</h2>
+            <p className="mb-4">Change role for <strong>{roleChangePending.userName}</strong> to <strong>{roleChangePending.newRoleName || '(none)'}</strong>?</p>
+            <div className="flex gap-2 justify-end">
+              <button
+                className="px-3 py-1 border rounded bg-[var(--primary-bg)]"
+                onClick={() => setRoleChangePending(null)}
+                disabled={isSavingRole}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-[var(--accent)] text-white"
+                onClick={async () => {
+                  if (!roleChangePending) return;
+                  setIsSavingRole(true);
+                  try {
+                    await setRolesTrigger({ userId: roleChangePending.userId, roles: roleChangePending.newRoleId ? [Number(roleChangePending.newRoleId)] : [] }).unwrap();
+                    addToast('Role updated', 'success');
+                    setRoleChangePending(null);
+                  } catch (err) {
+                    console.error(err);
+                    addToast('Failed to update role', 'error');
+                  } finally {
+                    setIsSavingRole(false);
+                  }
+                }}
+                disabled={isSavingRole}
+              >
+                {isSavingRole ? 'Saving…' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </div>
   );
 }

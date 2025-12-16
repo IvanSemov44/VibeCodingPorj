@@ -18,14 +18,23 @@ class PermissionSeeder extends Seeder
             'settings.manage',
         ];
 
+        $guard = config('auth.defaults.guard') ?? 'web';
         foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm, 'guard_name' => 'web']);
+            Permission::firstOrCreate(['name' => $perm, 'guard_name' => $guard]);
         }
 
         // Assign all permissions to owner
-        $owner = Role::where('name', 'owner')->first();
+        $owner = Role::where('name', 'owner')->where('guard_name', $guard)->first();
         if ($owner) {
             $owner->givePermissionTo($permissions);
+        } else {
+            // if an owner role exists with a different guard, repair it
+            $existing = Role::where('name', 'owner')->first();
+            if ($existing) {
+                $existing->guard_name = $guard;
+                $existing->save();
+                $existing->givePermissionTo($permissions);
+            }
         }
     }
 }

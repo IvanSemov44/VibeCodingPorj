@@ -80,6 +80,7 @@ Route::middleware([
             Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store']);
             Route::post('users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'ban']);
             Route::post('users/{user}/activate', [\App\Http\Controllers\Admin\UserController::class, 'activate']);
+            Route::post('users/{user}/roles', [\App\Http\Controllers\Admin\UserController::class, 'setRoles']);
 
             // Admin 2FA management for specific users
             Route::get('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'show']);

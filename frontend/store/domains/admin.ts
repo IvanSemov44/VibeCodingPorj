@@ -102,3 +102,33 @@ export function useGetAdminUsersQuery(params: Record<string, unknown> = {}, opti
     ...(options || {}),
   });
 }
+
+export function useActivateUserMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<unknown, Error, string | number>({
+    mutationFn: async (id) => api.activateUser(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
+  });
+  const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m] as const;
+}
+
+export function useDeactivateUserMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<unknown, Error, string | number>({
+    mutationFn: async (id) => api.deactivateUser(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
+  });
+  const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m] as const;
+}
+
+export function useSetUserRolesMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<unknown, Error, { userId: string | number; roles: Array<string | number> }>({
+    mutationFn: async ({ userId, roles }) => api.setUserRoles(userId, roles),
+    onSuccess: (_data, vars) => qc.invalidateQueries({ queryKey: ['admin', 'users', { page: 1 }] }),
+  });
+  const trigger = (arg: { userId: string | number; roles: Array<string | number> }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m] as const;
+}

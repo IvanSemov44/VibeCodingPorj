@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root[data-theme='light'] {
+  /* Overlay for modals and dialogs */
+  --overlay-bg: rgba(0, 0, 0, 0.5);
   --bg-primary: #ffffff;
   --bg-secondary: #f9fafb;
   --bg-tertiary: #f3f4f6;
@@ -49,6 +51,8 @@
 }
 
 :root[data-theme='dark'] {
+  /* Overlay for modals and dialogs in dark theme */
+  --overlay-bg: rgba(0, 0, 0, 0.6);
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
   --bg-tertiary: #334155;

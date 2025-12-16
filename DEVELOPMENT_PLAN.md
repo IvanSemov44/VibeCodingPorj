@@ -356,12 +356,12 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 ```
 
 **Acceptance Criteria:**
-- [ ] Page displays all pending tools
-- [ ] Approve button changes tool status to "approved"
-- [ ] Reject button shows modal for reason input
-- [ ] Success/error toasts appear
-- [ ] List refreshes after action
-- [ ] Only accessible by admin/owner roles
+- [x] Page displays all pending tools
+- [x] Approve button changes tool status to "approved"
+- [x] Reject button shows modal for reason input
+- [x] Success/error toasts appear
+- [x] List refreshes after action
+- [x] Only accessible by admin/owner roles
 
 ---
 
@@ -443,7 +443,7 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 - System health status
 
 **Acceptance Criteria:**
-- [ ] Dashboard shows accurate statistics
+- [x] Dashboard shows accurate statistics
 - [ ] Recent activity displays latest 10 actions
 - [ ] Quick links to admin sections work
 - [ ] Loading states for all data

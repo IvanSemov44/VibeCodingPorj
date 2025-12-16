@@ -24,5 +24,8 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\JournalSeeder::class);
         // Seed a CLI test user for automated checks
         $this->call(\Database\Seeders\TestUserSeeder::class);
+        // Ensure permissions and owner assignment exist
+        $this->call(\Database\Seeders\PermissionSeeder::class);
+        $this->call(\Database\Seeders\OwnerPermissionSeeder::class);
     }
 }
