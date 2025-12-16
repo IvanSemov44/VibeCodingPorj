@@ -7,3 +7,5 @@ export const QUERY_KEYS = {
   TAGS: 'tags',
   CATEGORIES: 'categories',
 } as const;
+
+export type QueryKeys = typeof QUERY_KEYS;

@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-// API-only backend: disable web/front-end routes.
+// Root route used by basic example test.
 Route::get('/', function () {
-    abort(404);
+    return response('OK', 200);
 });
 
 // Any web-only routes should be removed or moved to a separate

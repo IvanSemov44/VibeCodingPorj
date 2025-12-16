@@ -90,6 +90,8 @@ final class ToolController extends Controller
 
     public function destroy(Request $request, Tool $tool): Response
     {
+        $this->authorize('delete', $tool);
+
         $this->toolService->delete($tool, $request->user());
 
         return response()->noContent();

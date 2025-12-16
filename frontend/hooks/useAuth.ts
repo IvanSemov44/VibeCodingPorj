@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useGetUserQuery } from '../store/api2';
+import { useGetUserQuery } from '../store/domains/user';
 import type { User } from '../lib/types';
 import { ROUTES } from '../lib/constants';
 

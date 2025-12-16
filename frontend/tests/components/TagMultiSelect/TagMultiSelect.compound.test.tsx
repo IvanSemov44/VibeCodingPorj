@@ -9,7 +9,7 @@ describe('TagMultiSelect (compound API)', () => {
       <TagMultiSelect value={['one']} onChange={() => {}}>
         <TagMultiSelect.Input />
         <TagMultiSelect.Dropdown />
-      </TagMultiSelect>
+      </TagMultiSelect>,
     );
 
     // input should be present

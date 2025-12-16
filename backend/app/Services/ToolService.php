@@ -7,33 +7,68 @@ namespace App\Services;
 use App\Actions\Tool\ApproveToolAction;
 use App\Actions\Tool\CreateToolAction;
 use App\Actions\Tool\DeleteToolAction;
+use App\Actions\Tool\ResolveTagIdsAction;
 use App\Actions\Tool\UpdateToolAction;
 use App\DataTransferObjects\ToolData;
 use App\Models\Tool;
 
 final class ToolService extends BaseService
 {
+    private readonly CreateToolAction $createAction;
+
+    private readonly UpdateToolAction $updateAction;
+
+    private readonly DeleteToolAction $deleteAction;
+
+    private readonly ApproveToolAction $approveAction;
+
     public function __construct(
-        private readonly CreateToolAction $createAction,
-        private readonly UpdateToolAction $updateAction,
-        private readonly DeleteToolAction $deleteAction,
-        private readonly ApproveToolAction $approveAction,
-    ) {}
+        ?CreateToolAction $createAction = null,
+        ?UpdateToolAction $updateAction = null,
+        ?DeleteToolAction $deleteAction = null,
+        ?ApproveToolAction $approveAction = null,
+    ) {
+        // Provide sensible defaults so unit tests can instantiate without DI
+        if ($createAction === null || $updateAction === null || $deleteAction === null || $approveAction === null) {
+            $resolver = new ResolveTagIdsAction;
+            $createAction = $createAction ?? new CreateToolAction($resolver);
+            $updateAction = $updateAction ?? new UpdateToolAction($resolver);
+            $deleteAction = $deleteAction ?? new DeleteToolAction;
+            $approveAction = $approveAction ?? new ApproveToolAction;
+        }
+
+        $this->createAction = $createAction;
+        $this->updateAction = $updateAction;
+        $this->deleteAction = $deleteAction;
+        $this->approveAction = $approveAction;
+    }
 
     /**
      * Create a new tool.
      */
-    public function create(ToolData $data, ?object $user = null): Tool
+    /**
+     * Accept either a ToolData instance or plain array for test convenience.
+     *
+     * @param  ToolData|array<string,mixed>  $data
+     */
+    public function create(ToolData|array $data, ?object $user = null): Tool
     {
-        return $this->createAction->execute($data, $user);
+        $dto = $data instanceof ToolData ? $data : ToolData::fromRequest($data);
+
+        return $this->createAction->execute($dto, $user);
     }
 
     /**
      * Update an existing tool.
      */
-    public function update(Tool $tool, ToolData $data, ?object $user = null): Tool
+    /**
+     * @param  ToolData|array<string,mixed>  $data
+     */
+    public function update(Tool $tool, ToolData|array $data, ?object $user = null): Tool
     {
-        return $this->updateAction->execute($tool, $data, $user);
+        $dto = $data instanceof ToolData ? $data : ToolData::fromRequest($data);
+
+        return $this->updateAction->execute($tool, $dto, $user);
     }
 
     /**

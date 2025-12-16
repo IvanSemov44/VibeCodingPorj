@@ -17,7 +17,9 @@ describe('TagMultiSelect compound behavior', () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    renderWithProviders(<TagMultiSelect value={[]} onChange={onChange} allowCreate options={['testing']} />);
+    renderWithProviders(
+      <TagMultiSelect value={[]} onChange={onChange} allowCreate options={['testing']} />,
+    );
 
     const input = screen.getByRole('combobox');
     await user.type(input, 'newitem');
@@ -30,7 +32,9 @@ describe('TagMultiSelect compound behavior', () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    renderWithProviders(<TagMultiSelect value={[]} onChange={onChange} allowCreate options={['test']} />);
+    renderWithProviders(
+      <TagMultiSelect value={[]} onChange={onChange} allowCreate options={['test']} />,
+    );
 
     const input = screen.getByRole('combobox');
     await user.type(input, 'another');
@@ -56,7 +60,9 @@ describe('TagMultiSelect compound behavior', () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
 
-    renderWithProviders(<TagMultiSelect value={['a', 'b', 'c']} onChange={onChange} options={[]} />);
+    renderWithProviders(
+      <TagMultiSelect value={['a', 'b', 'c']} onChange={onChange} options={[]} />,
+    );
 
     const input = screen.getByRole('combobox');
     await user.click(input);

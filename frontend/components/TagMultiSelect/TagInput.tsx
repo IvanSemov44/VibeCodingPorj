@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { useTagMultiSelectContext } from './context';
 
@@ -57,7 +58,9 @@ export function TagInput({ children }: TagInputProps) {
           aria-controls={ctx.listId}
           aria-autocomplete="list"
           role="combobox"
-          aria-activedescendant={ctx.open && ctx.activeIndex >= 0 ? `${ctx.listId}-option-${ctx.activeIndex}` : undefined}
+          aria-activedescendant={
+            ctx.open && ctx.activeIndex >= 0 ? `${ctx.listId}-option-${ctx.activeIndex}` : undefined
+          }
           aria-describedby={undefined}
           className="w-full min-w-[120px] bg-transparent border-none outline-none text-sm text-primary-text placeholder:text-secondary-text focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
         />

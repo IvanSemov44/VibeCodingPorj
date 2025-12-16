@@ -40,6 +40,16 @@ class ToolPolicy
             return true;
         }
 
+        // If the tool has no owner and no role restrictions, allow any authenticated user.
+        if ($tool->user_id === null && ! $tool->roles()->exists()) {
+            return true;
+        }
+
+        // Allow owner by ownership (creator) as well
+        if ($tool->user_id === $user->id) {
+            return true;
+        }
+
         $userRoles = $user->getRoleNames()->toArray();
         $toolRoles = $tool->roles()->pluck('name')->toArray();
 

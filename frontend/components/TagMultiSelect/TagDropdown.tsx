@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { useTagMultiSelectContext } from './context';
 
@@ -78,9 +79,18 @@ export function TagDropdown({ children }: TagDropdownProps) {
         </div>
       )}
 
-      {ctx.allowCreate && ctx.input.trim() !== '' && !ctx.options.map((o) => o.toLowerCase()).includes(ctx.input.trim().toLowerCase()) && (
+      {ctx.allowCreate &&
+        ctx.input.trim() !== '' &&
+        !ctx.options.map((o) => o.toLowerCase()).includes(ctx.input.trim().toLowerCase()) &&
         (children ? (
-          <React.Fragment key="__create">{children(ctx.input.trim(), ctx.filteredList.length, ctx.activeIndex === ctx.filteredList.length, () => ctx.addTag(ctx.input.trim()))}</React.Fragment>
+          <React.Fragment key="__create">
+            {children(
+              ctx.input.trim(),
+              ctx.filteredList.length,
+              ctx.activeIndex === ctx.filteredList.length,
+              () => ctx.addTag(ctx.input.trim()),
+            )}
+          </React.Fragment>
         ) : (
           <div
             role="option"
@@ -92,8 +102,7 @@ export function TagDropdown({ children }: TagDropdownProps) {
           >
             {`Create "${ctx.input.trim()}"`}
           </div>
-        ))
-      )}
+        ))}
     </div>
   );
 }

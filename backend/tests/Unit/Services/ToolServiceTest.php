@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Enums\ToolStatus;
 use App\Models\Tag;
 use App\Models\Tool;
 use App\Models\User;
@@ -93,7 +94,7 @@ class ToolServiceTest extends TestCase
 
         $approved = $this->toolService->approve($tool, $user);
 
-        $this->assertEquals('approved', $approved->status);
+        $this->assertEquals(ToolStatus::APPROVED, $approved->status);
     }
 
     public function test_create_tool_logs_activity(): void

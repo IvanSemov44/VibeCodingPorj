@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as api from '../../lib/api';
 import { QUERY_KEYS } from '../queryKeys';
+import { useCreateMutation } from '../utils/createMutation';
 import type { AuthResponse, LoginPayload, RegisterPayload, User } from '../../lib/types';
 
 export function useGetUserQuery(options?: Record<string, unknown>) {
@@ -45,4 +46,14 @@ export function useRegisterMutation() {
   });
   const trigger = (arg: RegisterPayload) => ({ unwrap: () => m.mutateAsync(arg) });
   return [trigger, m] as const;
+}
+
+// Example using createMutation helper
+export function useCreateUserMutation() {
+  const apiShim = api as unknown as {
+    createUser?: (body: Record<string, unknown>) => Promise<User>;
+  };
+  const fn = (body: Record<string, unknown>) =>
+    apiShim.createUser ? apiShim.createUser(body) : Promise.reject(new Error('not implemented'));
+  return useCreateMutation<Record<string, unknown>, User>({ fn, invalidate: [QUERY_KEYS.USER] });
 }

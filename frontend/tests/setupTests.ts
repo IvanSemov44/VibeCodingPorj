@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 // test setup: jest-dom + MSW server lifecycle
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';

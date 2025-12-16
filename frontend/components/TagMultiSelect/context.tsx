@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 
 export type TagMultiSelectContextValue = {
@@ -40,11 +41,11 @@ const throwErr = () => {
 export const TagMultiSelectContext = React.createContext<TagMultiSelectContextValue>({
   value: [],
   input: '',
-  setInput: throwErr as any,
+  setInput: throwErr as unknown as (v: string) => void,
   open: false,
-  setOpen: throwErr as any,
+  setOpen: throwErr as unknown as (v: boolean) => void,
   activeIndex: -1,
-  setActiveIndex: throwErr as any,
+  setActiveIndex: throwErr as unknown as (i: number) => void,
   options: [],
   filteredList: [],
   isLoading: false,
@@ -58,9 +59,9 @@ export const TagMultiSelectContext = React.createContext<TagMultiSelectContextVa
   listId: undefined,
   inputId: undefined,
   allowCreate: undefined,
-  addTag: throwErr as any,
-  removeTag: throwErr as any,
-  handleKey: throwErr as any,
+  addTag: throwErr as unknown as (tag: string) => void,
+  removeTag: throwErr as unknown as (tag: string) => void,
+  handleKey: throwErr as unknown as (e: React.KeyboardEvent<HTMLInputElement>) => void,
 });
 
 export const useTagMultiSelectContext = () => React.useContext(TagMultiSelectContext);

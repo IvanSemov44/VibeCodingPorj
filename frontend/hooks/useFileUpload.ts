@@ -5,6 +5,7 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
+import type * as React from 'react';
 
 export interface UseFileUploadReturn {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -56,7 +57,7 @@ export function useFileUpload(
       if (!selectedFiles || selectedFiles.length === 0) return;
 
       setError(null);
-      const fileArray = Array.from(selectedFiles);
+      const fileArray = Array.from(selectedFiles) as File[];
 
       // Check max files limit
       if (files.length + fileArray.length > maxFiles) {

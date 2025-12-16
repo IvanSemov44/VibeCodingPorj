@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useId, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTagMultiSelect } from '../hooks/useTagMultiSelect';
@@ -40,7 +41,7 @@ type TagMultiSelectProps = {
   children?: React.ReactNode;
 };
 
-export default function TagMultiSelect({
+function TagMultiSelect({
   value = [],
   onChange,
   allowCreate = true,
@@ -154,7 +155,15 @@ export default function TagMultiSelect({
   );
 }
 
-// Attach static subcomponents for compound API
+// Attach static subcomponents for compound API with proper typing
+type CompoundTagMultiSelect = React.FC<TagMultiSelectProps> & {
+  Input: typeof TagInput;
+  List: typeof TagList;
+  Dropdown: typeof TagDropdown;
+};
+
 (TagMultiSelect as any).Input = TagInput;
 (TagMultiSelect as any).List = TagList;
 (TagMultiSelect as any).Dropdown = TagDropdown;
+
+export default TagMultiSelect as unknown as CompoundTagMultiSelect;

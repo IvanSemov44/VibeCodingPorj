@@ -18,7 +18,7 @@ export const Compound = () => (
 export const RenderPropCustomization = () => (
   <TagMultiSelect value={['custom']} onChange={() => {}}>
     <TagMultiSelect.Input>
-      {(tag, idx, remove) => (
+      {(tag: string, idx: number, remove: (t: string) => void) => (
         <div key={tag} style={{ padding: 6, borderRadius: 6, background: '#eef' }}>
           <span style={{ marginRight: 8 }}>{tag.toUpperCase()}</span>
           <button onClick={() => remove(tag)}>✕</button>
@@ -26,7 +26,7 @@ export const RenderPropCustomization = () => (
       )}
     </TagMultiSelect.Input>
     <TagMultiSelect.Dropdown>
-      {(option, idx, active, select) => (
+      {(option: string, idx: number, active: boolean, select: () => void) => (
         <div
           onClick={select}
           style={{ padding: 8, background: active ? '#def' : 'transparent', cursor: 'pointer' }}
@@ -49,3 +49,13 @@ export const LargeListVirtualized = () => {
   );
 };
 
+// Audit-safe variant: avoid using hooks in the story function to keep
+// server-side rendering / static audits simple and deterministic.
+export const LargeListVirtualizedAudit = () => {
+  const largeOptions = Array.from({ length: 300 }).map((_, i) => `option-${i}`);
+  return (
+    <div style={{ width: 400 }}>
+      <TagMultiSelect value={[]} onChange={() => {}} options={largeOptions} />
+    </div>
+  );
+};

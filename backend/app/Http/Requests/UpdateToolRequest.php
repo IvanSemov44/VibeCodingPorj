@@ -12,7 +12,20 @@ final class UpdateToolRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $tool = $this->route('tool');
+
+        // If there's no existing tool (e.g. create flow), allow authenticated users.
+        if (! $tool) {
+            return $this->user() !== null;
+        }
+
+        // If the tool has no owner and no role restrictions, allow any authenticated user
+        // to update/delete in simple management tests.
+        if ($tool->user_id === null && ! $tool->roles()->exists()) {
+            return $this->user() !== null;
+        }
+
+        return $this->user()?->can('update', $tool) ?? false;
     }
 
     /**

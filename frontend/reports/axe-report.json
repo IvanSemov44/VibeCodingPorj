@@ -1,0 +1,30 @@
+[
+  {
+    "story": "Default",
+    "violations": [],
+    "passes": 14,
+    "incomplete": 1,
+    "timestamp": "2025-12-16T06:55:14.330Z"
+  },
+  {
+    "story": "Compound",
+    "violations": [],
+    "passes": 16,
+    "incomplete": 1,
+    "timestamp": "2025-12-16T06:55:14.480Z"
+  },
+  {
+    "story": "RenderPropCustomization",
+    "violations": [],
+    "passes": 16,
+    "incomplete": 1,
+    "timestamp": "2025-12-16T06:55:14.531Z"
+  },
+  {
+    "story": "LargeListVirtualizedAudit",
+    "violations": [],
+    "passes": 14,
+    "incomplete": 1,
+    "timestamp": "2025-12-16T06:55:14.588Z"
+  }
+]
