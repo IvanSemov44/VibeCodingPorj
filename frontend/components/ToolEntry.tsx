@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useDeleteToolMutation } from '../store/domains';
+import { useAuth } from '../hooks/useAuth';
 import type { Tool } from '../lib/types';
 
 interface Props {
@@ -13,6 +14,11 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
   // router not used here
 
   const [deleteTrigger] = useDeleteToolMutation();
+  const { user } = useAuth(false);
+
+  const canManage = Boolean(
+    user && (user.id === (tool.user && (tool.user as any).id) || (user.roles && user.roles.includes('owner')))
+  );
 
   const handleDelete = async () => {
     if (!confirm('Delete this tool?')) return;
@@ -63,17 +69,21 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
           ) : (
             <span className="px-3 py-1.5 text-sm font-medium text-tertiary-text">Visit</span>
           )}
-          <Link href={`/tools/${tool.id}/edit`}>
-            <button className="px-3 py-1.5 bg-accent text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-accent-hover">
-              Edit
-            </button>
-          </Link>
-          <button
-            onClick={handleDelete}
-            className="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-red-600"
-          >
-            Delete
-          </button>
+          {canManage ? (
+            <>
+              <Link href={`/tools/${tool.id}/edit`}>
+                <button className="px-3 py-1.5 bg-accent text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-accent-hover">
+                  Edit
+                </button>
+              </Link>
+              <button
+                onClick={handleDelete}
+                className="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg border-none cursor-pointer transition-all hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
     </div>

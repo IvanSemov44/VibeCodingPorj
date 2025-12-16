@@ -8,3 +8,6 @@ update all component have dark mode
 Add confirmation to Approve (toast + optimistic update) and show toasts on success/failure.
 Add server-side protection UI (hide actions when user is not admin).
 Add ban/activate actions for users listed on the Admin Users page.
+
+
+DONE:
