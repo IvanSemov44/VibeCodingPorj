@@ -149,7 +149,26 @@ class UserController extends Controller
 
         $user->syncRoles($roleNames);
 
-        activity()->performedOn($user)->log('user_roles_updated');
+        // Log to spatie activity log if available
+        try {
+            activity()->performedOn($user)->log('user_roles_updated');
+        } catch (\Throwable $e) {
+            \Log::warning('spatie activity() helper not available: ' . $e->getMessage());
+        }
+
+        // Also write to our lightweight activities table so RecentActivity can display it
+        try {
+            \App\Models\Activity::create([
+                'subject_type' => get_class($user),
+                'subject_id' => $user->id,
+                'action' => 'roles_updated',
+                'user_id' => $request->user()?->id,
+                'meta' => ['roles' => $roleNames],
+                'created_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            \Log::warning('Failed to create Activity record: ' . $e->getMessage());
+        }
 
         return response()->json($user->load('roles'));
     }

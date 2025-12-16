@@ -15,7 +15,8 @@ class EnsureAdminOrOwner
     {
         $user = $request->user();
         if (! $user) {
-            if ($request->expectsJson()) {
+            // Treat API routes as JSON requests even if Accept header isn't present
+            if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);
             }
             return redirect('/');
@@ -30,7 +31,7 @@ class EnsureAdminOrOwner
         }
 
         if (! $allowed) {
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Forbidden.'], 403);
             }
             return redirect('/');

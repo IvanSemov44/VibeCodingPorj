@@ -119,6 +119,20 @@ final class ToolController extends Controller
 
         $approved = $action->execute($tool, request()->user());
 
+        // Log lightweight activity for admin dashboard
+        try {
+            \App\Models\Activity::create([
+                'subject_type' => get_class($approved),
+                'subject_id' => $approved->id,
+                'action' => 'approved',
+                'user_id' => request()->user()?->id,
+                'meta' => ['title' => $approved->name ?? null],
+                'created_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to create activity for tool approval: ' . $e->getMessage());
+        }
+
         return response()->json([
             'message' => 'Tool approved successfully',
             'data' => new ToolResource($approved->fresh()),
@@ -132,6 +146,19 @@ final class ToolController extends Controller
         $reason = $request->input('reason');
 
         $rejected = $action->execute($tool, $request->user(), $reason);
+
+        try {
+            \App\Models\Activity::create([
+                'subject_type' => get_class($rejected),
+                'subject_id' => $rejected->id,
+                'action' => 'rejected',
+                'user_id' => $request->user()?->id,
+                'meta' => ['title' => $rejected->name ?? null, 'reason' => $reason],
+                'created_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to create activity for tool rejection: ' . $e->getMessage());
+        }
 
         return response()->json([
             'message' => 'Tool rejected',

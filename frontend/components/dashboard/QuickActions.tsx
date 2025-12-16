@@ -5,8 +5,12 @@
 
 import React from 'react';
 import Card from '../Card';
-import { QUICK_ACTIONS } from '../../lib/constants';
-import type { QuickAction } from '../../lib/constants';
+
+// Local actions used on admin dashboard. Exclude activity logs link intentionally.
+const ACTIONS = [
+  { icon: '📦', label: 'View Pending Tools', href: '/admin/tools?status=pending' },
+  { icon: '👥', label: 'Manage Users', href: '/admin/users' },
+]
 
 interface ActionButtonProps {
   icon: string;
@@ -26,8 +30,10 @@ export default function QuickActions(): React.ReactElement {
   return (
     <Card title="Quick Actions">
       <div className="flex flex-col gap-3">
-        {QUICK_ACTIONS.map((action: QuickAction) => (
-          <ActionButton key={action.label} icon={action.icon} label={action.label} />
+        {ACTIONS.map((action) => (
+          <a key={action.label} href={action.href}>
+            <ActionButton icon={action.icon} label={action.label} />
+          </a>
         ))}
       </div>
     </Card>

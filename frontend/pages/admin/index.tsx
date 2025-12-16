@@ -1,6 +1,8 @@
 import React from 'react';
 import { useGetAdminStatsQuery, useGetCategoriesQuery, useGetTagsQuery } from '../../store/domains';
 import StatsCard from '../../components/admin/StatsCard';
+import RecentActivity from '../../components/admin/RecentActivity';
+import QuickActions from '../../components/dashboard/QuickActions';
 // AdminGuard removed: server-side middleware enforces access
 
 export default function AdminDashboard() {
@@ -23,6 +25,13 @@ export default function AdminDashboard() {
         <StatsCard title="Active Users" value={stats.activeUsers} href="/admin/users" />
         <StatsCard title="Categories" value={totalCategories} href="/admin/categories" />
         <StatsCard title="Tags" value={totalTags} href="/admin/tags" />
+      </div>
+      <div className="mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2">
+            <RecentActivity />
+          </div>
+        </div>
       </div>
     </div>
   );

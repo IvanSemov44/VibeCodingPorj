@@ -19,6 +19,19 @@ class AdminController extends Controller
     {
         $this->authorize('viewAny', Tool::class);
 
+        $recent = Tool::withRelations()->latest()->take(10)->get()->map(function (Tool $t) {
+            return [
+                'id' => $t->id,
+                'title' => $t->name ?? $t->title ?? 'Untitled',
+                'slug' => $t->slug,
+                'user' => [
+                    'name' => $t->user?->name ?? null,
+                    'id' => $t->user?->id ?? null,
+                ],
+                'created_at' => $t->created_at?->toDateTimeString(),
+            ];
+        });
+
         return response()->json([
             'totalTools' => Tool::count(),
             'pendingTools' => Tool::where('status', ToolStatus::PENDING->value)->count(),
@@ -26,7 +39,7 @@ class AdminController extends Controller
             'rejectedTools' => Tool::where('status', ToolStatus::REJECTED->value)->count(),
             'activeUsers' => User::where('is_active', true)->count(),
             'totalUsers' => User::count(),
-            'recentTools' => Tool::latest()->take(10)->get(),
+            'recentTools' => $recent,
         ]);
     }
 }

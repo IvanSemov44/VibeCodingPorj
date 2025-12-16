@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('health', function () {
     return response()->json(['ok' => true]);
 });
+// Temporary debug route: return raw activities without auth for troubleshooting
+Route::get('_debug/activities-raw', function () {
+    return response()->json(['data' => \App\Models\Activity::orderBy('created_at', 'desc')->limit(10)->get()->toArray()]);
+});
 Route::get('categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
 Route::get('roles', [\App\Http\Controllers\Api\RoleController::class, 'index']);
 Route::get('tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
@@ -96,6 +100,8 @@ Route::middleware([
 
             // Admin dashboard stats
             Route::get('stats', [\App\Http\Controllers\Admin\AdminController::class, 'stats']);
+            // Admin activity feed
+            Route::get('activities', [\App\Http\Controllers\Admin\ActivityController::class, 'index']);
         });
     });
 });
