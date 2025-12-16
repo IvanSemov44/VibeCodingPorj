@@ -8,7 +8,9 @@ vi.mock('../../components/Toast', () => ({ useToast: () => ({ addToast: vi.fn() 
 vi.mock('../../store/domains', () => ({
   useCreateToolMutation: vi.fn(),
   useUpdateToolMutation: vi.fn(),
-  useUploadToolScreenshotsMutation: vi.fn(),
+  useUploadToolScreenshotsMutation: vi.fn(() => [vi.fn(), {}]),
+  useDeleteToolScreenshotMutation: vi.fn(() => [vi.fn(), {}]),
+  useGetCsrfMutation: vi.fn(() => [vi.fn(), {}]),
   useGetTagsQuery: vi.fn(() => ({ data: [], isLoading: false, isError: false })),
 }));
 
@@ -33,6 +35,8 @@ describe('ToolForm', () => {
     vi.mocked(api.useCreateToolMutation).mockReturnValue([createTrigger, {}] as any);
     vi.mocked(api.useUpdateToolMutation).mockReturnValue([vi.fn(), {}] as any);
     vi.mocked(api.useUploadToolScreenshotsMutation).mockReturnValue([vi.fn(), {}] as any);
+    vi.mocked(api.useDeleteToolScreenshotMutation).mockReturnValue([vi.fn(), {}] as any);
+    vi.mocked(api.useGetCsrfMutation).mockReturnValue([vi.fn(), {}] as any);
 
     renderWithProviders(<ToolForm allTags={['a', 'b']} categories={[]} roles={[]} />);
 

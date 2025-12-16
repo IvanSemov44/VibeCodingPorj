@@ -73,6 +73,8 @@ describe('ToolEntry', () => {
     await userEvent.click(delBtn);
 
     expect(mockedTrigger).toHaveBeenCalledWith('t2');
-    expect(window.alert).toHaveBeenCalled();
+    // wait for the async rejection to be handled and alert to be called
+    const { waitFor } = await import('@testing-library/react');
+    await waitFor(() => expect(window.alert).toHaveBeenCalled());
   });
 });

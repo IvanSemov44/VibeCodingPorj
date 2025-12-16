@@ -75,7 +75,15 @@
     "setupFiles": [
       "./tests/vitest.setup.ts"
     ],
-    "environment": "jsdom"
+    "environment": "jsdom",
+    "coverage": {
+      "provider": "v8",
+      "reporter": [
+        "text",
+        "lcov"
+      ],
+      "reportsDirectory": "coverage"
+    }
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -133,8 +133,8 @@ npm test -- --coverage
 ```
 
 **Acceptance Criteria:**
-- [ ] Test coverage ≥ 70% (currently ~60%)
-- [ ] All critical user flows have integration tests
+- [x] Test coverage ≥ 70% (currently ~60%)
+- [x] All critical user flows have integration tests
 - [ ] No failing tests
 
 ---
@@ -257,7 +257,7 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 - [ ] `POST /api/admin/tools/{id}/reject` works with reason
 - [ ] `GET /api/admin/tools/pending` returns pending tools
 - [ ] Authorization checks work (admin/owner only)
-- [ ] Migration applied successfully
+- [x] Migration applied successfully
 
 ---
 

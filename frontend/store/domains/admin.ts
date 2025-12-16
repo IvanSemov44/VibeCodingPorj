@@ -43,3 +43,45 @@ export function useGetRolesQuery(options?: Record<string, unknown>) {
     ...(options || {}),
   });
 }
+
+export function useGetPendingToolsQuery(options?: Record<string, unknown>) {
+  return useQuery<unknown>({
+    queryKey: ['admin', 'pending-tools'],
+    queryFn: async () => api.getPendingTools(),
+    ...(options || {}),
+  });
+}
+
+export function useApproveToolMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<unknown, Error, string | number>({
+    mutationFn: async (id) => api.approveTool(id),
+    onSuccess: (_data) => {
+      qc.invalidateQueries({ queryKey: ['admin', 'pending-tools'] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
+    },
+  });
+  const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m] as const;
+}
+
+export function useRejectToolMutation() {
+  const qc = useQueryClient();
+  const m = useMutation<unknown, Error, { id: string | number; reason?: string }>({
+    mutationFn: async ({ id, reason }) => api.rejectTool(id, reason),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'pending-tools'] });
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
+    },
+  });
+  const trigger = (arg: { id: string | number; reason?: string }) => ({ unwrap: () => m.mutateAsync(arg) });
+  return [trigger, m] as const;
+}
+
+export function useGetAdminStatsQuery(options?: Record<string, unknown>) {
+  return useQuery<unknown>({
+    queryKey: ['admin', 'stats'],
+    queryFn: async () => api.getAdminStats(),
+    ...(options || {}),
+  });
+}

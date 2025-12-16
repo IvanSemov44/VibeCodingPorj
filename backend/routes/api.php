@@ -84,6 +84,14 @@ Route::middleware([
             Route::get('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'show']);
             Route::post('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'store']);
             Route::delete('users/{user}/2fa', [\App\Http\Controllers\Admin\TwoFactorController::class, 'destroy']);
+
+            // Admin tool approval endpoints & dashboard
+            Route::get('tools/pending', [\App\Http\Controllers\Api\ToolController::class, 'pending']);
+            Route::post('tools/{tool}/approve', [\App\Http\Controllers\Api\ToolController::class, 'approve']);
+            Route::post('tools/{tool}/reject', [\App\Http\Controllers\Api\ToolController::class, 'reject']);
+
+            // Admin dashboard stats
+            Route::get('stats', [\App\Http\Controllers\Admin\AdminController::class, 'stats']);
         });
     });
 });

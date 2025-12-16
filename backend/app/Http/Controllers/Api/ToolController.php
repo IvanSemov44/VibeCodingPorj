@@ -11,6 +11,10 @@ use App\Http\Requests\UpdateToolRequest;
 use App\Http\Resources\ToolResource;
 use App\Models\Tool;
 use App\Services\ToolService;
+use App\Actions\Tool\ApproveToolAction;
+use App\Actions\Tool\RejectToolAction;
+use App\Enums\ToolStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -95,5 +99,43 @@ final class ToolController extends Controller
         $this->toolService->delete($tool, $request->user());
 
         return response()->noContent();
+    }
+
+    public function approve(Tool $tool, ApproveToolAction $action): JsonResponse
+    {
+        $this->authorize('update', $tool);
+
+        $approved = $action->execute($tool, request()->user());
+
+        return response()->json([
+            'message' => 'Tool approved successfully',
+            'data' => new ToolResource($approved->fresh()),
+        ]);
+    }
+
+    public function reject(Tool $tool, Request $request, RejectToolAction $action): JsonResponse
+    {
+        $this->authorize('update', $tool);
+
+        $reason = $request->input('reason');
+
+        $rejected = $action->execute($tool, $request->user(), $reason);
+
+        return response()->json([
+            'message' => 'Tool rejected',
+            'data' => new ToolResource($rejected),
+        ]);
+    }
+
+    public function pending(): AnonymousResourceCollection
+    {
+        $this->authorize('viewAny', Tool::class);
+
+        $tools = Tool::where('status', ToolStatus::PENDING->value)
+            ->withRelations()
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return ToolResource::collection($tools);
     }
 }
