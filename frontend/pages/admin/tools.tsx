@@ -11,6 +11,7 @@ import {
   useGetToolsQuery,
 } from '../../store/domains';
 import { useAuth } from '../../hooks/useAuth';
+import AdminGuard from '../../components/admin/AdminGuard';
 
 export default function AdminToolsPage() {
   const router = useRouter();
@@ -73,8 +74,9 @@ export default function AdminToolsPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">{pendingMode ? 'Pending Tool Approvals' : 'Tools'}</h1>
+    <AdminGuard>
+      <div>
+        <h1 className="text-2xl font-bold mb-4">{pendingMode ? 'Pending Tool Approvals' : 'Tools'}</h1>
 
       {isLoading && <div>Loading…</div>}
 
@@ -210,6 +212,7 @@ export default function AdminToolsPage() {
           </div>
         </Modal>
       )}
-    </div>
+      </div>
+    </AdminGuard>
   );
 }

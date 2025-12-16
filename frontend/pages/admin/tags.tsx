@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import AdminGuard from '../../components/admin/AdminGuard';
 import { Tag } from '../../lib/types';
 import {
   useGetCsrfMutation,
@@ -76,6 +77,7 @@ export default function AdminTags(): React.ReactElement {
   }
 
   return (
+      <AdminGuard>
     <div className="p-5">
       <h1>Admin — Tags</h1>
       <form onSubmit={handleCreate} className="mb-5">
@@ -130,6 +132,7 @@ export default function AdminTags(): React.ReactElement {
         </table>
       )}
     </div>
+      </AdminGuard>
   );
 }
 

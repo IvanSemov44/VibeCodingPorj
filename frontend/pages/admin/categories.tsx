@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import AdminGuard from '../../components/admin/AdminGuard';
 import { Category } from '../../lib/types';
 import {
   useGetCsrfMutation,
@@ -76,7 +77,8 @@ export default function AdminCategories(): React.ReactElement {
   }
 
   return (
-    <div className="p-5">
+    <AdminGuard>
+      <div className="p-5">
       <h1>Admin — Categories</h1>
       <form onSubmit={handleCreate} className="mb-5">
         <div>
@@ -134,7 +136,8 @@ export default function AdminCategories(): React.ReactElement {
           </tbody>
         </table>
       )}
-    </div>
+      </div>
+    </AdminGuard>
   );
 }
 

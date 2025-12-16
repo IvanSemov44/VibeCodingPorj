@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGetAdminUsersQuery } from '../../../store/domains';
+import AdminGuard from '../../../components/admin/AdminGuard';
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -15,8 +16,9 @@ export default function AdminUsersPage() {
   const meta = (data && (data as any).meta) || {};
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Active Users</h1>
+    <AdminGuard>
+      <div>
+        <h1 className="text-2xl font-bold mb-4">Active Users</h1>
 
       <div className="mb-4 flex gap-2">
         <input
@@ -83,6 +85,7 @@ export default function AdminUsersPage() {
           Next
         </button>
       </div>
-    </div>
+      </div>
+    </AdminGuard>
   );
 }
