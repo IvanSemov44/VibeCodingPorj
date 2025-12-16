@@ -18,6 +18,9 @@ export function currentXsrf(): string {
   return getCookie('XSRF-TOKEN') || csrfToken || '';
 }
 
+// Guard to prevent multiple concurrent CSRF fetches from stomping the browser
+let _inflightCsrf: Promise<Response> | null = null;
+
 export type FetchOptions = {
   timeoutMs?: number;
 };
@@ -106,7 +109,12 @@ export async function parseListResponse<T>(res: Response) {
 
 export async function getCsrf(): Promise<Response> {
   try {
-    const res = await fetchWithAuth(API_ENDPOINTS.CSRF);
+    if (_inflightCsrf) return _inflightCsrf;
+    _inflightCsrf = fetchWithAuth(API_ENDPOINTS.CSRF).finally(() => {
+      // clear after settled
+      _inflightCsrf = null;
+    });
+    const res = await _inflightCsrf;
     const cookieVal = getCookie('XSRF-TOKEN');
     if (cookieVal) csrfToken = cookieVal;
     return res;

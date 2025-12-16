@@ -41,6 +41,13 @@ class ToolResource extends JsonResource
             'categories' => $this->whenLoaded('categories', fn () => $this->categories->map->only(['id', 'name', 'slug'])),
             'tags' => $this->whenLoaded('tags', fn () => $this->tags->map->only(['id', 'name', 'slug'])),
             'roles' => $this->whenLoaded('roles', fn () => $this->roles->map->only(['id', 'name'])),
+            'user' => $this->whenLoaded('user', fn () => [
+                'id' => $this->user?->id,
+                'name' => $this->user?->name,
+                'email' => $this->user?->email,
+            ]),
+            'status' => $this->status?->value ?? null,
+            'rejection_reason' => $this->when(isset($this->rejection_reason), fn () => $this->rejection_reason),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

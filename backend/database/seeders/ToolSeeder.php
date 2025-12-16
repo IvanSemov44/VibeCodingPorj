@@ -92,6 +92,25 @@ class ToolSeeder extends Seeder
                 $rTake = rand(0, min(2, count($roleIds)));
                 $tool->roles()->syncWithoutDetaching(array_slice($roleIds, 0, $rTake));
             }
+            // Ensure each tool has an owner if one is not already set.
+            if (empty($tool->submitted_by)) {
+                // Prefer a user with the 'owner' role, fall back to any user.
+                $owner = null;
+                try {
+                    $owner = \App\Models\User::role('owner')->inRandomOrder()->first();
+                } catch (\Throwable $e) {
+                    // If roles are not available or the role query fails, ignore and fallback
+                }
+
+                if (! $owner) {
+                    $owner = \App\Models\User::inRandomOrder()->first();
+                }
+
+                if ($owner) {
+                    $tool->user()->associate($owner);
+                    $tool->save();
+                }
+            }
         }
     }
 }

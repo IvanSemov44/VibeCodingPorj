@@ -9,6 +9,8 @@ use App\Enums\ToolStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 /**
  * @property-read int|null $user_id
@@ -32,6 +34,11 @@ class Tool extends Model
         return $this->belongsToMany(Category::class, 'category_tool');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'submitted_by');
+    }
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'tag_tool');
@@ -48,7 +55,7 @@ class Tool extends Model
      */
     public function scopeWithRelations($query)
     {
-        return $query->with(['categories', 'tags', 'roles']);
+        return $query->with(['categories', 'tags', 'roles', 'user']);
     }
 
     /**

@@ -45,3 +45,10 @@ export async function getAdminStats(): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/stats`);
   return await parseJson(res as unknown as Response);
 }
+
+export async function getAdminUsers(params: Record<string, unknown> = {}): Promise<unknown> {
+  const qs = new URLSearchParams(Object.entries(params as Record<string, string>)).toString();
+  const url = `/api/admin/users${qs ? `?${qs}` : ''}`;
+  const res = await fetchWithAuth(url);
+  return await parseJson(res as unknown as Response);
+}

@@ -253,10 +253,10 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 ```
 
 **Acceptance Criteria:**
-- [ ] `POST /api/admin/tools/{id}/approve` works
-- [ ] `POST /api/admin/tools/{id}/reject` works with reason
-- [ ] `GET /api/admin/tools/pending` returns pending tools
-- [ ] Authorization checks work (admin/owner only)
+- [x] `POST /api/admin/tools/{id}/approve` works
+- [x] `POST /api/admin/tools/{id}/reject` works with reason
+- [x] `GET /api/admin/tools/pending` returns pending tools
+- [x] Authorization checks work (admin/owner only)
 - [x] Migration applied successfully
 
 ---

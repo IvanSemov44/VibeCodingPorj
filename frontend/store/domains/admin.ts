@@ -85,3 +85,20 @@ export function useGetAdminStatsQuery(options?: Record<string, unknown>) {
     ...(options || {}),
   });
 }
+
+export function useGetAdminUsersQuery(params: Record<string, unknown> = {}, options?: Record<string, unknown>) {
+  const key = ['admin', 'users', params];
+  return useQuery<{
+    data: any[];
+    meta?: Record<string, any>;
+    links?: Record<string, any>;
+  }>({
+    queryKey: key,
+    queryFn: async () => (await api.getAdminUsers(params)) as {
+      data: any[];
+      meta?: Record<string, any>;
+      links?: Record<string, any>;
+    },
+    ...(options || {}),
+  });
+}

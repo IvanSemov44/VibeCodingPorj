@@ -6,6 +6,7 @@ import {
   UseQueryResult,
   UseMutationResult,
 } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import * as api from '../../lib/api';
 import { QUERY_KEYS } from '../queryKeys.ts';
 import { useCreateMutation } from '../utils/createMutation';
@@ -25,8 +26,10 @@ export function useGetCsrfMutation(): readonly [
   () => { unwrap: () => Promise<Response> },
   UseMutationResult<Response, unknown, void>,
 ] {
-  const m = useMutation<Response, unknown, void>({ mutationFn: async () => api.getCsrf() });
-  const trigger = () => ({ unwrap: () => m.mutateAsync() });
+  const m = useMutation<Response, unknown, void>({ mutationFn: async () => api.getCsrf(), retry: false });
+  // Return a stable trigger that directly calls the API shim. We rely on
+  // api.getCsrf()'s internal dedupe to avoid duplicate network requests.
+  const trigger = useCallback(() => ({ unwrap: () => api.getCsrf() }), []);
   return [trigger, m] as const;
 }
 
