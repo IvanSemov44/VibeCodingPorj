@@ -10,6 +10,7 @@ import {
   useRejectToolMutation,
   useGetToolsQuery,
 } from '../../store/domains';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function AdminToolsPage() {
   const router = useRouter();
@@ -23,6 +24,8 @@ export default function AdminToolsPage() {
   const [rejectTrigger] = useRejectToolMutation();
   const { addToast } = useToast();
   const qc = useQueryClient();
+  const { user } = useAuth(false);
+  const isAdmin = Boolean(user && Array.isArray(user.roles) && user.roles.includes('owner'));
 
   const [rejectingTool, setRejectingTool] = useState<any | null>(null);
   const [rejectReason, setRejectReason] = useState<string>('');
@@ -80,7 +83,13 @@ export default function AdminToolsPage() {
       {pendingMode ? (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
           {tools.map((t: any) => (
-            <ToolApprovalCard key={t.id} tool={t} onApprove={performApprove} onRequestReject={(tool) => setRejectingTool(tool)} />
+            <ToolApprovalCard
+              key={t.id}
+              tool={t}
+              onApprove={performApprove}
+              onRequestReject={(tool) => setRejectingTool(tool)}
+              isAdmin={isAdmin}
+            />
           ))}
         </div>
       ) : (
@@ -105,20 +114,24 @@ export default function AdminToolsPage() {
                       View
                     </a>
                     {t.status === 'pending' || t.is_pending ? (
-                      <>
-                        <button
-                          className="ml-2 px-2 py-1 bg-green-500 text-white rounded"
-                          onClick={() => requestApprove(t)}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className="ml-2 px-2 py-1 bg-red-500 text-white rounded"
-                          onClick={() => setRejectingTool(t)}
-                        >
-                          Reject
-                        </button>
-                      </>
+                        isAdmin ? (
+                          <>
+                            <button
+                              className="ml-2 px-2 py-1 bg-green-500 text-white rounded"
+                              onClick={() => requestApprove(t)}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className="ml-2 px-2 py-1 bg-red-500 text-white rounded"
+                              onClick={() => setRejectingTool(t)}
+                            >
+                              Reject
+                            </button>
+                          </>
+                        ) : (
+                          <span className="ml-2 text-sm text-tertiary-text">Pending</span>
+                        )
                     ) : null}
                   </td>
                 </tr>
