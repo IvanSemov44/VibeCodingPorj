@@ -1,7 +1,5 @@
 
-show more information in recent activities
 update pagination logic for Active Users and Tools and Pending Tool Approvals
-
 
 Add server-side unit tests for EnsureAdminOrOwner middleware.
 Add an e2e test that logs in and verifies /admin access.
@@ -16,3 +14,4 @@ add tags and categories to admin panel
 better role choice
 Add ban/activate actions for users listed on the Admin Users page.
 add base seed data for recent activities 
+show more information in recent activities

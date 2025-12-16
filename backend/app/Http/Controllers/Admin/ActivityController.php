@@ -18,12 +18,30 @@ class ActivityController extends Controller
                 ->limit(10)
                 ->get()
                 ->map(function (Activity $a) {
+                    $actor = null;
+                    if ($a->user) {
+                        $actor = [
+                            'id' => $a->user->id,
+                            'name' => $a->user->name,
+                            'email' => $a->user->email ?? null,
+                        ];
+
+                        // Include role names if the model uses Spatie trait
+                        try {
+                            if (method_exists($a->user, 'getRoleNames')) {
+                                $actor['roles'] = $a->user->getRoleNames()->toArray();
+                            }
+                        } catch (\Throwable $e) {
+                            // ignore
+                        }
+                    }
+
                     return [
                         'id' => $a->id,
                         'subject_type' => $a->subject_type,
                         'subject_id' => $a->subject_id,
                         'action' => $a->action,
-                        'user' => $a->user ? ['id' => $a->user->id, 'name' => $a->user->name] : null,
+                        'user' => $actor,
                         'meta' => $a->meta,
                         'created_at' => ($a->created_at instanceof \DateTimeInterface) ? $a->created_at->format('Y-m-d H:i:s') : (string) $a->created_at,
                     ];
