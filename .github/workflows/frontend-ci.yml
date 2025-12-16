@@ -44,11 +44,4 @@ jobs:
         run: npm run build --silent
         working-directory: ./frontend
 
-      - name: Snyk Security Scan (Node.js)
-        if: github.event_name == 'push'
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
+      # Snyk Security Scan removed to stop automatic scan on push
