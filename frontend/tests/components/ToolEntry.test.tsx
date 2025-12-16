@@ -59,7 +59,7 @@ describe('ToolEntry', () => {
   it('alerts on delete failure', async () => {
     const tool = { id: 't2', name: 'Broken', description: '', screenshots: [] } as any;
     const api = await import('../../store/domains');
-    const mockedTrigger = vi.fn(() => ({ unwrap: () => Promise.reject(new Error('fail')) }));
+    const mockedTrigger = vi.fn(() => ({ unwrap: async () => { throw new Error('fail'); } }));
     vi.mocked(api.useDeleteToolMutation).mockReturnValue([mockedTrigger, {}] as any);
 
     // mock confirm true and alert

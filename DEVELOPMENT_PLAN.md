@@ -77,8 +77,8 @@ npm run lint  # Verify remaining warnings
 ```
 
 **Acceptance Criteria:**
-- [ ] Zero ESLint errors
-- [ ] ESLint warnings reduced from 7 to 0
+- [x] Zero ESLint errors
+- [x] ESLint warnings reduced from 7 to 0
 
 ---
 
@@ -97,9 +97,9 @@ npm run lint  # Verify remaining warnings
    - `frontend/pages/tools/index.tsx`
 
 **Acceptance Criteria:**
-- [ ] No unused exports detected
-- [ ] No commented-out code blocks
-- [ ] All imports are used
+- [x] No unused exports detected
+- [x] No commented-out code blocks
+- [x] All imports are used
 
 ---
 

@@ -127,6 +127,13 @@ function TagMultiSelect({
     handleKey,
   };
 
+  // Mark intentionally unused props as used to satisfy the linter
+  // (these are kept in the props API for consumers)
+  void _placeholder;
+  void _disabled;
+  void _ariaLabel;
+  void _ariaLabelledby;
+
   return (
     <TagMultiSelectContext.Provider value={providerValue}>
       <div ref={ref} className={`relative w-full ${className}`}>

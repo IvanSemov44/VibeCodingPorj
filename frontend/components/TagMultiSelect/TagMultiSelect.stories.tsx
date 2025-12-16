@@ -1,10 +1,12 @@
 import React from 'react';
 import TagMultiSelect from '../TagMultiSelect';
 
-export default {
+const meta = {
   title: 'Components/TagMultiSelect',
   component: TagMultiSelect,
 };
+
+export default meta;
 
 export const Default = () => <TagMultiSelect value={[]} onChange={() => {}} />;
 

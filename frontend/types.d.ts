@@ -4,7 +4,7 @@
 /**
  * Button component props
  */
-export interface ButtonProps {
+interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
@@ -18,7 +18,7 @@ export interface ButtonProps {
 /**
  * Input component props
  */
-export interface InputProps {
+interface InputProps {
   label?: string;
   type?: string;
   value: string;
@@ -33,7 +33,7 @@ export interface InputProps {
 /**
  * Alert component props
  */
-export interface AlertProps {
+interface AlertProps {
   type?: 'success' | 'error' | 'warning' | 'info';
   message: string;
   onClose?: () => void;
@@ -42,7 +42,7 @@ export interface AlertProps {
 /**
  * Card component props
  */
-export interface CardProps {
+interface CardProps {
   title?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -52,9 +52,9 @@ export interface CardProps {
 /**
  * Badge component props
  */
-export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'purple';
+type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'purple';
 
-export interface BadgeProps {
+interface BadgeProps {
   children: React.ReactNode;
   variant?: BadgeVariant;
   size?: 'sm' | 'md' | 'lg';
@@ -63,7 +63,7 @@ export interface BadgeProps {
 /**
  * AuthLayout component props
  */
-export interface AuthLayoutProps {
+interface AuthLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle: string;
@@ -75,7 +75,7 @@ export interface AuthLayoutProps {
 /**
  * LoadingSpinner component props
  */
-export interface LoadingSpinnerProps {
+interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   color?: string;
 }
@@ -83,14 +83,14 @@ export interface LoadingSpinnerProps {
 /**
  * LoadingPage component props
  */
-export interface LoadingPageProps {
+interface LoadingPageProps {
   message?: string;
 }
 
 /**
  * Validation rule object for useForm
  */
-export interface ValidationRule {
+interface ValidationRule {
   required?: boolean;
   requiredMessage?: string;
   minLength?: number;
@@ -107,7 +107,7 @@ export interface ValidationRule {
 /**
  * useForm hook return type
  */
-export interface UseFormReturn<T = Record<string, unknown>> {
+interface UseFormReturn<T = Record<string, unknown>> {
   values: T;
   errors: Record<string, string>;
   touched: Record<string, boolean>;
@@ -122,7 +122,7 @@ export interface UseFormReturn<T = Record<string, unknown>> {
 /**
  * useAuth hook return type
  */
-export interface UseAuthReturn {
+interface UseAuthReturn {
   user: User | null;
   loading: boolean;
 }
@@ -130,14 +130,14 @@ export interface UseAuthReturn {
 /**
  * useRedirectIfAuthenticated hook return type
  */
-export interface UseRedirectIfAuthenticatedReturn {
+interface UseRedirectIfAuthenticatedReturn {
   checking: boolean;
 }
 
 /**
  * useAsync hook options
  */
-export interface UseAsyncOptions<T = unknown> {
+interface UseAsyncOptions<T = unknown> {
   initialData?: T;
   onSuccess?: (data: T) => void;
   onError?: (error: unknown) => void;
@@ -146,7 +146,7 @@ export interface UseAsyncOptions<T = unknown> {
 /**
  * useAsync hook return type
  */
-export interface UseAsyncReturn<T = unknown> {
+interface UseAsyncReturn<T = unknown> {
   execute: (...args: unknown[]) => Promise<{ success: boolean; data?: T; error?: unknown }>;
   loading: boolean;
   error: unknown | null;
@@ -157,7 +157,7 @@ export interface UseAsyncReturn<T = unknown> {
 /**
  * Theme context value
  */
-export interface ThemeContextValue {
+interface ThemeContextValue {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
@@ -165,7 +165,7 @@ export interface ThemeContextValue {
 /**
  * API Error class
  */
-export class ApiError extends Error {
+class ApiError extends Error {
   status: number;
   errors: Record<string, string | string[]>;
   constructor(message: string, status: number, errors?: Record<string, unknown>);
@@ -174,7 +174,7 @@ export class ApiError extends Error {
 /**
  * User model
  */
-export interface User {
+interface User {
   id: number;
   name: string;
   email: string;
@@ -187,7 +187,7 @@ export interface User {
 /**
  * Role model
  */
-export interface Role {
+interface Role {
   id: number;
   name: string;
   description?: string;
@@ -196,7 +196,7 @@ export interface Role {
 /**
  * API response type
  */
-export interface ApiResponse<T = unknown> {
+interface ApiResponse<T = unknown> {
   data?: T;
   message?: string;
   errors?: Record<string, string[]> | Record<string, unknown[]>;

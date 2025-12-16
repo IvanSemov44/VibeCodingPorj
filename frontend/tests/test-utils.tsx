@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -26,6 +25,10 @@ export function renderWithProviders(
   options?: { store?: Store; queryClient?: QueryClient },
 ) {
   const queryClient = options?.queryClient || createQueryClientForTest();
+  // register queryClient for cleanup in global test teardown
+  const g = global as unknown as { __TEST_QUERY_CLIENTS?: QueryClient[] };
+  if (!g.__TEST_QUERY_CLIENTS) g.__TEST_QUERY_CLIENTS = [];
+  g.__TEST_QUERY_CLIENTS.push(queryClient);
   const usedStore = options?.store || (defaultStore as Store);
 
   function Wrapper({ children }: { children?: React.ReactNode }) {
