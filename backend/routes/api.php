@@ -57,6 +57,17 @@ Route::middleware([
         Route::put('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'update']);
         Route::delete('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'destroy']);
 
+        // Comments (authenticated)
+        Route::get('tools/{tool}/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
+        Route::post('tools/{tool}/comments', [\App\Http\Controllers\Api\CommentController::class, 'store'])
+            ->middleware('throttle:10,60'); // 10 comments per hour
+        Route::delete('comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']);
+
+        // Ratings
+        Route::post('tools/{tool}/rating', [\App\Http\Controllers\Api\RatingController::class, 'store'])
+            ->middleware('throttle:30,60'); // 30 ratings per hour (increased for testing)
+        Route::delete('tools/{tool}/rating', [\App\Http\Controllers\Api\RatingController::class, 'destroy']);
+
         // Journal routes
         Route::get('journal', [\App\Http\Controllers\Api\JournalController::class, 'index']);
         Route::post('journal', [\App\Http\Controllers\Api\JournalController::class, 'store']);
@@ -93,6 +104,9 @@ Route::middleware([
             Route::get('tools/pending', [\App\Http\Controllers\Api\ToolController::class, 'pending']);
             Route::post('tools/{tool}/approve', [\App\Http\Controllers\Api\ToolController::class, 'approve']);
             Route::post('tools/{tool}/reject', [\App\Http\Controllers\Api\ToolController::class, 'reject']);
+
+            // Comment moderation
+            Route::post('comments/{comment}/moderate', [\App\Http\Controllers\Api\CommentController::class, 'moderate']);
 
             // Admin dashboard stats
             Route::get('stats', [\App\Http\Controllers\Admin\AdminController::class, 'stats']);

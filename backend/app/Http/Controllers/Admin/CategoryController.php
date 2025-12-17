@@ -128,7 +128,9 @@ class CategoryController extends Controller
             $total = Category::count();
             $withTools = Category::has('tools')->count();
             $withoutTools = $total - $withTools;
-            $avgToolsPerCategory = Category::withCount('tools')->avg('tools_count') ?? 0;
+            $avgToolsPerCategory = $total > 0
+                ? Category::withCount('tools')->get()->avg('tools_count')
+                : 0;
 
             $topCategories = Category::withCount('tools')
                 ->orderByDesc('tools_count')

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\User;
 
 /**
@@ -68,12 +70,41 @@ class Tool extends Model
         return $this->belongsToMany(\Spatie\Permission\Models\Role::class, 'role_tool');
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function userRating(): HasOne
+    {
+        return $this->hasOne(Rating::class)->where('user_id', auth()->id());
+    }
+
+    /**
+     * Update the tool's average rating based on all ratings.
+     */
+    public function updateAverageRating(): void
+    {
+        $avg = $this->ratings()->avg('score') ?? 0;
+        $count = $this->ratings()->count();
+
+        $this->update([
+            'average_rating' => round((float) $avg, 2),
+            'rating_count' => $count,
+        ]);
+    }
+
     /**
      * Scope to eager load all standard relationships.
      */
     public function scopeWithRelations($query)
     {
-        return $query->with(['categories', 'tags', 'roles', 'user']);
+        return $query->with(['categories', 'tags', 'roles', 'user', 'userRating']);
     }
 
     /**

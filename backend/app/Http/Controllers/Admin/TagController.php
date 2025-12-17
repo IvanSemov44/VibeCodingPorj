@@ -128,7 +128,9 @@ class TagController extends Controller
             $total = Tag::count();
             $withTools = Tag::has('tools')->count();
             $withoutTools = $total - $withTools;
-            $avgToolsPerTag = Tag::withCount('tools')->avg('tools_count') ?? 0;
+            $avgToolsPerTag = $total > 0
+                ? Tag::withCount('tools')->get()->avg('tools_count')
+                : 0;
 
             $topTags = Tag::withCount('tools')
                 ->orderByDesc('tools_count')

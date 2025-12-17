@@ -6,6 +6,8 @@ import { useGetToolQuery, useDeleteToolMutation } from '../../../store/domains';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../components/Toast';
 import SkeletonToolDetail from '../../../components/Loading/SkeletonToolDetail';
+import StarRating from '../../../components/ratings/StarRating';
+import CommentList from '../../../components/comments/CommentList';
 
 // types in this file are inferred from API responses — no local aliases needed
 
@@ -13,6 +15,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
   const router = useRouter();
   const { id } = router.query;
   const toolId = Array.isArray(id) ? id[0] : id;
+  const { user } = useAuth(false);
   const {
     data: tool,
     isLoading,
@@ -39,91 +42,154 @@ export default function ToolDetailPage(): React.ReactElement | null {
   const url = typeof t.url === 'string' ? t.url : undefined;
   const name = t.name == null ? '' : String(t.name);
   const description = t.description == null ? '' : String(t.description);
+  const averageRating = typeof t.average_rating === 'number' ? t.average_rating : 0;
+  const ratingCount = typeof t.rating_count === 'number' ? t.rating_count : 0;
+  const userRatingScore = user && t.user_rating ? (t.user_rating as any).score : undefined;
 
   return (
-    <div className="max-w-[900px] my-6 mx-auto">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex-1">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="m-0 text-2xl font-semibold text-[var(--text-primary)]">{name}</h1>
-              <div className="text-sm text-[var(--text-secondary)] mt-1">{description}</div>
-              <div className="text-xs text-[var(--text-secondary)] mt-2">By: {(t.user as any)?.name ?? 'Unknown'}</div>
+    <div className="max-w-7xl my-6 mx-auto px-4">
+      {/* Header Card */}
+      <div className="bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6 mb-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="flex-1">
+                <h1 className="m-0 text-3xl font-bold text-[var(--text-primary)] mb-2">{name}</h1>
+                <p className="text-base text-[var(--text-secondary)] mb-3">{description}</p>
+                <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+                  <span>Created by</span>
+                  <span className="font-semibold text-[var(--text-primary)]">{(t.user as any)?.name ?? 'Unknown'}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                {url && (
+                  <a href={url} target="_blank" rel="noreferrer">
+                    <button className="py-2 px-4 rounded-md bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] transition-colors font-medium">
+                      Visit Website →
+                    </button>
+                  </a>
+                )}
+                {t.docs_url && (
+                  <a href={t.docs_url as string} target="_blank" rel="noreferrer">
+                    <button className="py-2 px-4 rounded-md border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] hover:bg-[var(--secondary-bg)] transition-colors">
+                      Docs
+                    </button>
+                  </a>
+                )}
+              </div>
             </div>
 
-            <div className="flex gap-2">
-              {url && (
-                <a href={url} target="_blank" rel="noreferrer">
-                  <button className="py-2 px-3 rounded-md border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] hover:bg-[var(--secondary-bg)] transition-colors">
-                    Visit
-                  </button>
-                </a>
-              )}
+            {/* Star Rating Section */}
+            <div className="bg-[var(--secondary-bg)] rounded-lg p-4 border border-[var(--border-color)]">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-2">Rate this tool</h3>
+                  <StarRating
+                    toolId={Number(toolId)}
+                    currentRating={userRatingScore}
+                    averageRating={averageRating}
+                    ratingCount={ratingCount}
+                    editable={Boolean(user)}
+                  />
+                </div>
+                {!user && (
+                  <div className="text-sm text-[var(--text-secondary)] italic">
+                    Sign in to rate
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* Actions for owners/admins */}
+            <ToolActions tool={tool as any} />
           </div>
 
-          <div className="mt-6 space-y-4">
-            <div>
-              <strong>Documentation:</strong>{' '}
-              {t.docs_url ? (
-                <a
-                  href={t.docs_url as string}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[var(--accent)] hover:text-[var(--accent-hover)]"
-                >
-                  Open docs
-                </a>
-              ) : (
-                '—'
-              )}
-            </div>
-
-            <div>
-              <strong>Usage</strong>
-              <div className="mt-2">{t.usage ? String(t.usage) : '—'}</div>
-            </div>
-
-            {Boolean(t.examples) && (
-              <div>
-                <strong>Examples</strong>
-                <div className="mt-2">{String(t.examples)}</div>
+          {/* Screenshots Sidebar */}
+          <aside className="w-full lg:w-80">
+            {tool.screenshots && tool.screenshots.length > 0 ? (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">Screenshots</h3>
+                {tool.screenshots.map((s: string, idx: number) => (
+                  <div key={s} className="rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--secondary-bg)]">
+                    <Image src={s} alt={`Screenshot ${idx + 1}`} width={400} height={260} className="object-cover w-full" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 rounded-lg border border-[var(--border-color)] text-sm text-[var(--text-secondary)] text-center">
+                No screenshots available
               </div>
             )}
-
-            <div className="flex gap-4 flex-wrap">
-              <div>
-                <strong>Categories</strong>
-                <div className="mt-1 text-sm">{((t.categories as any[]) || []).map((c) => c.name).join(', ') || '—'}</div>
-              </div>
-              <div>
-                <strong>Roles</strong>
-                <div className="mt-1 text-sm">{((t.roles as any[]) || []).map((r) => r.name).join(', ') || '—'}</div>
-              </div>
-              <div>
-                <strong>Tags</strong>
-                <div className="mt-1 text-sm">{((t.tags as any[]) || []).map((tg) => tg.name).join(', ') || '—'}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions for owners/admins */}
-          <ToolActions tool={tool as any} />
+          </aside>
         </div>
+      </div>
 
-        <aside className="w-full lg:w-72">
-          {tool.screenshots && tool.screenshots.length > 0 ? (
-            <div className="space-y-3">
-              {tool.screenshots.map((s: string) => (
-                <div key={s} className="rounded-md overflow-hidden border border-[var(--border-color)]">
-                  <Image src={s} alt="screenshot" width={400} height={260} className="object-cover w-full" />
+      {/* Details Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Usage Card */}
+        {t.usage && (
+          <div className="lg:col-span-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">Usage</h2>
+            <div className="text-[var(--text-secondary)] whitespace-pre-wrap">{String(t.usage)}</div>
+          </div>
+        )}
+
+        {/* Meta Information Card */}
+        <div className={`bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6 ${!t.usage ? 'lg:col-span-3' : ''}`}>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Information</h2>
+          <div className="space-y-3">
+            {((t.categories as any[]) || []).length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-1">Categories</div>
+                <div className="flex flex-wrap gap-2">
+                  {((t.categories as any[]) || []).map((c) => (
+                    <span key={c.id} className="px-2 py-1 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded text-sm">
+                      {c.name}
+                    </span>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 rounded-md border border-[var(--border-color)] text-sm text-[var(--text-secondary)]">No screenshots</div>
-          )}
-        </aside>
+              </div>
+            )}
+            {((t.roles as any[]) || []).length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-1">Roles</div>
+                <div className="flex flex-wrap gap-2">
+                  {((t.roles as any[]) || []).map((r) => (
+                    <span key={r.id} className="px-2 py-1 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded text-sm">
+                      {r.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {((t.tags as any[]) || []).length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-1">Tags</div>
+                <div className="flex flex-wrap gap-2">
+                  {((t.tags as any[]) || []).map((tg) => (
+                    <span key={tg.id} className="px-2.5 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 rounded-full text-sm font-medium">
+                      #{tg.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Examples Card */}
+      {Boolean(t.examples) && (
+        <div className="bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">Examples</h2>
+          <div className="text-[var(--text-secondary)] whitespace-pre-wrap">{String(t.examples)}</div>
+        </div>
+      )}
+
+      {/* Comments Section */}
+      <div className="bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6">
+        <CommentList toolId={Number(toolId)} currentUserId={user?.id} />
       </div>
     </div>
   );
@@ -148,16 +214,23 @@ function ToolActions({ tool }: { tool: any }) {
     }
   }
 
+  if (!canManage) return null;
+
   return (
-    <div className="mt-4">
-      {canManage ? (
-        <div className="flex gap-2">
-          <Link href={`/tools/${tool.id}/edit`}>
-            <button className="py-2 px-3 rounded-md border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)]">Edit</button>
-          </Link>
-          <button onClick={handleDelete} className="py-2 px-3 rounded-md border border-red-300 text-red-700 hover:bg-red-50">Delete</button>
-        </div>
-      ) : null}
+    <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
+      <div className="flex gap-2">
+        <Link href={`/tools/${tool.id}/edit`}>
+          <button className="py-2 px-4 rounded-md border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] hover:bg-[var(--secondary-bg)] transition-colors">
+            ✏️ Edit Tool
+          </button>
+        </Link>
+        <button
+          onClick={handleDelete}
+          className="py-2 px-4 rounded-md border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+        >
+          🗑️ Delete Tool
+        </button>
+      </div>
     </div>
   );
 }
