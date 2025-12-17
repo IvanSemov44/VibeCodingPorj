@@ -29,7 +29,7 @@ interface ActivityStats {
 
 export default function ActivityLogPage() {
   const { addToast } = useToast();
-  
+
   // Filters
   const [filters, setFilters] = useState({
     action: '',

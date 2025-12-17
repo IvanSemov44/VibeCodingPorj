@@ -80,6 +80,11 @@ class Tool extends Model
         return $this->hasMany(Rating::class);
     }
 
+    public function views(): HasMany
+    {
+        return $this->hasMany(ToolView::class);
+    }
+
     public function userRating(): HasOne
     {
         return $this->hasOne(Rating::class)->where('user_id', auth()->id());

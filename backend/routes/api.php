@@ -122,6 +122,11 @@ Route::middleware([
 
             Route::get('tags/stats', [\App\Http\Controllers\Admin\TagController::class, 'stats']);
             Route::apiResource('tags', \App\Http\Controllers\Admin\TagController::class);
+
+            // Analytics endpoints
+            Route::get('analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index']);
+            Route::get('analytics/timeseries', [\App\Http\Controllers\Admin\AnalyticsController::class, 'viewsTimeseries']);
+            Route::get('analytics/tools/{tool}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'toolAnalytics']);
         });
     });
 });

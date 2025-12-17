@@ -14,10 +14,10 @@ foreach ($tools as $tool) {
         'avg' => $tool->average_rating,
         'count' => $tool->rating_count
     ];
-    
+
     $tool->updateAverageRating();
     $tool->refresh();
-    
+
     echo "Tool: {$tool->name}\n";
     echo "  Before: avg={$before['avg']}, count={$before['count']}\n";
     echo "  After:  avg={$tool->average_rating}, count={$tool->rating_count}\n\n";
