@@ -24,19 +24,19 @@ class EnsureAdminOrOwner
 
         // Check if user is admin or owner
         $allowed = false;
-        
+
         try {
             // Method 1: Spatie roles
             if (method_exists($user, 'hasAnyRole')) {
                 $allowed = $user->hasAnyRole(['admin', 'owner']);
             }
-            
+
             // Method 2: Direct roles check (backup)
             if (!$allowed && method_exists($user, 'roles')) {
                 $roles = $user->roles()->pluck('name')->toArray();
                 $allowed = in_array('admin', $roles) || in_array('owner', $roles);
             }
-            
+
             // Method 3: Check is_admin flag (backup)
             if (!$allowed && isset($user->is_admin) && $user->is_admin) {
                 $allowed = true;
@@ -54,7 +54,7 @@ class EnsureAdminOrOwner
                 'user_id' => $user->id,
                 'path' => $request->path(),
             ]);
-            
+
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Forbidden. Admin access required.'], 403);
             }

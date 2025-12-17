@@ -20,7 +20,7 @@ class AnalyticsController extends Controller
     public function debug(Request $request): JsonResponse
     {
         $user = auth()->user();
-        
+
         return response()->json([
             'authenticated' => $user !== null,
             'user_id' => $user?->id,
@@ -164,15 +164,19 @@ class AnalyticsController extends Controller
 
     private function getViewsByDate(Carbon $startDate, int $days): array
     {
-        $views = ToolView::where('viewed_at', '>=', $startDate)
+        // Limit to last 10 days for chart display
+        $displayDays = min($days, 10);
+        $chartStartDate = Carbon::now()->subDays($displayDays);
+
+        $views = ToolView::where('viewed_at', '>=', $chartStartDate)
             ->selectRaw('DATE(viewed_at) as date, COUNT(*) as count')
             ->groupBy('date')
             ->orderBy('date')
             ->pluck('count', 'date');
 
         $result = [];
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $date = $startDate->copy()->addDays($i)->format('Y-m-d');
+        for ($i = $displayDays - 1; $i >= 0; $i--) {
+            $date = $chartStartDate->copy()->addDays($i)->format('Y-m-d');
             $result[$date] = $views->get($date, 0);
         }
 
