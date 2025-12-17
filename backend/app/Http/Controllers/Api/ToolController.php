@@ -30,7 +30,10 @@ final class ToolController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Tool::query()->withRelations();
+        // No-op: instrumentation removed. Defer choosing relations until we
+        // know whether this is a search request (we load a smaller set for
+        // searches to reduce DB queries and payload size).
+        $query = Tool::query();
 
         if ($q = $request->query('q')) {
             $query->search($q);
@@ -98,7 +101,19 @@ final class ToolController extends Controller
             }
         }
 
-        $tools = $query->orderBy('name')->paginate($perPage);
+        $isSearch = (bool) $request->query('q');
+
+        // Choose a lean eager-loading strategy for searches to reduce the
+        // number of relation queries and response payload. For non-search
+        // listing we keep the full relation set.
+        if ($isSearch) {
+            $query = $query->withRelationsForSearch();
+            // Use simplePaginate for search to avoid expensive count queries
+            $tools = $query->orderBy('name')->simplePaginate($perPage);
+        } else {
+            $query = $query->withRelations();
+            $tools = $query->orderBy('name')->paginate($perPage);
+        }
 
         return ToolResource::collection($tools);
     }

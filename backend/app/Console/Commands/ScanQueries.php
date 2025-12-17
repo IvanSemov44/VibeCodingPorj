@@ -13,7 +13,7 @@ class ScanQueries extends Command
      *
      * @var string
      */
-    protected $signature = 'scan:queries';
+    protected $signature = 'scan:queries {--dump-sql : Dump SQL queries captured per path} {--trace : Capture caller stack frame for each query} {--full-trace : Capture full backtrace for each query}';
 
     /**
      * The console command description.
@@ -41,16 +41,99 @@ class ScanQueries extends Command
 
         $results = [];
 
+        $dumpSql = $this->option('dump-sql');
+        $traceEnabled = $this->option('trace');
+        $fullTraceEnabled = $this->option('full-trace');
+
         foreach ($paths as $path) {
             $queries = 0;
+            $sqls = [];
+            $seen = [];
             DB::flushQueryLog();
-            DB::listen(function ($query) use (&$queries) {
+            DB::listen(function ($query) use (&$queries, &$sqls, &$seen, $traceEnabled, $fullTraceEnabled) {
+                // Build an identity key for deduplication: SQL + bindings + caller (if present)
+                $bt = null;
+                $caller = null;
+                if ($traceEnabled || $fullTraceEnabled) {
+                    $bt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
+                    if ($traceEnabled) {
+                        foreach ($bt as $frame) {
+                            if (isset($frame['file']) && ! str_contains($frame['file'], '/vendor/')) {
+                                $caller = ($frame['file'] ?? '') . ':' . ($frame['line'] ?? '');
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                $key = md5($query->sql . '|' . serialize($query->bindings) . '|' . ($caller ?? ''));
+                if (isset($seen[$key])) {
+                    // Skip duplicate collector emissions to reduce noise
+                    return;
+                }
+
+                $seen[$key] = true;
                 $queries++;
+
+                $entry = ['sql' => $query->sql, 'bindings' => $query->bindings, 'time' => $query->time ?? null];
+                if ($bt && ($traceEnabled || $fullTraceEnabled)) {
+                    if ($traceEnabled) {
+                        $entry['caller'] = $caller;
+                    }
+                    if ($fullTraceEnabled) {
+                        $frames = [];
+                        $limit = 0;
+                        foreach ($bt as $frame) {
+                            if ($limit++ > 30) break;
+                            $frames[] = ((($frame['file'] ?? '[internal]') . ':' . ($frame['line'] ?? '?') . ' ' . ($frame['function'] ?? '')));
+                        }
+                        $entry['trace'] = $frames;
+                    }
+                }
+
+                $sqls[] = $entry;
             });
 
             $start = microtime(true);
             try {
-                // Create a request and dispatch via the application kernel
+                // Disable Debugbar more robustly: remove its middleware from the
+                // kernel's middleware groups temporarily so it cannot wrap the
+                // dispatch and trigger collectors that may re-run queries.
+                $kernel = app(\App\Http\Kernel::class);
+                $removedDebugbar = false;
+                $originalMiddleware = null;
+                try {
+                    if (class_exists(\Barryvdh\Debugbar\Middleware\InjectDebugbar::class)) {
+                        $ref = new \ReflectionObject($kernel);
+                        if ($ref->hasProperty('middlewareGroups')) {
+                            $prop = $ref->getProperty('middlewareGroups');
+                            $prop->setAccessible(true);
+                            $groups = $prop->getValue($kernel);
+                            $originalMiddleware = $groups;
+                            foreach ($groups as $gk => $garr) {
+                                $groups[$gk] = array_values(array_filter($garr, function ($m) {
+                                    return $m !== \Barryvdh\Debugbar\Middleware\InjectDebugbar::class;
+                                }));
+                            }
+                            $prop->setValue($kernel, $groups);
+                            $removedDebugbar = true;
+                        }
+                        // Also disable the debugbar instance if present
+                        if (app()->bound('debugbar')) {
+                            try {
+                                app('debugbar')->disable();
+                            } catch (\Throwable $_) {
+                                // ignore
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // best-effort; continue even if reflection fails
+                    logger()->warning('Failed to strip debugbar middleware for scan: ' . $e->getMessage());
+                }
+
+                // Create a request and dispatch via the application kernel.
+                // Debugbar is disabled above to avoid collector-triggered queries.
                 $request = Request::create($path, 'GET');
                 $response = app()->handle($request);
                 $status = $response->getStatusCode();
@@ -59,9 +142,24 @@ class ScanQueries extends Command
             }
             $time = microtime(true) - $start;
 
+            // Restore kernel middleware groups if we modified them
+            if (! empty($removedDebugbar) && isset($originalMiddleware) && is_array($originalMiddleware)) {
+                try {
+                    $ref = new \ReflectionObject($kernel);
+                    if ($ref->hasProperty('middlewareGroups')) {
+                        $prop = $ref->getProperty('middlewareGroups');
+                        $prop->setAccessible(true);
+                        $prop->setValue($kernel, $originalMiddleware);
+                    }
+                } catch (\Throwable $e) {
+                    logger()->warning('Failed to restore kernel middleware after scan: ' . $e->getMessage());
+                }
+            }
+
             $results[] = [
                 'path' => $path,
                 'queries' => $queries,
+                'sqls' => $sqls,
                 'status' => $status,
                 'ms' => round($time * 1000, 1),
             ];
@@ -70,6 +168,24 @@ class ScanQueries extends Command
         $this->table(['Path', 'DB Queries', 'Status', 'Time (ms)'], array_map(function ($r) {
             return [$r['path'], $r['queries'], $r['status'], $r['ms']];
         }, $results));
+
+        if ($dumpSql) {
+            foreach ($results as $r) {
+                $this->info("\n--- SQL for {$r['path']} ({$r['queries']} queries) ---");
+                foreach ($r['sqls'] as $i => $s) {
+                    $line = ($i + 1) . ") " . $s['sql'] . ' [' . implode(', ', array_map(function ($b) { return is_scalar($b) ? (string) $b : gettype($b); }, $s['bindings'] ?? [])) . ']';
+                    if (! empty($s['caller'] ?? null)) {
+                        $line .= ' -- caller: ' . $s['caller'];
+                    }
+                    $this->line($line);
+                    if (! empty($s['trace'] ?? null) && is_array($s['trace'])) {
+                        foreach ($s['trace'] as $frame) {
+                            $this->line('    at ' . $frame);
+                        }
+                    }
+                }
+            }
+        }
 
         $this->info('Scan complete.');
 

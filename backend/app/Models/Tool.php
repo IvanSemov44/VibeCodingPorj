@@ -59,6 +59,17 @@ class Tool extends Model
     }
 
     /**
+     * Lean relations used for search results to reduce query load and payload.
+     */
+    public function scopeWithRelationsForSearch($query)
+    {
+        return $query->with([
+            'categories:id,name,slug',
+            'tags:id,name,slug',
+        ]);
+    }
+
+    /**
      * Scope to filter by approved status.
      */
     public function scopeApproved($query)

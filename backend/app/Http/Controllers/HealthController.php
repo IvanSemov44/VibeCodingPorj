@@ -13,6 +13,7 @@ class HealthController extends BaseController
 
     public function __construct(CacheService $cacheService)
     {
+        $this->cacheService = $cacheService;
     }
     /**
      * Lightweight public health check — inexpensive and safe.
