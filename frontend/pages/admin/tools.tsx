@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import ToolApprovalCard from '../../components/admin/ToolApprovalCard';
+import { SkeletonCard } from '../../components/Loading/SkeletonCard';
+import { SkeletonTableRow } from '../../components/Loading/SkeletonTableRow';
 import Modal from '../../components/Modal';
 import { useToast } from '../../components/Toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -77,11 +79,36 @@ export default function AdminToolsPage() {
     <div>
         <h1 className="text-2xl font-bold mb-4">{pendingMode ? 'Pending Tool Approvals' : 'Tools'}</h1>
 
-      {isLoading && <div>Loading…</div>}
+      {isLoading && pendingMode && (
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      )}
+      {isLoading && !pendingMode && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-[var(--card-bg)] border border-[var(--border-color)]">
+            <thead>
+              <tr>
+                <th className="p-2 text-left">Name</th>
+                <th className="p-2 text-left">Owner</th>
+                <th className="p-2 text-left">Status</th>
+                <th className="p-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonTableRow key={i} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {!isLoading && tools.length === 0 && <div>No tools found</div>}
 
-      {pendingMode ? (
+      {!isLoading && pendingMode ? (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
           {tools.map((t: any) => (
             <ToolApprovalCard
