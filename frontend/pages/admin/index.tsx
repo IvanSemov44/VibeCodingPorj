@@ -2,6 +2,8 @@ import React from 'react';
 import { useGetAdminStatsQuery, useGetCategoriesQuery, useGetTagsQuery } from '../../store/domains';
 import StatsCard from '../../components/admin/StatsCard';
 import RecentActivity from '../../components/admin/RecentActivity';
+import SystemHealthCard from '../../components/admin/SystemHealthCard';
+import ThemeToggle from '../../components/ThemeToggle';
 // AdminGuard removed: server-side middleware enforces access
 
 export default function AdminDashboard() {
@@ -21,6 +23,9 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
           <p className="text-sm text-gray-500 mt-1">Overview of site activity and management.</p>
         </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+        </div>
       </div>
 
       {isLoading && <div>Loading stats…</div>}
@@ -35,9 +40,12 @@ export default function AdminDashboard() {
 
       <div className="mt-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <RecentActivity />
-          </div>
+            <div className="lg:col-span-2">
+              <RecentActivity />
+            </div>
+            <div className="">
+              <SystemHealthCard />
+            </div>
         </div>
       </div>
     </div>

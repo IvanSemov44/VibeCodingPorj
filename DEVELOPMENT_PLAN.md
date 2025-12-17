@@ -442,6 +442,60 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 - Quick action buttons (approve pending, manage users, view logs)
 - System health status
 
+**System health status**
+
+**Definition & Purpose:**
+- A concise, real-time summary of the platform's operational state across core services, dependencies, and critical resources. Its purpose is to show overall health (Healthy / Degraded / Down), surface problems quickly, and link to diagnostics and runbooks for rapid remediation.
+
+**What to display on Admin Dashboard:**
+- **Overall status:** single-banner indicator (Green / Yellow / Red) with last-updated timestamp.
+- **Key metrics tiles:** uptime, error rate (5xx), P95/P99 latency, requests/sec, DB connections, cache hit rate.
+- **Background jobs:** queue depth, failed job count, last-run timestamps.
+- **Dependencies:** external API, email/SMS, storage, third-party auth — each with status and latency.
+- **Recent incidents / alerts:** active alerts, brief description, owner, link to runbook/logs/traces.
+- **Quick actions:** run synthetic smoke test, refresh checks, acknowledge alert.
+
+**Automated checks to implement:**
+- **Liveness & readiness endpoints:** `/health` (liveness) and `/ready` (readiness) that validate DB, cache, storage, and essential config.
+- **Synthetic/heartbeat tests:** scheduled end-to-end checks (login, create tool, fetch list) using a lightweight runner (e.g., k6, Postman monitors, or simple cron job script).
+- **Metrics export:** expose Prometheus-compatible metrics for error rate, latency, request count, job queue length, resource usage.
+- **Structured logs & tracing:** ensure request IDs, error context, and spans (OpenTelemetry) are available for drilldown.
+
+**Alerting & SLOs:**
+- Define SLOs (e.g., 99.9% success rate for API, 95th percentile latency < X ms) and SLIs to measure them.
+- Create alert rules for error-rate spikes, high latency, queue backlog, low cache hit rate, and disk/db capacity.
+- Integrate alert destinations (Slack, email, PagerDuty) and attach runbook links to each alert.
+
+**Implementation checklist (backend + frontend):**
+- Backend: add `routes/api.php` endpoints for health checks; implement `App\\Http\\Controllers\\HealthController` verifying `DB`, `Redis`/cache, storage, and required env values.
+- Backend: instrument metrics (Prometheus exporter / Laravel Prometheus client) and add a `WarmCache` command if not present.
+- Frontend: create `frontend/components/admin/SystemHealthCard.tsx` and include it on `frontend/pages/admin/index.tsx` (dashboard) with tiles and links to Grafana/Logs.
+- Infra: add synthetic monitor job (k6 or simple curl script in `scripts/`), and add Prometheus + Grafana dashboards (or provide links to hosted dashboards) with panels for the key metrics.
+
+**Files to create/modify (suggested):**
+- `backend/app/Http/Controllers/HealthController.php` — implement `/health` and `/ready` checks.
+- `backend/routes/api.php` — add routes for health endpoints and admin stats if needed.
+- `frontend/components/admin/SystemHealthCard.tsx` — dashboard widget showing aggregate status and tiles.
+- `frontend/pages/admin/index.tsx` — include the `SystemHealthCard` and links to diagnostics.
+- `scripts/synthetic-check.sh` (or `scripts/synthetic-check.js`) — simple end-to-end smoke test runner.
+- `docs/runbooks/system-health.md` — short runbook for common alerts and owners.
+
+**Acceptance criteria:**
+- `/health` returns 200 with JSON listing component checks (DB, cache, storage) when healthy.
+- `/ready` returns 200 only when all readiness checks pass.
+- Dashboard shows overall status and at least the core tiles (uptime, error rate, p95 latency, queue depth).
+- Synthetic checks run on schedule and failures create alerts.
+- Alerts fire for defined threshold breaches and include runbook links.
+
+**Estimated effort:**
+- Backend health endpoints + basic checks: 1-2 hours.
+- Metrics export + Grafana panels: 2-3 hours (assumes Prometheus infra available).
+- Frontend dashboard card & UX: 1-2 hours.
+- Synthetic tests + alert rules: 1-2 hours.
+
+**Next steps:**
+- Implement the backend `HealthController` and a minimal `SystemHealthCard` component; then wire metrics to Grafana and add a synthetic monitor. I can scaffold these files for you — tell me which to start with.
+
 **Acceptance Criteria:**
 - [x] Dashboard shows accurate statistics
 - [x] Recent activity displays latest 10 actions

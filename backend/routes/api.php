@@ -7,10 +7,9 @@ use Illuminate\Support\Facades\Route;
 
 // Tools API (protected - authenticated users can create)
 // Public discovery endpoints for categories and roles (useful for frontend filters)
-// Simple health check for quick verification from the frontend or curl
-Route::get('health', function () {
-    return response()->json(['ok' => true]);
-});
+// Health endpoints
+Route::get('health', [\App\Http\Controllers\HealthController::class, 'health']);
+Route::get('ready', [\App\Http\Controllers\HealthController::class, 'ready']);
 // Temporary debug route: return raw activities without auth for troubleshooting
 Route::get('_debug/activities-raw', function () {
     return response()->json(['data' => \App\Models\Activity::orderBy('created_at', 'desc')->limit(10)->get()->toArray()]);
