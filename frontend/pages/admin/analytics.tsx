@@ -1,8 +1,36 @@
+'use client';
+
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useState } from 'react';
 import { useToast } from '../../components/Toast';
 import { useQuery } from '@tanstack/react-query';
 import { fetchWithAuth } from '../../lib/api/fetch';
+import { Bar, Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+// Register ChartJS components only once
+if (typeof window !== 'undefined') {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+}
 
 interface AnalyticsData {
   total_views: number;
@@ -221,109 +249,165 @@ export default function AnalyticsDashboard() {
 
         {/* Trending Tools & Top Referrers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Trending Tools */}
+          {/* Trending Tools Chart */}
           <div className="rounded-lg p-6 shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
             <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               🔥 Trending Tools
             </h2>
-            <div className="space-y-3">
-              {analytics.trending_tools.length > 0 ? (
-                analytics.trending_tools.map((tool) => (
-                  <div
-                    key={tool.tool_id}
-                    className="flex justify-between items-center p-3 rounded transition-all"
-                    style={{ backgroundColor: 'var(--secondary-bg)' }}
-                  >
-                    <div>
-                      <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {tool.tool.name}
-                      </p>
-                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {tool.this_week_views} views this week
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold" style={{ color: 'var(--success)' }}>
-                        +{tool.growth_percentage.toFixed(0)}%
-                      </p>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p style={{ color: 'var(--text-secondary)' }}>No trending tools</p>
-              )}
-            </div>
+            {analytics.trending_tools.length > 0 ? (
+              <Bar
+                data={{
+                  labels: analytics.trending_tools.map((t) => t.tool.name),
+                  datasets: [
+                    {
+                      label: 'Growth %',
+                      data: analytics.trending_tools.map((t) => t.growth_percentage),
+                      backgroundColor: '#10b981',
+                      borderColor: '#059669',
+                      borderWidth: 1,
+                      borderRadius: 4,
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  indexAxis: 'y',
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      callbacks: {
+                        label: (context) => `+${context.parsed.x.toFixed(1)}%`,
+                      },
+                    },
+                  },
+                  scales: {
+                    x: {
+                      ticks: { color: 'var(--text-secondary)' },
+                      grid: { color: 'var(--border-color)' },
+                    },
+                    y: {
+                      ticks: { color: 'var(--text-primary)' },
+                      grid: { display: false },
+                    },
+                  },
+                }}
+              />
+            ) : (
+              <p style={{ color: 'var(--text-secondary)' }}>No trending tools</p>
+            )}
           </div>
 
-          {/* Top Referrers */}
+          {/* Top Referrers Chart */}
           <div className="rounded-lg p-6 shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
             <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               🔗 Top Referrers
             </h2>
-            <div className="space-y-3">
-              {analytics.referrers.length > 0 ? (
-                analytics.referrers.map((ref, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center p-3 rounded"
-                    style={{ backgroundColor: 'var(--secondary-bg)' }}
-                  >
-                    <p className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
-                      {ref.referer || 'Direct'}
-                    </p>
-                    <p className="font-medium" style={{ color: 'var(--text-secondary)' }}>
-                      {ref.views.toLocaleString()}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p style={{ color: 'var(--text-secondary)' }}>No referrer data</p>
-              )}
-            </div>
+            {analytics.referrers.length > 0 ? (
+              <Bar
+                data={{
+                  labels: analytics.referrers.map((r) => {
+                    if (!r.referer) return 'Direct';
+                    try {
+                      return new URL(r.referer).hostname;
+                    } catch {
+                      return r.referer.substring(0, 30); // Fallback: truncate the string
+                    }
+                  }),
+                  datasets: [
+                    {
+                      label: 'Views',
+                      data: analytics.referrers.map((r) => r.views),
+                      backgroundColor: '#3b82f6',
+                      borderColor: '#1d4ed8',
+                      borderWidth: 1,
+                      borderRadius: 4,
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  indexAxis: 'y',
+                  plugins: {
+                    legend: { display: false },
+                  },
+                  scales: {
+                    x: {
+                      ticks: { color: 'var(--text-secondary)' },
+                      grid: { color: 'var(--border-color)' },
+                    },
+                    y: {
+                      ticks: { color: 'var(--text-primary)' },
+                      grid: { display: false },
+                    },
+                  },
+                }}
+              />
+            ) : (
+              <p style={{ color: 'var(--text-secondary)' }}>No referrer data</p>
+            )}
           </div>
         </div>
 
-        {/* Views Over Time - Limited to Last 10 Days */}
+        {/* Views Over Time - Line Chart - Last 10 Days */}
         <div className="rounded-lg p-6 shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
           <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
             📈 Views Over Time (Last 10 Days)
           </h2>
-          <div className="space-y-3">
-            {Object.entries(lastTenDays).length > 0 ? (
-              Object.entries(lastTenDays).map(([date, views]) => {
-                const maxViews = Math.max(...Object.values(lastTenDays));
-                const percentage = maxViews > 0 ? (views / maxViews) * 100 : 0;
-                return (
-                  <div key={date} className="flex items-center gap-3">
-                    <div className="w-24 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                      {date}
-                    </div>
-                    <div
-                      className="flex-1 rounded h-8 relative overflow-hidden transition-all"
-                      style={{ backgroundColor: 'var(--secondary-bg)' }}
-                    >
-                      {percentage > 0 && (
-                        <div
-                          className="h-full transition-all duration-300 flex items-center px-2"
-                          style={{
-                            width: `${Math.max(percentage, 5)}%`,
-                            background: `linear-gradient(90deg, var(--accent), ${percentage > 50 ? 'var(--success)' : 'var(--accent)'})`,
-                          }}
-                        >
-                          <span className="text-white text-xs font-bold whitespace-nowrap">{views}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="w-20 text-right text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {views.toLocaleString()}
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <p style={{ color: 'var(--text-secondary)' }}>No data available for the last 10 days</p>
-            )}
-          </div>
+          {Object.entries(lastTenDays).length > 0 ? (
+            <Line
+              data={{
+                labels: Object.keys(lastTenDays),
+                datasets: [
+                  {
+                    label: 'Daily Views',
+                    data: Object.values(lastTenDays),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: {
+                    display: true,
+                    labels: { color: 'var(--text-primary)' },
+                  },
+                  tooltip: {
+                    backgroundColor: 'var(--secondary-bg)',
+                    titleColor: 'var(--text-primary)',
+                    bodyColor: 'var(--text-primary)',
+                    borderColor: 'var(--border-color)',
+                    borderWidth: 1,
+                  },
+                },
+                scales: {
+                  x: {
+                    ticks: { color: 'var(--text-primary)' },
+                    grid: { color: 'var(--border-color)' },
+                  },
+                  y: {
+                    ticks: { color: 'var(--text-primary)' },
+                    grid: { color: 'var(--border-color)' },
+                    beginAtZero: true,
+                  },
+                },
+              }}
+            />
+          ) : (
+            <p style={{ color: 'var(--text-secondary)' }}>No data available for the last 10 days</p>
+          )}
         </div>
 
         {/* Summary Stats */}

@@ -31,5 +31,7 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\ActivitySeeder::class);
         // Seed comments and ratings for all tools
         $this->call(\Database\Seeders\CommentRatingSeeder::class);
+        // Seed tool views and analytics data for dashboard
+        $this->call(\Database\Seeders\ToolViewSeeder::class);
     }
 }
