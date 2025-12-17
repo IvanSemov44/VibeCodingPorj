@@ -1,0 +1,21 @@
+## Example redis.conf for local/dev and production
+# Copy this file to backend/docker/redis/redis.conf (do NOT commit the real file with secrets)
+
+# Persist AOF for durability
+appendonly yes
+
+# Bind/port settings (default binds to all interfaces inside container)
+protected-mode no
+port 6379
+
+# Security: in production uncomment and set a strong password
+# requirepass your-strong-password-here
+
+# Recommended production tuning comments:
+# maxmemory <bytes>
+# maxmemory-policy allkeys-lru
+
+# Save snapshots (RDB) as needed
+# save 900 1
+# save 300 10
+# save 60 10000

@@ -80,11 +80,10 @@ services:
     container_name: vibecode-backend_redis
     ports:
       - "6379:6379"
-    command: sh -c "mkdir -p /usr/local/etc/redis && printf '%s\n' 'appendonly yes' > /usr/local/etc/redis/redis.conf && if [ -f /run/secrets/redis_password ]; then printf 'requirepass %s\n' \"$(cat /run/secrets/redis_password)\" >> /usr/local/etc/redis/redis.conf; fi && redis-server /usr/local/etc/redis/redis.conf"
+    command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - redisdata:/data
-    secrets:
-      - redis_password
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     restart: unless-stopped
 
 volumes:

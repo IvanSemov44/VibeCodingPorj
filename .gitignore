@@ -22,6 +22,9 @@ backend/bootstrap/cache/*
 # Docker
 .docker/
 
+# Prevent committing local Redis config with secrets
+backend/docker/redis/redis.conf
+
 # Database
 *.sql
 backup_*.sql
