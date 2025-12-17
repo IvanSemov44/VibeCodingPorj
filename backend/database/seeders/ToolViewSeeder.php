@@ -12,7 +12,7 @@ class ToolViewSeeder extends Seeder
 {
     /**
      * Seed the tool_views table with realistic analytics data
-     * 
+     *
      * Generates:
      * - 50-150 views per tool over last 30 days
      * - Mix of authenticated and anonymous views
@@ -26,7 +26,7 @@ class ToolViewSeeder extends Seeder
         $users = User::whereHas('roles', function ($query) {
             $query->whereIn('name', ['user', 'admin', 'owner']);
         })->get();
-        
+
         if ($tools->isEmpty()) {
             $this->command->warn('No tools found. Please run ToolSeeder first.');
             return;
@@ -71,7 +71,7 @@ class ToolViewSeeder extends Seeder
             $viewCount = rand(50, 150);
             $batchSize = 500; // Insert in batches of 500
             $views = [];
-            
+
             for ($i = 0; $i < $viewCount; $i++) {
                 // More views on recent days
                 $daysAgo = rand(0, 50);

@@ -48,7 +48,7 @@ class VerifyAnalyticsData extends Command
         // Top 5 tools
         $this->line('─────────────────────────────────────');
         $this->info('🏆 Top 5 Most Viewed Tools:');
-        
+
         $topTools = ToolView::selectRaw('tool_id, COUNT(*) as view_count')
             ->groupBy('tool_id')
             ->orderByDesc('view_count')
