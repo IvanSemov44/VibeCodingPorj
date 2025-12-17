@@ -444,7 +444,7 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 
 **Acceptance Criteria:**
 - [x] Dashboard shows accurate statistics
-- [ ] Recent activity displays latest 10 actions
+- [x] Recent activity displays latest 10 actions
 - [x] Quick links to admin sections work
 - [ ] Loading states for all data
 - [ ] Error handling for failed requests

@@ -15,6 +15,40 @@ Route::get('health', function () {
 Route::get('_debug/activities-raw', function () {
     return response()->json(['data' => \App\Models\Activity::orderBy('created_at', 'desc')->limit(10)->get()->toArray()]);
 });
+// Temporary debug: run admin stats queries without auth and log timings.
+Route::get('_debug/admin-stats-noauth', function () {
+    if (!app()->environment('local') && !config('app.debug')) {
+        abort(404);
+    }
+    $t0 = microtime(true);
+    $totals = [
+        'users' => \App\Models\User::count(),
+        'tools' => \App\Models\Tool::count(),
+        'categories' => \App\Models\Category::count(),
+        'tags' => \App\Models\Tag::count(),
+    ];
+    $t1 = microtime(true);
+    // use the same helper as AdminController to avoid mismatched relations
+    $recentTools = \App\Models\Tool::withRelations()
+        ->orderBy('created_at', 'desc')
+        ->limit(10)
+        ->get();
+    $t2 = microtime(true);
+    \Log::info('admin.stats.debug.timings', [
+        'counts_ms' => round(($t1 - $t0) * 1000, 2),
+        'recent_tools_ms' => round(($t2 - $t1) * 1000, 2),
+        'total_ms' => round(($t2 - $t0) * 1000, 2),
+    ]);
+    return response()->json([
+        'totals' => $totals,
+        'recentTools' => $recentTools,
+        'timings' => [
+            'counts_ms' => round(($t1 - $t0) * 1000, 2),
+            'recent_tools_ms' => round(($t2 - $t1) * 1000, 2),
+            'total_ms' => round(($t2 - $t0) * 1000, 2),
+        ],
+    ]);
+});
 Route::get('categories', [\App\Http\Controllers\Api\CategoryController::class, 'index']);
 Route::get('roles', [\App\Http\Controllers\Api\RoleController::class, 'index']);
 Route::get('tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
