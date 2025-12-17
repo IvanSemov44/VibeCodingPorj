@@ -98,6 +98,7 @@ Route::middleware([
             Route::get('stats', [\App\Http\Controllers\Admin\AdminController::class, 'stats']);
             // Admin activity feed
             Route::get('activities', [\App\Http\Controllers\Admin\ActivityController::class, 'index']);
+            Route::get('activities/stats', [\App\Http\Controllers\Admin\ActivityController::class, 'stats']);
         });
     });
 });

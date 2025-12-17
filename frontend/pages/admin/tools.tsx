@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import AdminLayout from '../../components/admin/AdminLayout';
 import ToolApprovalCard from '../../components/admin/ToolApprovalCard';
 import { SkeletonCard } from '../../components/Loading/SkeletonCard';
 import { SkeletonTableRow } from '../../components/Loading/SkeletonTableRow';
@@ -13,12 +14,19 @@ import {
   useGetToolsQuery,
 } from '../../store/domains';
 import { useAuth } from '../../hooks/useAuth';
-// AdminGuard removed: rely on Next middleware for server-side protection
 
 export default function AdminToolsPage() {
   const router = useRouter();
   const status = typeof router.query.status === 'string' ? (router.query.status as string) : undefined;
   const pendingMode = status === 'pending';
+  const { user } = useAuth();
+
+  // Check if user is admin
+  const isAdmin = user?.roles?.some((role: any) => 
+    typeof role === 'string' 
+      ? role === 'admin' || role === 'owner'
+      : role?.name === 'admin' || role?.name === 'owner'
+  );
 
   const { data, isLoading, refetch } = pendingMode
     ? useGetPendingToolsQuery()
@@ -27,8 +35,6 @@ export default function AdminToolsPage() {
   const [rejectTrigger] = useRejectToolMutation();
   const { addToast } = useToast();
   const qc = useQueryClient();
-  const { user } = useAuth(false);
-  const isAdmin = Boolean(user && Array.isArray(user.roles) && (user.roles.includes('owner') || user.roles.includes('admin')));
 
   const [rejectingTool, setRejectingTool] = useState<any | null>(null);
   const [rejectReason, setRejectReason] = useState<string>('');
@@ -76,9 +82,10 @@ export default function AdminToolsPage() {
   }
 
   return (
-    <div>
-        <h1 className="text-2xl font-bold mb-4">{pendingMode ? 'Pending Tool Approvals' : 'Tools'}</h1>
-
+    <AdminLayout
+      title={pendingMode ? 'Pending Tool Approvals' : 'Tools'}
+      description={pendingMode ? 'Review and approve submitted tools' : 'Manage all tools'}
+    >
       {isLoading && pendingMode && (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -238,6 +245,6 @@ export default function AdminToolsPage() {
           </div>
         </Modal>
       )}
-    </div>
+    </AdminLayout>
   );
 }

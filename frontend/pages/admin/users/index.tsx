@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import { useGetAdminUsersQuery, useActivateUserMutation, useDeactivateUserMutation, useGetRolesQuery, useSetUserRolesMutation } from '../../../store/domains';
 import { useToast } from '../../../components/Toast';
 import Modal from '../../../components/Modal';
-// AdminGuard removed: rely on Next middleware for server-side protection
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -26,8 +26,7 @@ export default function AdminUsersPage() {
   const [confirmAction, setConfirmAction] = useState<null | { type: 'activate' | 'deactivate'; userId: number | string; userName?: string }>(null);
 
   return (
-    <div>
-        <h1 className="text-2xl font-bold mb-4">Active Users</h1>
+    <AdminLayout title="User Management" description="Manage user accounts, roles, and permissions">
 
       <div className="mb-4 flex gap-2">
         <input
@@ -200,6 +199,6 @@ export default function AdminUsersPage() {
           </div>
         </Modal>
       )}
-    </div>
+    </AdminLayout>
   );
 }

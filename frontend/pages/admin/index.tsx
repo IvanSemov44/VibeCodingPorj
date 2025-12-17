@@ -1,10 +1,10 @@
 import React from 'react';
+import AdminLayout from '../../components/admin/AdminLayout';
 import { useGetAdminStatsQuery, useGetCategoriesQuery, useGetTagsQuery } from '../../store/domains';
 import StatsCard from '../../components/admin/StatsCard';
 import RecentActivity from '../../components/admin/RecentActivity';
 import SystemHealthCard from '../../components/admin/SystemHealthCard';
 import { SkeletonCard } from '../../components/Loading/SkeletonCard';
-// AdminGuard removed: server-side middleware enforces access
 
 export default function AdminDashboard() {
   const { data, isLoading } = useGetAdminStatsQuery();
@@ -17,17 +17,7 @@ export default function AdminDashboard() {
     stats.totalTags ?? (Array.isArray(tagsRes) ? tagsRes.length : (tagsRes && (tagsRes as any).data ? (tagsRes as any).data.length : undefined)) ?? 0;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Overview of site activity and management.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Theme toggle intentionally removed from admin header */}
-        </div>
-      </div>
-
+    <AdminLayout title="Admin Dashboard" description="Overview of site activity and management.">
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -46,14 +36,14 @@ export default function AdminDashboard() {
 
       <div className="mt-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
+            {/* <div className="lg:col-span-2">
               {isLoading ? <SkeletonCard /> : <RecentActivity />}
-            </div>
+            </div> */}
             <div className="">
               {isLoading ? <SkeletonCard /> : <SystemHealthCard />}
             </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
