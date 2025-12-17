@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import Pagination from '../../../components/admin/Pagination';
 import { useGetAdminUsersQuery, useActivateUserMutation, useDeactivateUserMutation, useGetRolesQuery, useSetUserRolesMutation } from '../../../store/domains';
 import { useToast } from '../../../components/Toast';
 import Modal from '../../../components/Modal';
@@ -107,23 +108,14 @@ export default function AdminUsersPage() {
         </table>
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
-        <button
-          className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={(meta.current_page || page) <= 1}
-        >
-          Previous
-        </button>
-        <div className="text-[var(--text-primary)]">Page {meta.current_page || page} of {meta.last_page || '-'}</div>
-        <button
-          className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-          onClick={() => setPage((p) => p + 1)}
-          disabled={meta.current_page >= (meta.last_page || 0)}
-        >
-          Next
-        </button>
-      </div>
+      <Pagination
+        currentPage={meta.current_page || page}
+        lastPage={meta.last_page || 1}
+        total={meta.total}
+        perPage={perPage}
+        onPageChange={setPage}
+        loading={isLoading}
+      />
 
       {roleChangePending && (
         <Modal onClose={() => setRoleChangePending(null)}>

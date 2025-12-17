@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import Pagination from '../../components/admin/Pagination';
 import {
   useGetAdminCategoriesQuery,
   useCreateCategoryMutation,
@@ -162,27 +163,14 @@ export default function CategoriesPage() {
       )}
 
       {/* Pagination */}
-      {pagination.last_page > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] disabled:opacity-50 hover:bg-[var(--primary-bg)] transition-colors"
-          >
-            Previous
-          </button>
-          <span className="px-4 py-2 text-[var(--text-primary)]">
-            Page {pagination.current_page} of {pagination.last_page}
-          </span>
-          <button
-            onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))}
-            disabled={page === pagination.last_page}
-            className="px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] disabled:opacity-50 hover:bg-[var(--primary-bg)] transition-colors"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={pagination.current_page}
+        lastPage={pagination.last_page}
+        total={pagination.total}
+        perPage={20}
+        onPageChange={setPage}
+        loading={isLoading}
+      />
 
       {/* Create/Edit Modal */}
       {showModal && (
