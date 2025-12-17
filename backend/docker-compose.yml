@@ -22,18 +22,21 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-secret}
       XDEBUG_MODE: develop,debug
       XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
-    command: sh -c "chmod +x /var/www/html/docker-entrypoint.sh && /var/www/html/docker-entrypoint.sh"
+    command: sh -c "if [ -f /run/secrets/redis_password ]; then export REDIS_PASSWORD=$(cat /run/secrets/redis_password); fi; chmod +x /var/www/html/docker-entrypoint.sh && /var/www/html/docker-entrypoint.sh"
     env_file:
       - .env
+    secrets:
+      - redis_password
     depends_on:
       - db
       - migrator
+      - redis
 
   db:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: vibecode-full-stack-starter-kit_mysql_pass
       MYSQL_DATABASE: ${DB_DATABASE:-laravel}
       # Use a non-root user for application connections in the local dev DB
       MYSQL_USER: laravel
@@ -57,8 +60,10 @@ services:
       - .env
     depends_on:
       - db
-    command: sh -c "chmod +x /var/www/html/docker-migrate-and-seed.sh && /var/www/html/docker-migrate-and-seed.sh"
+    command: sh -c "if [ -f /run/secrets/redis_password ]; then export REDIS_PASSWORD=$(cat /run/secrets/redis_password); fi; chmod +x /var/www/html/docker-migrate-and-seed.sh && /var/www/html/docker-migrate-and-seed.sh"
     restart: 'no'
+    secrets:
+      - redis_password
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -70,5 +75,22 @@ services:
     ports:
       - "8080:80"
 
+  redis:
+    image: redis:7-alpine
+    container_name: vibecode-backend_redis
+    ports:
+      - "6379:6379"
+    command: sh -c "mkdir -p /usr/local/etc/redis && printf '%s\n' 'appendonly yes' > /usr/local/etc/redis/redis.conf && if [ -f /run/secrets/redis_password ]; then printf 'requirepass %s\n' \"$(cat /run/secrets/redis_password)\" >> /usr/local/etc/redis/redis.conf; fi && redis-server /usr/local/etc/redis/redis.conf"
+    volumes:
+      - redisdata:/data
+    secrets:
+      - redis_password
+    restart: unless-stopped
+
 volumes:
   dbdata:
+  redisdata:
+
+secrets:
+  redis_password:
+    external: true

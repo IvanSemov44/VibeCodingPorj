@@ -14,6 +14,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
+# Install phpredis extension for Redis support
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
 # Set working directory
 WORKDIR /var/www/html
 

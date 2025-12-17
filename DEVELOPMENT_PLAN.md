@@ -500,8 +500,8 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 - [x] Dashboard shows accurate statistics
 - [x] Recent activity displays latest 10 actions
 - [x] Quick links to admin sections work
-- [ ] Loading states for all data
-- [ ] Error handling for failed requests
+- [x] Loading states for all data
+- [x] Error handling for failed requests
 
 ---
 
@@ -667,9 +667,9 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
    ```
 
 **Acceptance Criteria:**
-- [ ] All pages show skeleton loaders
-- [ ] No "Loading..." text visible
-- [ ] Smooth transitions from loading to content
+- [x] All pages show skeleton loaders
+- [x] No "Loading..." text visible
+- [x] Smooth transitions from loading to content
 
 ---
 

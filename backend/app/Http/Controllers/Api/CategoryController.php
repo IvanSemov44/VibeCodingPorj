@@ -8,12 +8,26 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+        try {
+            if (method_exists(Cache::getStore(), 'tags')) {
+                $categories = Cache::tags(['meta', 'categories'])->remember('list', 3600, function () {
+                    return Category::orderBy('name')->get(['id', 'name', 'slug']);
+                });
+            } else {
+                $categories = Cache::remember('categories', 3600, function () {
+                    return Category::orderBy('name')->get(['id', 'name', 'slug']);
+                });
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Category cache read failed, falling back to direct DB: ' . $e->getMessage());
+            $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
+        }
 
         return response()->json($categories);
     }
@@ -42,6 +56,16 @@ class CategoryController extends Controller
             'slug' => $slug,
         ]);
 
+        try {
+            if (method_exists(Cache::getStore(), 'tags')) {
+                Cache::tags(['meta', 'categories'])->flush();
+            } else {
+                Cache::forget('categories');
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to invalidate categories cache: ' . $e->getMessage());
+        }
+
         return response()->json($category, 201);
     }
 
@@ -65,6 +89,16 @@ class CategoryController extends Controller
         $category->slug = $this->generateUniqueSlug($baseSlug, $category->id);
         $category->save();
 
+        try {
+            if (method_exists(Cache::getStore(), 'tags')) {
+                Cache::tags(['meta', 'categories'])->flush();
+            } else {
+                Cache::forget('categories');
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to invalidate categories cache: ' . $e->getMessage());
+        }
+
         return response()->json($category);
     }
 
@@ -79,6 +113,16 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+
+        try {
+            if (method_exists(Cache::getStore(), 'tags')) {
+                Cache::tags(['meta', 'categories'])->flush();
+            } else {
+                Cache::forget('categories');
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to invalidate categories cache: ' . $e->getMessage());
+        }
 
         return response()->noContent();
     }
