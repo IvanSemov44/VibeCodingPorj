@@ -12,6 +12,18 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
   const [loading, setLoading] = useState<boolean>(true);
   const { theme, toggleTheme } = useAppTheme();
 
+  // Determine admin/owner role safely — roles may be strings or objects, or missing
+  const isAdmin = React.useMemo(() => {
+    const r = (user && (user as any).roles) || null;
+    if (!Array.isArray(r)) return false;
+    return r.some((role: any) => {
+      if (!role) return false;
+      if (typeof role === 'string') return role === 'owner' || role === 'admin';
+      if (typeof role === 'object' && 'name' in role) return role.name === 'owner' || role.name === 'admin';
+      return false;
+    });
+  }, [user]);
+
   // Keep stable refs to the latest `csrfTrigger` and `data` so the main
   // effect can depend only on `refetch` (prevents unnecessary re-runs).
   type CsrfTrigger = (() => { unwrap: () => Promise<unknown> }) | undefined;
@@ -100,12 +112,22 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
               Tools
             </Link>
             {!loading && user && (
-              <Link
-                href="/dashboard"
-                className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
-              >
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href="/dashboard"
+                  className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
+                >
+                  Dashboard
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
+                  >
+                    Admin
+                  </Link>
+                )}
+              </>
             )}
 
             <button

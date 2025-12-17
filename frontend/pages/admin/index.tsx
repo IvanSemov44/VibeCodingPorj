@@ -4,7 +4,6 @@ import StatsCard from '../../components/admin/StatsCard';
 import RecentActivity from '../../components/admin/RecentActivity';
 import SystemHealthCard from '../../components/admin/SystemHealthCard';
 import { SkeletonCard } from '../../components/Loading/SkeletonCard';
-import ThemeToggle from '../../components/ThemeToggle';
 // AdminGuard removed: server-side middleware enforces access
 
 export default function AdminDashboard() {
@@ -25,7 +24,7 @@ export default function AdminDashboard() {
           <p className="text-sm text-gray-500 mt-1">Overview of site activity and management.</p>
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          {/* Theme toggle intentionally removed from admin header */}
         </div>
       </div>
 
