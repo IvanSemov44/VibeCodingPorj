@@ -148,11 +148,11 @@ final class ToolController extends Controller
 
         $tool = $this->toolService->update($tool, $toolData, $request->user());
 
-        try {
         $this->handleCacheOperation(
             fn() => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool update'
         );
+
         return new ToolResource($tool);
     }
 
@@ -162,11 +162,11 @@ final class ToolController extends Controller
 
         $this->toolService->delete($tool, $request->user());
 
-        try {
         $this->handleCacheOperation(
             fn() => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool deletion'
         );
+
         return response()->noContent();
     }
 
