@@ -42,11 +42,55 @@ final class CacheService
     }
 
     /**
+     * Remember a value using tags when supported by the store.
+     *
+     * @template T
+     * @param array<string> $tags
+     * @param callable(): T $callback
+     * @return T
+     */
+    public function rememberWithTags(array $tags, string $key, callable $callback, ?int $ttl = null): mixed
+    {
+        if ($this->supportsTags()) {
+            return Cache::tags($tags)->remember($key, $ttl ?? self::DEFAULT_TTL, $callback);
+        }
+
+        return $this->remember($key, $callback, $ttl);
+    }
+
+    /**
      * Flush all cache.
      */
     public function flush(): bool
     {
         return Cache::flush();
+    }
+
+    /**
+     * Whether the current cache store supports tags.
+     */
+    public function supportsTags(): bool
+    {
+        try {
+            return method_exists(Cache::getStore(), 'tags');
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get a value from cache.
+     *
+     * @return mixed
+     */
+    public function get(string $key): mixed
+    {
+        try {
+            return Cache::get($key);
+        } catch (\Throwable $e) {
+            logger()->warning('Cache get failed for key ' . $key . ': ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -72,8 +116,64 @@ final class CacheService
      */
     public function invalidateToolCaches(): void
     {
-        // In a real app, you'd use cache tags or a more sophisticated approach
-        // For now, we'll just forget specific patterns
-        Cache::forget('tools:*');
+        if ($this->supportsTags()) {
+            try {
+                Cache::tags(['tools'])->flush();
+                return;
+            } catch (\Throwable $e) {
+                logger()->warning('Failed to flush tool cache tags: ' . $e->getMessage());
+            }
+        }
+
+        // Fallback: try forgetting a small set of likely keys
+        for ($i = 1; $i <= 5; $i++) {
+            try {
+                Cache::forget("tools.approved.page.{$i}.perpage.20");
+            } catch (\Throwable $e) {
+                // best-effort
+            }
+        }
+    }
+
+    /**
+     * Invalidate caches by tags when supported.
+     *
+     * @param array<string> $tags
+     */
+    public function invalidateTags(array $tags): void
+    {
+        if (! $this->supportsTags()) {
+            return;
+        }
+
+        try {
+            Cache::tags($tags)->flush();
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to flush cache tags: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Put a value into cache using tags when supported.
+     *
+     * @param array<string> $tags
+     */
+    public function putWithTags(array $tags, string $key, mixed $value, ?int $ttl = null): bool
+    {
+        if ($this->supportsTags()) {
+            try {
+                return Cache::tags($tags)->put($key, $value, $ttl ?? self::DEFAULT_TTL);
+            } catch (\Throwable $e) {
+                logger()->warning('Failed to put cache with tags: ' . $e->getMessage());
+            }
+        }
+
+        try {
+            return Cache::put($key, $value, $ttl ?? self::DEFAULT_TTL);
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to put cache (fallback): ' . $e->getMessage());
+        }
+
+        return false;
     }
 }

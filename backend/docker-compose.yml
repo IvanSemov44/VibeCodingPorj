@@ -25,8 +25,6 @@ services:
     command: sh -c "if [ -f /run/secrets/redis_password ]; then export REDIS_PASSWORD=$(cat /run/secrets/redis_password); fi; chmod +x /var/www/html/docker-entrypoint.sh && /var/www/html/docker-entrypoint.sh"
     env_file:
       - .env
-    secrets:
-      - redis_password
     depends_on:
       - db
       - migrator
@@ -62,8 +60,7 @@ services:
       - db
     command: sh -c "if [ -f /run/secrets/redis_password ]; then export REDIS_PASSWORD=$(cat /run/secrets/redis_password); fi; chmod +x /var/www/html/docker-migrate-and-seed.sh && /var/www/html/docker-migrate-and-seed.sh"
     restart: 'no'
-    secrets:
-      - redis_password
+    # secrets are optional for local development; provide redis_password as a Docker secret in production
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -90,6 +87,6 @@ volumes:
   dbdata:
   redisdata:
 
-secrets:
-  redis_password:
-    external: true
+# secrets:
+#  redis_password:
+#    external: true

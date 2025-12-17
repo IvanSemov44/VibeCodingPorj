@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use App\Services\CacheService;
 
 class HealthController extends BaseController
 {
+    private CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+    }
     /**
      * Lightweight public health check — inexpensive and safe.
      */
@@ -38,7 +43,7 @@ class HealthController extends BaseController
 
         // Cache check (safe read)
         try {
-            Cache::get('health_check_key');
+            $val = $this->cacheService->get('health_check_key');
             $checks['cache'] = 'ok';
         } catch (\Exception $e) {
             $checks['cache'] = 'error: ' . $e->getMessage();

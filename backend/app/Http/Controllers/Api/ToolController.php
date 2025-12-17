@@ -19,11 +19,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use App\Services\CacheService;
 
 final class ToolController extends Controller
 {
     public function __construct(
-        private readonly ToolService $toolService
+        private readonly ToolService $toolService,
+        private readonly CacheService $cacheService,
     ) {}
 
     public function index(Request $request): AnonymousResourceCollection
@@ -84,20 +86,12 @@ final class ToolController extends Controller
             if ($perPage === 20 && $page === 1) {
                 $cacheKey = "tools.approved.page.{$page}.perpage.{$perPage}";
                 try {
-                    if (method_exists(Cache::getStore(), 'tags')) {
-                        $tools = Cache::tags(['tools'])->remember($cacheKey, 300, function () use ($query, $perPage) {
-                            return $query->orderBy('name')->paginate($perPage);
-                        });
-                    } else {
-                        $tools = Cache::remember($cacheKey, 300, function () use ($query, $perPage) {
-                            return $query->orderBy('name')->paginate($perPage);
-                        });
-                    }
-                } catch (\Throwable $e) {
-                    logger()->warning('Cache tags check failed, falling back to key cache: ' . $e->getMessage());
-                    $tools = Cache::remember($cacheKey, 300, function () use ($query, $perPage) {
+                    $tools = $this->cacheService->rememberWithTags(['tools'], $cacheKey, function () use ($query, $perPage) {
                         return $query->orderBy('name')->paginate($perPage);
-                    });
+                    }, 300);
+                } catch (\Throwable $e) {
+                    logger()->warning('Cache read failed, falling back to DB: ' . $e->getMessage());
+                    $tools = $query->orderBy('name')->paginate($perPage);
                 }
 
                 return ToolResource::collection($tools);
@@ -123,13 +117,7 @@ final class ToolController extends Controller
         $tool = $this->toolService->create($toolData, $request->user());
 
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                Cache::tags(['tools'])->flush();
-            } else {
-                for ($i = 1; $i <= 5; $i++) {
-                    Cache::forget("tools.approved.page.{$i}.perpage.20");
-                }
-            }
+            $this->cacheService->invalidateToolCaches();
         } catch (\Throwable $e) {
             logger()->warning('Failed to invalidate tools cache: ' . $e->getMessage());
         }
@@ -144,13 +132,7 @@ final class ToolController extends Controller
         $tool = $this->toolService->update($tool, $toolData, $request->user());
 
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                Cache::tags(['tools'])->flush();
-            } else {
-                for ($i = 1; $i <= 5; $i++) {
-                    Cache::forget("tools.approved.page.{$i}.perpage.20");
-                }
-            }
+            $this->cacheService->invalidateToolCaches();
         } catch (\Throwable $e) {
             logger()->warning('Failed to invalidate tools cache: ' . $e->getMessage());
         }
@@ -165,13 +147,7 @@ final class ToolController extends Controller
         $this->toolService->delete($tool, $request->user());
 
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                Cache::tags(['tools'])->flush();
-            } else {
-                for ($i = 1; $i <= 5; $i++) {
-                    Cache::forget("tools.approved.page.{$i}.perpage.20");
-                }
-            }
+            $this->cacheService->invalidateToolCaches();
         } catch (\Throwable $e) {
             logger()->warning('Failed to invalidate tools cache: ' . $e->getMessage());
         }
@@ -200,8 +176,10 @@ final class ToolController extends Controller
         }
 
         // Invalidate cached tool lists
-        for ($i = 1; $i <= 5; $i++) {
-            Cache::forget("tools.approved.page.{$i}.perpage.20");
+        try {
+            $this->cacheService->invalidateToolCaches();
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to invalidate tools cache after approval: ' . $e->getMessage());
         }
 
         return response()->json([
@@ -232,8 +210,10 @@ final class ToolController extends Controller
         }
 
         // Invalidate cached tool lists
-        for ($i = 1; $i <= 5; $i++) {
-            Cache::forget("tools.approved.page.{$i}.perpage.20");
+        try {
+            $this->cacheService->invalidateToolCaches();
+        } catch (\Throwable $e) {
+            logger()->warning('Failed to invalidate tools cache after rejection: ' . $e->getMessage());
         }
 
         return response()->json([

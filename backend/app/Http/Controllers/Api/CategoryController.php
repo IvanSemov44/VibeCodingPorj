@@ -9,21 +9,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use App\Services\CacheService;
 
 class CategoryController extends Controller
 {
+    public function __construct(private readonly CacheService $cacheService)
+    {
+    }
     public function index(Request $request)
     {
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                $categories = Cache::tags(['meta', 'categories'])->remember('list', 3600, function () {
-                    return Category::orderBy('name')->get(['id', 'name', 'slug']);
-                });
-            } else {
-                $categories = Cache::remember('categories', 3600, function () {
-                    return Category::orderBy('name')->get(['id', 'name', 'slug']);
-                });
-            }
+            $categories = $this->cacheService->rememberWithTags(['meta', 'categories'], 'list', function () {
+                return Category::orderBy('name')->get(['id', 'name', 'slug']);
+            }, 3600);
         } catch (\Throwable $e) {
             logger()->warning('Category cache read failed, falling back to direct DB: ' . $e->getMessage());
             $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
@@ -57,9 +55,8 @@ class CategoryController extends Controller
         ]);
 
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                Cache::tags(['meta', 'categories'])->flush();
-            } else {
+            $this->cacheService->invalidateTags(['meta', 'categories']);
+            if (! $this->cacheService->supportsTags()) {
                 Cache::forget('categories');
             }
         } catch (\Throwable $e) {
@@ -90,9 +87,8 @@ class CategoryController extends Controller
         $category->save();
 
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                Cache::tags(['meta', 'categories'])->flush();
-            } else {
+            $this->cacheService->invalidateTags(['meta', 'categories']);
+            if (! $this->cacheService->supportsTags()) {
                 Cache::forget('categories');
             }
         } catch (\Throwable $e) {
@@ -115,9 +111,8 @@ class CategoryController extends Controller
         $category->delete();
 
         try {
-            if (method_exists(Cache::getStore(), 'tags')) {
-                Cache::tags(['meta', 'categories'])->flush();
-            } else {
+            $this->cacheService->invalidateTags(['meta', 'categories']);
+            if (! $this->cacheService->supportsTags()) {
                 Cache::forget('categories');
             }
         } catch (\Throwable $e) {

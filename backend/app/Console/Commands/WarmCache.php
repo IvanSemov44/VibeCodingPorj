@@ -30,15 +30,10 @@ class WarmCache extends Command
 
         try {
             $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
-            try {
-                if (method_exists(Cache::getStore(), 'tags')) {
-                    Cache::tags(['meta', 'categories'])->put('list', $categories, 3600);
-                } else {
-                    Cache::put('categories', $categories, 3600);
-                }
+            $cacheService = app(\App\Services\CacheService::class);
+            if ($cacheService->putWithTags(['meta', 'categories'], 'list', $categories, 3600)) {
                 $this->info('Cached categories');
-            } catch (\Throwable $e) {
-                Cache::put('categories', $categories, 3600);
+            } else {
                 $this->info('Cached categories (fallback)');
             }
         } catch (\Throwable $e) {
@@ -50,14 +45,12 @@ class WarmCache extends Command
             if (class_exists('\App\\Models\\Tag')) {
                 $tags = \App\Models\Tag::orderBy('name')->get();
                 try {
-                    if (method_exists(Cache::getStore(), 'tags')) {
-                        Cache::tags(['meta', 'tags'])->put('list', $tags, 3600);
-                    } else {
-                        Cache::put('tags', $tags, 3600);
-                    }
+                    $cacheService = app(\App\Services\CacheService::class);
+                    $cacheService->putWithTags(['meta', 'tags'], 'list', $tags, 3600);
                     $this->info('Cached tags');
                 } catch (\Throwable $e) {
-                    Cache::put('tags', $tags, 3600);
+                    $cacheService = app(\App\Services\CacheService::class);
+                    $cacheService->putWithTags(['meta', 'tags'], 'list', $tags, 3600);
                     $this->info('Cached tags (fallback)');
                 }
             }
@@ -70,14 +63,12 @@ class WarmCache extends Command
             if (class_exists('\Spatie\\Permission\\Models\\Role')) {
                 $roles = \Spatie\Permission\Models\Role::all();
                 try {
-                    if (method_exists(Cache::getStore(), 'tags')) {
-                        Cache::tags(['meta', 'roles'])->put('list', $roles, 3600);
-                    } else {
-                        Cache::put('roles', $roles, 3600);
-                    }
+                    $cacheService = app(\App\Services\CacheService::class);
+                    $cacheService->putWithTags(['meta', 'roles'], 'list', $roles, 3600);
                     $this->info('Cached roles');
                 } catch (\Throwable $e) {
-                    Cache::put('roles', $roles, 3600);
+                    $cacheService = app(\App\Services\CacheService::class);
+                    $cacheService->putWithTags(['meta', 'roles'], 'list', $roles, 3600);
                     $this->info('Cached roles (fallback)');
                 }
             }
@@ -89,16 +80,18 @@ class WarmCache extends Command
         try {
             $tools = Tool::where('status', ToolStatus::APPROVED->value)->withRelations()->orderBy('name')->paginate(20);
             try {
-                if (method_exists(Cache::getStore(), 'tags')) {
-                    Cache::tags(['tools'])->put('page.1.perpage.20', $tools, 300);
+                $cacheService = app(\App\Services\CacheService::class);
+                if ($cacheService->putWithTags(['tools'], 'tools.approved.page.1.perpage.20', $tools, 300)) {
+                    $this->info('Cached tools page 1');
                 } else {
-                    Cache::put('tools.approved.page.1.perpage.20', $tools, 300);
+                    $cacheService->putWithTags(['tools'], 'tools.approved.page.1.perpage.20', $tools, 300);
+                    $this->info('Cached tools page 1 (fallback)');
                 }
-                $this->info('Cached tools page 1');
-            } catch (\Throwable $e) {
-                Cache::put('tools.approved.page.1.perpage.20', $tools, 300);
-                $this->info('Cached tools page 1 (fallback)');
-            }
+                } catch (\Throwable $e) {
+                    $cacheService = app(\App\Services\CacheService::class);
+                    $cacheService->putWithTags(['tools'], 'tools.approved.page.1.perpage.20', $tools, 300);
+                    $this->info('Cached tools page 1 (fallback)');
+                }
         } catch (\Throwable $e) {
             $this->warn('Failed to cache tools: ' . $e->getMessage());
         }
