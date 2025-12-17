@@ -99,6 +99,13 @@ Route::middleware([
             // Admin activity feed
             Route::get('activities', [\App\Http\Controllers\Admin\ActivityController::class, 'index']);
             Route::get('activities/stats', [\App\Http\Controllers\Admin\ActivityController::class, 'stats']);
+
+            // Admin categories & tags management
+            Route::get('categories/stats', [\App\Http\Controllers\Admin\CategoryController::class, 'stats']);
+            Route::apiResource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+
+            Route::get('tags/stats', [\App\Http\Controllers\Admin\TagController::class, 'stats']);
+            Route::apiResource('tags', \App\Http\Controllers\Admin\TagController::class);
         });
     });
 });

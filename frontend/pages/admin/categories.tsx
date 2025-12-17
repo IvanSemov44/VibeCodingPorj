@@ -1,223 +1,236 @@
-import React, { useEffect, useState } from 'react';
-// AdminGuard removed: rely on Next middleware for server-side protection
-import { Category } from '../../lib/types';
+import { useState } from 'react';
+import AdminLayout from '../../components/admin/AdminLayout';
 import {
-  useGetCsrfMutation,
-  useGetCategoriesQuery,
+  useGetAdminCategoriesQuery,
   useCreateCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
-} from '../../store/domains';
+  useGetCategoryStatsQuery,
+} from '../../store/domains/admin';
 
-export default function AdminCategories(): React.ReactElement {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const { data: categoriesData, isLoading, refetch } = useGetCategoriesQuery();
-  const [error, setError] = useState<string | null>(null);
-
-  const [name, setName] = useState<string>('');
-  const [slug, setSlug] = useState<string>('');
-  const [saving, setSaving] = useState<boolean>(false);
-
-  const [csrfTrigger] = useGetCsrfMutation();
-  const [createTrigger] = useCreateCategoryMutation();
-  const [updateTrigger] = useUpdateCategoryMutation();
-  const [deleteTrigger] = useDeleteCategoryMutation();
-
-  useEffect(() => {
-    csrfTrigger()
-      .unwrap()
-      .catch(() => {});
-  }, [csrfTrigger]);
-
-  useEffect(() => {
-    setCategories(categoriesData || []);
-  }, [categoriesData]);
-
-  async function fetchCategories() {
-    setError(null);
-    try {
-      await refetch();
-    } catch {
-      setError('Failed to load categories');
-    }
-  }
-
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      await createTrigger({ name, slug: slug || undefined }).unwrap();
-      setName('');
-      setSlug('');
-      await fetchCategories();
-    } catch {
-      setError('Create failed');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleUpdate(id: number, updated: Partial<Category>) {
-    try {
-      await updateTrigger({ id, body: updated }).unwrap();
-      await fetchCategories();
-    } catch {
-      setError('Update failed');
-    }
-  }
-
-  async function handleDelete(id: number) {
-    if (!confirm('Delete this category?')) return;
-    try {
-      await deleteTrigger(id).unwrap();
-      await fetchCategories();
-    } catch {
-      setError('Delete failed');
-    }
-  }
-
-  return (
-    <div className="p-5">
-      <h1>Admin — Categories</h1>
-      <form onSubmit={handleCreate} className="mb-5">
-        <div>
-          <label>Name</label>
-          <br />
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--primary-bg)] text-[var(--text-primary)]"
-          />
-        </div>
-        <div className="mt-2">
-          <label>Slug (optional)</label>
-          <br />
-          <input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--primary-bg)] text-[var(--text-primary)]"
-          />
-        </div>
-        <div className="mt-3">
-          <button
-            type="submit"
-            disabled={saving}
-            className="py-2 px-3 bg-[var(--accent)] text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--accent-hover)] transition-colors"
-          >
-            {saving ? 'Saving...' : 'Create'}
-          </button>
-        </div>
-      </form>
-
-      {error && <div className="text-[var(--danger)]">{error}</div>}
-
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <table className="border-0 w-full">
-          <thead>
-            <tr className="text-left">
-              <th className="p-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">Name</th>
-              <th className="p-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">Slug</th>
-              <th className="p-2 border-b border-[var(--border-color)] text-[var(--text-secondary)]">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((c) => (
-              <CategoryRow
-                key={c.id}
-                category={c}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-              />
-            ))}
-          </tbody>
-        </table>
-      )}
-      </div>
-  );
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  tools_count?: number;
+  created_at?: string;
 }
 
-function CategoryRow({
-  category,
-  onUpdate,
-  onDelete,
-}: {
-  category: Category;
-  onUpdate: (id: number, updated: Partial<Category>) => Promise<void>;
-  onDelete: (id: number) => void;
-}) {
-  const [editing, setEditing] = useState<boolean>(false);
-  const [name, setName] = useState<string>(category.name);
-  const [slug, setSlug] = useState<string>(category.slug || '');
-  const [saving, setSaving] = useState<boolean>(false);
+export default function CategoriesPage() {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formData, setFormData] = useState({ name: '', description: '' });
 
-  async function save() {
-    setSaving(true);
-    await onUpdate(category.id, { name, slug: slug || undefined });
-    setSaving(false);
-    setEditing(false);
-  }
+  const { data, isLoading, error } = useGetAdminCategoriesQuery({ page, search, per_page: 20 });
+  const { data: stats } = useGetCategoryStatsQuery();
+  const [createCategory, createMutation] = useCreateCategoryMutation();
+  const [updateCategory, updateMutation] = useUpdateCategoryMutation();
+  const [deleteCategory, deleteMutation] = useDeleteCategoryMutation();
+
+  const categories = data?.data || [];
+  const pagination = {
+    current_page: data?.current_page || 1,
+    last_page: data?.last_page || 1,
+    total: data?.total || 0,
+  };
+
+  const handleOpenCreate = () => {
+    setFormData({ name: '', description: '' });
+    setEditingCategory(null);
+    setShowModal(true);
+  };
+
+  const handleOpenEdit = (category: Category) => {
+    setFormData({ name: category.name, description: category.description || '' });
+    setEditingCategory(category);
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      if (editingCategory) {
+        await updateCategory({ id: editingCategory.id, data: formData }).unwrap();
+      } else {
+        await createCategory(formData).unwrap();
+      }
+      setShowModal(false);
+      setFormData({ name: '', description: '' });
+    } catch (err: any) {
+      alert(err?.message || 'Failed to save category');
+    }
+  };
+
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete category "${name}"?`)) return;
+    try {
+      await deleteCategory(id).unwrap();
+    } catch (err: any) {
+      alert(err?.message || 'Failed to delete category. It may be used by tools.');
+    }
+  };
 
   return (
-    <tr className="border-b border-[var(--border-color)]">
-      <td className="p-2">
-        {editing ? (
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="p-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)]"
-          />
-        ) : (
-          category.name
-        )}
-      </td>
-      <td className="p-2">
-        {editing ? (
-          <input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className="p-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)]"
-          />
-        ) : (
-          category.slug
-        )}
-      </td>
-      <td className="p-2">
-        {editing ? (
-          <>
-            <button
-              onClick={save}
-              disabled={saving}
-              className="py-1 px-2 bg-[var(--success)] text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-[var(--success-hover)] transition-colors"
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-            <button
-              onClick={() => setEditing(false)}
-              className="ml-2 py-1 px-2 bg-[var(--secondary-bg)] text-[var(--text-primary)] text-sm rounded border-none cursor-pointer hover:bg-[var(--secondary-bg-hover)] transition-colors"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => setEditing(true)}
-              className="py-1 px-2 bg-[var(--accent)] text-white text-sm rounded border-none cursor-pointer hover:bg-[var(--accent-hover)] transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => onDelete(category.id)}
-              className="ml-2 py-1 px-2 bg-[var(--danger)] text-white text-sm rounded border-none cursor-pointer hover:bg-[var(--danger-hover)] transition-colors"
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </td>
-    </tr>
+    <AdminLayout title="Categories" description="Manage content categories">
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">Total Categories</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.total}</div>
+          </div>
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">With Tools</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.with_tools}</div>
+          </div>
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">Without Tools</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.without_tools}</div>
+          </div>
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">Avg Tools per Category</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.avg_tools_per_category}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Search and Create */}
+      <div className="flex gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Search categories..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)]"
+        />
+        <button
+          onClick={handleOpenCreate}
+          className="px-6 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+        >
+          + Create Category
+        </button>
+      </div>
+
+      {/* Table */}
+      {isLoading ? (
+        <div className="text-center py-8 text-[var(--text-secondary)]">Loading...</div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-500">Failed to load categories</div>
+      ) : categories.length === 0 ? (
+        <div className="text-center py-8 text-[var(--text-secondary)]">No categories found</div>
+      ) : (
+        <div className="bg-[var(--secondary-bg)] rounded-lg border border-[var(--border-color)] overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[var(--border-color)]">
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Name</th>
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Slug</th>
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Description</th>
+                <th className="text-center p-4 text-[var(--text-secondary)] font-medium">Tools</th>
+                <th className="text-right p-4 text-[var(--text-secondary)] font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map((category: Category) => (
+                <tr key={category.id} className="border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--primary-bg)] transition-colors">
+                  <td className="p-4 text-[var(--text-primary)] font-medium">{category.name}</td>
+                  <td className="p-4 text-[var(--text-secondary)]">{category.slug}</td>
+                  <td className="p-4 text-[var(--text-secondary)] max-w-xs truncate">{category.description || '-'}</td>
+                  <td className="p-4 text-center text-[var(--text-primary)]">{category.tools_count || 0}</td>
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={() => handleOpenEdit(category)}
+                      className="text-[var(--accent)] hover:underline mr-3"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category.id, category.name)}
+                      className="text-red-500 hover:underline"
+                      disabled={deleteMutation.isPending}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.last_page > 1 && (
+        <div className="flex justify-center gap-2 mt-6">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] disabled:opacity-50 hover:bg-[var(--primary-bg)] transition-colors"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-[var(--text-primary)]">
+            Page {pagination.current_page} of {pagination.last_page}
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))}
+            disabled={page === pagination.last_page}
+            className="px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] disabled:opacity-50 hover:bg-[var(--primary-bg)] transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
+          <div className="bg-[var(--secondary-bg)] p-6 rounded-lg border border-[var(--border-color)] w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+              {editingCategory ? 'Edit Category' : 'Create Category'}
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[var(--text-secondary)] mb-2">Name *</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]"
+                  placeholder="e.g. Development Tools"
+                />
+              </div>
+              <div>
+                <label className="block text-[var(--text-secondary)] mb-2">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-4 py-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] resize-none"
+                  placeholder="Optional description..."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleSave}
+                disabled={!formData.name.trim() || createMutation.isPending || updateMutation.isPending}
+                className="flex-1 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] hover:bg-[var(--primary-bg)] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 }

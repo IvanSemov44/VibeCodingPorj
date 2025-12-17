@@ -1,3 +1,5 @@
+fix categories and tags buts 
+admin/categories admin/tags
 
 add seeder default with starting app
 update pagination logic for Active Users and Tools and Pending Tool Approvals

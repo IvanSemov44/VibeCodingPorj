@@ -83,3 +83,86 @@ export async function getActivityStats(): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/activities/stats`);
   return await parseJson(res as unknown as Response);
 }
+
+// Categories
+export async function getAdminCategories(params: Record<string, unknown> = {}): Promise<unknown> {
+  const qs = new URLSearchParams(Object.entries(params as Record<string, string>)).toString();
+  const url = `/api/admin/categories${qs ? `?${qs}` : ''}`;
+  const res = await fetchWithAuth(url);
+  return await parseJson(res as unknown as Response);
+}
+
+export async function getAdminCategory(id: string | number): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/categories/${id}`);
+  return await parseJson(res as unknown as Response);
+}
+
+export async function createCategory(data: { name: string; description?: string }): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/categories`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await parseJson(res as unknown as Response);
+}
+
+export async function updateCategory(id: string | number, data: { name: string; description?: string }): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/categories/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await parseJson(res as unknown as Response);
+}
+
+export async function deleteCategory(id: string | number): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/categories/${id}`, { method: 'DELETE' });
+  return await parseJson(res as unknown as Response);
+}
+
+export async function getCategoryStats(): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/categories/stats`);
+  return await parseJson(res as unknown as Response);
+}
+
+// Tags
+export async function getAdminTags(params: Record<string, unknown> = {}): Promise<unknown> {
+  const qs = new URLSearchParams(Object.entries(params as Record<string, string>)).toString();
+  const url = `/api/admin/tags${qs ? `?${qs}` : ''}`;
+  const res = await fetchWithAuth(url);
+  return await parseJson(res as unknown as Response);
+}
+
+export async function getAdminTag(id: string | number): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/tags/${id}`);
+  return await parseJson(res as unknown as Response);
+}
+
+export async function createTag(data: { name: string; description?: string }): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/tags`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await parseJson(res as unknown as Response);
+}
+
+export async function updateTag(id: string | number, data: { name: string; description?: string }): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/tags/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await parseJson(res as unknown as Response);
+}
+
+export async function deleteTag(id: string | number): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/tags/${id}`, { method: 'DELETE' });
+  return await parseJson(res as unknown as Response);
+}
+
+export async function getTagStats(): Promise<unknown> {
+  const res = await fetchWithAuth(`/api/admin/tags/stats`);
+  return await parseJson(res as unknown as Response);
+}
+

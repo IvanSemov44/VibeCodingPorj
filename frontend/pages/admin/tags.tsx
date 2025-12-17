@@ -1,218 +1,236 @@
-import React, { useEffect, useState } from 'react';
-// AdminGuard removed: rely on Next middleware for server-side protection
-import { Tag } from '../../lib/types';
+import { useState } from 'react';
+import AdminLayout from '../../components/admin/AdminLayout';
 import {
-  useGetCsrfMutation,
-  useGetTagsQuery,
+  useGetAdminTagsQuery,
   useCreateTagMutation,
   useUpdateTagMutation,
   useDeleteTagMutation,
-} from '../../store/domains';
+  useGetTagStatsQuery,
+} from '../../store/domains/admin';
 
-export default function AdminTags(): React.ReactElement {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const { data: tagsData, isLoading, refetch } = useGetTagsQuery();
-  const [error, setError] = useState<string | null>(null);
-
-  const [name, setName] = useState<string>('');
-  const [slug, setSlug] = useState<string>('');
-  const [saving, setSaving] = useState<boolean>(false);
-
-  const [csrfTrigger] = useGetCsrfMutation();
-  const [createTrigger] = useCreateTagMutation();
-  const [updateTrigger] = useUpdateTagMutation();
-  const [deleteTrigger] = useDeleteTagMutation();
-
-  useEffect(() => {
-    csrfTrigger()
-      .unwrap()
-      .catch(() => {});
-  }, [csrfTrigger]);
-
-  useEffect(() => {
-    setTags(tagsData || []);
-  }, [tagsData]);
-
-  async function fetchTags() {
-    setError(null);
-    try {
-      await refetch();
-    } catch {
-      setError('Failed to load tags');
-    }
-  }
-
-  async function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      await createTrigger({ name, slug: slug || undefined }).unwrap();
-      setName('');
-      setSlug('');
-      await fetchTags();
-    } catch {
-      setError('Create failed');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleUpdate(id: number, updated: Partial<Tag>) {
-    try {
-      await updateTrigger({ id, body: updated }).unwrap();
-      await fetchTags();
-    } catch {
-      setError('Update failed');
-    }
-  }
-
-  async function handleDelete(id: number) {
-    if (!confirm('Delete this tag?')) return;
-    try {
-      await deleteTrigger(id).unwrap();
-      await fetchTags();
-    } catch {
-      setError('Delete failed');
-    }
-  }
-
-  return (
-    <div className="p-5">
-      <h1>Admin — Tags</h1>
-      <form onSubmit={handleCreate} className="mb-5">
-        <div>
-          <label>Name</label>
-          <br />
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--bg-primary)] text-[var(--text-primary)]"
-          />
-        </div>
-        <div className="mt-2">
-          <label>Slug (optional)</label>
-          <br />
-          <input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className="mt-1 p-2 border border-[var(--border-color)] rounded-md bg-[var(--bg-primary)] text-[var(--text-primary)]"
-          />
-        </div>
-        <div className="mt-3">
-          <button
-            type="submit"
-            disabled={saving}
-            className="py-2 px-3 bg-accent text-white rounded-md border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent-hover transition-colors"
-          >
-            {saving ? 'Saving...' : 'Create'}
-          </button>
-        </div>
-      </form>
-
-      {error && <div className="text-[var(--alert-error-text)]">{error}</div>}
-
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <table className="border-0 w-full">
-          <thead>
-            <tr className="text-left">
-              <th className="p-2 border-b border-[var(--border-color)]">Name</th>
-              <th className="p-2 border-b border-[var(--border-color)]">Slug</th>
-              <th className="p-2 border-b border-[var(--border-color)]">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tags.map((t) => (
-              <TagRow key={t.id} tag={t} onUpdate={handleUpdate} onDelete={handleDelete} />
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  tools_count?: number;
+  created_at?: string;
 }
 
-function TagRow({
-  tag,
-  onUpdate,
-  onDelete,
-}: {
-  tag: Tag;
-  onUpdate: (id: number, updated: Partial<Tag>) => Promise<void>;
-  onDelete: (id: number) => void;
-}) {
-  const [editing, setEditing] = useState<boolean>(false);
-  const [name, setName] = useState<string>(tag.name);
-  const [slug, setSlug] = useState<string>(tag.slug || '');
-  const [saving, setSaving] = useState<boolean>(false);
+export default function TagsPage() {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [formData, setFormData] = useState({ name: '', description: '' });
 
-  async function save() {
-    setSaving(true);
-    await onUpdate(tag.id, { name, slug: slug || undefined });
-    setSaving(false);
-    setEditing(false);
-  }
+  const { data, isLoading, error } = useGetAdminTagsQuery({ page, search, per_page: 20 });
+  const { data: stats } = useGetTagStatsQuery();
+  const [createTag, createMutation] = useCreateTagMutation();
+  const [updateTag, updateMutation] = useUpdateTagMutation();
+  const [deleteTag, deleteMutation] = useDeleteTagMutation();
+
+  const tags = data?.data || [];
+  const pagination = {
+    current_page: data?.current_page || 1,
+    last_page: data?.last_page || 1,
+    total: data?.total || 0,
+  };
+
+  const handleOpenCreate = () => {
+    setFormData({ name: '', description: '' });
+    setEditingTag(null);
+    setShowModal(true);
+  };
+
+  const handleOpenEdit = (tag: Tag) => {
+    setFormData({ name: tag.name, description: tag.description || '' });
+    setEditingTag(tag);
+    setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      if (editingTag) {
+        await updateTag({ id: editingTag.id, data: formData }).unwrap();
+      } else {
+        await createTag(formData).unwrap();
+      }
+      setShowModal(false);
+      setFormData({ name: '', description: '' });
+    } catch (err: any) {
+      alert(err?.message || 'Failed to save tag');
+    }
+  };
+
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete tag "${name}"?`)) return;
+    try {
+      await deleteTag(id).unwrap();
+    } catch (err: any) {
+      alert(err?.message || 'Failed to delete tag. It may be used by tools.');
+    }
+  };
 
   return (
-    <tr className="border-b border-[var(--border-color)]">
-      <td className="p-2">
-        {editing ? (
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="p-1 border border-[var(--border-color)] rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
-          />
-        ) : (
-          tag.name
-        )}
-      </td>
-      <td className="p-2">
-        {editing ? (
-          <input
-            value={slug}
-            onChange={(e) => setSlug(e.target.value)}
-            className="p-1 border border-[var(--border-color)] rounded bg-[var(--bg-primary)] text-[var(--text-primary)]"
-          />
-        ) : (
-          tag.slug
-        )}
-      </td>
-      <td className="p-2">
-        {editing ? (
-          <>
-            <button
-              onClick={save}
-              disabled={saving}
-              className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer disabled:opacity-50 hover:bg-accent-hover transition-colors"
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-            <button
-              onClick={() => setEditing(false)}
-              className="ml-2 py-1 px-2 bg-[var(--bg-secondary)] text-[var(--text-primary)] text-sm rounded border-none cursor-pointer hover:bg-[var(--bg-tertiary)] transition-colors"
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => setEditing(true)}
-              className="py-1 px-2 bg-accent text-white text-sm rounded border-none cursor-pointer hover:bg-accent-hover transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => onDelete(tag.id)}
-              className="ml-2 py-1 px-2 bg-red-600 text-white text-sm rounded border-none cursor-pointer hover:bg-red-700 transition-colors"
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </td>
-    </tr>
+    <AdminLayout title="Tags" description="Manage content tags">
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">Total Tags</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.total}</div>
+          </div>
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">With Tools</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.with_tools}</div>
+          </div>
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">Without Tools</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.without_tools}</div>
+          </div>
+          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
+            <div className="text-[var(--text-secondary)] text-sm">Avg Tools per Tag</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.avg_tools_per_tag}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Search and Create */}
+      <div className="flex gap-4 mb-6">
+        <input
+          type="text"
+          placeholder="Search tags..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)]"
+        />
+        <button
+          onClick={handleOpenCreate}
+          className="px-6 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+        >
+          + Create Tag
+        </button>
+      </div>
+
+      {/* Table */}
+      {isLoading ? (
+        <div className="text-center py-8 text-[var(--text-secondary)]">Loading...</div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-500">Failed to load tags</div>
+      ) : tags.length === 0 ? (
+        <div className="text-center py-8 text-[var(--text-secondary)]">No tags found</div>
+      ) : (
+        <div className="bg-[var(--secondary-bg)] rounded-lg border border-[var(--border-color)] overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[var(--border-color)]">
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Name</th>
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Slug</th>
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Description</th>
+                <th className="text-center p-4 text-[var(--text-secondary)] font-medium">Tools</th>
+                <th className="text-right p-4 text-[var(--text-secondary)] font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tags.map((tag: Tag) => (
+                <tr key={tag.id} className="border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--primary-bg)] transition-colors">
+                  <td className="p-4 text-[var(--text-primary)] font-medium">{tag.name}</td>
+                  <td className="p-4 text-[var(--text-secondary)]">{tag.slug}</td>
+                  <td className="p-4 text-[var(--text-secondary)] max-w-xs truncate">{tag.description || '-'}</td>
+                  <td className="p-4 text-center text-[var(--text-primary)]">{tag.tools_count || 0}</td>
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={() => handleOpenEdit(tag)}
+                      className="text-[var(--accent)] hover:underline mr-3"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(tag.id, tag.name)}
+                      className="text-red-500 hover:underline"
+                      disabled={deleteMutation.isPending}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.last_page > 1 && (
+        <div className="flex justify-center gap-2 mt-6">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] disabled:opacity-50 hover:bg-[var(--primary-bg)] transition-colors"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-[var(--text-primary)]">
+            Page {pagination.current_page} of {pagination.last_page}
+          </span>
+          <button
+            onClick={() => setPage(p => Math.min(pagination.last_page, p + 1))}
+            disabled={page === pagination.last_page}
+            className="px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] disabled:opacity-50 hover:bg-[var(--primary-bg)] transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
+          <div className="bg-[var(--secondary-bg)] p-6 rounded-lg border border-[var(--border-color)] w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+              {editingTag ? 'Edit Tag' : 'Create Tag'}
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[var(--text-secondary)] mb-2">Name *</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]"
+                  placeholder="e.g. Machine Learning"
+                />
+              </div>
+              <div>
+                <label className="block text-[var(--text-secondary)] mb-2">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-4 py-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] resize-none"
+                  placeholder="Optional description..."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleSave}
+                disabled={!formData.name.trim() || createMutation.isPending || updateMutation.isPending}
+                className="flex-1 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] hover:bg-[var(--primary-bg)] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 }
