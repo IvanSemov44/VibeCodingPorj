@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('tools', function (Blueprint $table) {
             $table->unsignedBigInteger('view_count')->default(0)->after('status');
             $table->timestamp('last_viewed_at')->nullable()->after('view_count');
-            
+
             $table->index('view_count'); // For "most viewed" queries
         });
     }

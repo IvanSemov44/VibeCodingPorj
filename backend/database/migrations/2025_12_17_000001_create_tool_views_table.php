@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('user_agent')->nullable();
             $table->string('referer')->nullable();
             $table->timestamp('viewed_at')->useCurrent();
-            
+
             // Indexes for performance
             $table->index(['tool_id', 'viewed_at']);
             $table->index('user_id');

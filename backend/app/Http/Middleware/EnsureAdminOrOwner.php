@@ -22,17 +22,41 @@ class EnsureAdminOrOwner
             return redirect('/');
         }
 
-        // Use Spatie roles trait if available
+        // Check if user is admin or owner
+        $allowed = false;
+        
         try {
-            $allowed = method_exists($user, 'hasAnyRole') && $user->hasAnyRole(['admin', 'owner']);
+            // Method 1: Spatie roles
+            if (method_exists($user, 'hasAnyRole')) {
+                $allowed = $user->hasAnyRole(['admin', 'owner']);
+            }
+            
+            // Method 2: Direct roles check (backup)
+            if (!$allowed && method_exists($user, 'roles')) {
+                $roles = $user->roles()->pluck('name')->toArray();
+                $allowed = in_array('admin', $roles) || in_array('owner', $roles);
+            }
+            
+            // Method 3: Check is_admin flag (backup)
+            if (!$allowed && isset($user->is_admin) && $user->is_admin) {
+                $allowed = true;
+            }
         } catch (\Throwable $e) {
-            Log::warning('EnsureAdminOrOwner role check failed: '.$e->getMessage());
+            Log::warning('EnsureAdminOrOwner role check failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
             $allowed = false;
         }
 
         if (! $allowed) {
+            Log::warning('Access denied for non-admin user', [
+                'user_id' => $user->id,
+                'path' => $request->path(),
+            ]);
+            
             if ($request->expectsJson() || $request->is('api/*')) {
-                return response()->json(['message' => 'Forbidden.'], 403);
+                return response()->json(['message' => 'Forbidden. Admin access required.'], 403);
             }
             return redirect('/');
         }

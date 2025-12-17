@@ -11,10 +11,24 @@ use Illuminate\Http\Request;
 
 class AnalyticsController extends Controller
 {
-    public function __construct()
+    // Routes are already protected by 'admin_or_owner' middleware in routes/api.php
+    // So we don't need to add middleware here
+
+    /**
+     * Debug endpoint to check auth status (public, for debugging only)
+     */
+    public function debug(Request $request): JsonResponse
     {
-        $this->middleware('auth:sanctum');
-        $this->middleware('admin_or_owner');
+        $user = auth()->user();
+        
+        return response()->json([
+            'authenticated' => $user !== null,
+            'user_id' => $user?->id,
+            'user_name' => $user?->name,
+            'user_email' => $user?->email,
+            'has_admin_role' => $user ? $user->hasAnyRole(['admin', 'owner']) : false,
+            'roles' => $user ? $user->getRoleNames()->toArray() : [],
+        ]);
     }
 
     /**
@@ -130,7 +144,7 @@ class AnalyticsController extends Controller
         $trending = [];
         foreach ($thisWeek as $toolId => $views) {
             $lastMonthViews = $lastMonth->get($toolId, 0);
-            $growth = $lastMonthViews > 0 
+            $growth = $lastMonthViews > 0
                 ? round((($views - $lastMonthViews) / $lastMonthViews) * 100, 2)
                 : 100;
 

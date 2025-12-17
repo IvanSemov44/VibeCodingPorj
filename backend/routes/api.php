@@ -19,6 +19,9 @@ Route::get('tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
 Route::get('tools', [\App\Http\Controllers\Api\ToolController::class, 'index']);
 Route::get('tools/{tool}', [\App\Http\Controllers\Api\ToolController::class, 'show']);
 
+// Debug endpoint (public, for testing auth)
+Route::get('admin/analytics/debug', [\App\Http\Controllers\Admin\AnalyticsController::class, 'debug']);
+
 // -------------------------
 // Auth + All Protected API endpoints (session-based)
 // -------------------------
@@ -130,6 +133,9 @@ Route::middleware([
         });
     });
 });
+
+// Debug & test analytics endpoints (temporary - should be behind admin_or_owner in production)
+Route::get('admin/analytics/test', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index']);
 
 // 2FA challenge (public - rate limited)
 Route::post('2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])

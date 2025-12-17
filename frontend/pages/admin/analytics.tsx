@@ -1,6 +1,8 @@
 import AdminLayout from '../../components/admin/AdminLayout';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useToast } from '../../components/Toast';
+import { useQuery } from '@tanstack/react-query';
+import { fetchWithAuth } from '../../lib/api/fetch';
 
 interface AnalyticsData {
   total_views: number;
@@ -20,35 +22,20 @@ interface AnalyticsData {
 
 export default function AnalyticsDashboard() {
   const { addToast } = useToast();
-  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('7');
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [period]);
-
-  const fetchAnalytics = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/admin/analytics?period=${period}`, {
-        credentials: 'include',
-      });
-
+  const { data: analytics, isLoading, isError, error } = useQuery({
+    queryKey: ['admin', 'analytics', period],
+    queryFn: async () => {
+      const response = await fetchWithAuth(`/api/admin/analytics?period=${period}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch analytics');
+        throw new Error(`Failed to fetch analytics: ${response.statusText}`);
       }
+      return response.json() as Promise<AnalyticsData>;
+    },
+  });
 
-      const data = await response.json();
-      setAnalytics(data);
-    } catch (error) {
-      addToast(error instanceof Error ? error.message : 'Error fetching analytics', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center min-h-screen">
@@ -61,10 +48,12 @@ export default function AnalyticsDashboard() {
     );
   }
 
-  if (!analytics) {
+  if (isError || !analytics) {
     return (
       <AdminLayout>
-        <div className="text-center text-red-600">Failed to load analytics</div>
+        <div className="text-center text-red-600">
+          Failed to load analytics: {error instanceof Error ? error.message : 'Unknown error'}
+        </div>
       </AdminLayout>
     );
   }
