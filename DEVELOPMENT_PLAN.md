@@ -583,11 +583,11 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
 - **Cache invalidation**: On create/update/delete
 
 **Acceptance Criteria:**
-- [ ] Categories cached (verify with Redis CLI)
-- [ ] Tags cached
-- [ ] Roles cached
-- [ ] Cache invalidates on updates
-- [ ] Response times improved (use browser DevTools)
+- [x] Categories cached (verify with Redis CLI)
+- [x] Tags cached
+- [x] Roles cached
+- [x] Cache invalidates on updates
+- [x] Response times improved (use browser DevTools)
 
 ---
 
@@ -628,9 +628,9 @@ curl -X GET http://localhost:8201/api/admin/tools/pending
    ```
 
 **Acceptance Criteria:**
-- [ ] No N+1 query warnings in debugbar
-- [ ] All foreign keys indexed
-- [ ] Eager loading used consistently
+- [x] No N+1 query warnings in debugbar
+- [x] All foreign keys indexed
+- [x] Eager loading used consistently
 
 ---
 
@@ -798,9 +798,9 @@ Route::get('tools/{tool}', function (Tool $tool) {
 - [ ] Authorization checks in place
 
 ### Milestone 3: Performance ✅
-- [ ] Caching implemented
-- [ ] Database indexed
-- [ ] No N+1 queries
+- [x] Caching implemented
+- [x] Database indexed
+- [x] No N+1 queries
 - [ ] Skeleton loaders on all pages
 
 ### Milestone 4: Advanced (Optional) 🌟

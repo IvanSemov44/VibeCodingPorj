@@ -21,26 +21,27 @@ class AdminController extends Controller
         $this->authorize('viewAny', Tool::class);
         $t0 = microtime(true);
 
-        $tStart = microtime(true);
-        $totalTools = Tool::count();
-        $tAfterTotal = microtime(true);
+        // Optimize: single query with groupBy instead of multiple count queries
+        $toolStats = Tool::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
 
-        $pendingTools = Tool::where('status', ToolStatus::PENDING->value)->count();
-        $tAfterPending = microtime(true);
+        $tAfterToolStats = microtime(true);
 
-        $approvedTools = Tool::where('status', ToolStatus::APPROVED->value)->count();
-        $tAfterApproved = microtime(true);
+        // Get total tools count
+        $totalTools = $toolStats->sum();
 
-        $rejectedTools = Tool::where('status', ToolStatus::REJECTED->value)->count();
-        $tAfterRejected = microtime(true);
+        // User counts
+        $userStats = User::selectRaw('is_active, COUNT(*) as count')
+            ->groupBy('is_active')
+            ->pluck('count', 'is_active');
 
-        $activeUsers = User::where('is_active', true)->count();
-        $tAfterActive = microtime(true);
+        $activeUsers = $userStats->get(1, 0);
+        $totalUsers = $userStats->sum();
 
-        $totalUsers = User::count();
-        $tAfterUsers = microtime(true);
+        $tAfterUserStats = microtime(true);
 
-        $tRecentStart = microtime(true);
+        // Recent tools with eager loading
         $recent = Tool::withRelations()->latest()->take(10)->get()->map(function (Tool $t) {
             return [
                 'id' => $t->id,
@@ -53,27 +54,21 @@ class AdminController extends Controller
                 'created_at' => $t->created_at?->toDateTimeString(),
             ];
         });
-        $tRecentEnd = microtime(true);
-
         $tEnd = microtime(true);
 
-        // Log timings (seconds)
-        Log::info('admin.stats.timings', [
-            'totalTools' => $tAfterTotal - $tStart,
-            'pendingTools' => $tAfterPending - $tAfterTotal,
-            'approvedTools' => $tAfterApproved - $tAfterPending,
-            'rejectedTools' => $tAfterRejected - $tAfterApproved,
-            'activeUsers' => $tAfterActive - $tAfterRejected,
-            'totalUsers' => $tAfterUsers - $tAfterActive,
-            'recentTools' => $tRecentEnd - $tRecentStart,
-            'total' => $tEnd - $t0,
+        // Log optimized timings
+        Log::info('admin.stats.timings.optimized', [
+            'toolStats_ms' => round(($tAfterToolStats - $t0) * 1000, 2),
+            'userStats_ms' => round(($tAfterUserStats - $tAfterToolStats) * 1000, 2),
+            'recentTools_ms' => round(($tEnd - $tAfterUserStats) * 1000, 2),
+            'total_ms' => round(($tEnd - $t0) * 1000, 2),
         ]);
 
         return response()->json([
             'totalTools' => $totalTools,
-            'pendingTools' => $pendingTools,
-            'approvedTools' => $approvedTools,
-            'rejectedTools' => $rejectedTools,
+            'pendingTools' => $toolStats->get(ToolStatus::PENDING->value, 0),
+            'approvedTools' => $toolStats->get(ToolStatus::APPROVED->value, 0),
+            'rejectedTools' => $toolStats->get(ToolStatus::REJECTED->value, 0),
             'activeUsers' => $activeUsers,
             'totalUsers' => $totalUsers,
             'recentTools' => $recent,

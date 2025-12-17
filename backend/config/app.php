@@ -123,4 +123,33 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure default pagination settings for the application.
+    |
+    */
+
+    'pagination' => [
+        'default_per_page' => env('PAGINATION_DEFAULT', 20),
+        'max_per_page' => env('PAGINATION_MAX', 100),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache TTL Configuration (in seconds)
+    |--------------------------------------------------------------------------
+    |
+    | Default cache time-to-live values for different data types.
+    |
+    */
+
+    'cache_ttl' => [
+        'static_data' => env('CACHE_TTL_STATIC', 3600), // 1 hour for categories, tags, roles
+        'dynamic_queries' => env('CACHE_TTL_DYNAMIC', 300), // 5 minutes for tool listings
+        'user_specific' => env('CACHE_TTL_USER', 900), // 15 minutes for permissions, 2FA
+    ],
+
 ];

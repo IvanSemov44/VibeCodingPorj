@@ -13,7 +13,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
 
 /**
- * @property-read int|null $user_id
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $url
+ * @property string|null $docs_url
+ * @property string|null $description
+ * @property string|null $usage
+ * @property string|null $examples
+ * @property ToolDifficulty|null $difficulty
+ * @property array|null $screenshots
+ * @property ToolStatus $status
+ * @property int|null $submitted_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * 
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Category> $categories
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Tag> $tags
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
+ * @property-read User|null $user
  */
 class Tool extends Model
 {

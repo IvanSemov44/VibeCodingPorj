@@ -20,9 +20,11 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use App\Services\CacheService;
+use App\Traits\HandlesServiceErrors;
 
 final class ToolController extends Controller
 {
+    use HandlesServiceErrors;
     public function __construct(
         private readonly ToolService $toolService,
         private readonly CacheService $cacheService,
@@ -73,12 +75,12 @@ final class ToolController extends Controller
             }
         }
 
-        // Allow client to request larger pages for listing (cap at 100)
-        $perPage = (int) $request->query('per_page', 20);
+        // Allow client to request larger pages for listing (cap at configured max)
+        $perPage = (int) $request->query('per_page', config('app.pagination.default_per_page', 20));
         if ($perPage < 1) {
-            $perPage = 20;
+            $perPage = config('app.pagination.default_per_page', 20);
         }
-        $perPage = min(100, $perPage);
+        $perPage = min(config('app.pagination.max_per_page', 100), $perPage);
 
         // Only cache when no filters are applied (pagination-only is ok)
         $queryParams = $request->query();
@@ -86,12 +88,13 @@ final class ToolController extends Controller
         if (empty($filterKeys)) {
             $page = (int) $request->query('page', 1);
             // Only cache the default first page with default size to keep invalidation simple
-            if ($perPage === 20 && $page === 1) {
+            $defaultPerPage = config('app.pagination.default_per_page', 20);
+            if ($perPage === $defaultPerPage && $page === 1) {
                 $cacheKey = "tools.approved.page.{$page}.perpage.{$perPage}";
                 try {
                     $tools = $this->cacheService->rememberWithTags(['tools'], $cacheKey, function () use ($query, $perPage) {
                         return $query->orderBy('name')->paginate($perPage);
-                    }, 300);
+                    }, config('app.cache_ttl.dynamic_queries', 300));
                 } catch (\Throwable $e) {
                     logger()->warning('Cache read failed, falling back to DB: ' . $e->getMessage());
                     $tools = $query->orderBy('name')->paginate($perPage);
@@ -131,11 +134,10 @@ final class ToolController extends Controller
 
         $tool = $this->toolService->create($toolData, $request->user());
 
-        try {
-            $this->cacheService->invalidateToolCaches();
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate tools cache: ' . $e->getMessage());
-        }
+        $this->handleCacheOperation(
+            fn() => $this->cacheService->invalidateToolCaches(),
+            'invalidate after tool creation'
+        );
 
         return new ToolResource($tool);
     }
@@ -147,11 +149,10 @@ final class ToolController extends Controller
         $tool = $this->toolService->update($tool, $toolData, $request->user());
 
         try {
-            $this->cacheService->invalidateToolCaches();
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate tools cache: ' . $e->getMessage());
-        }
-
+        $this->handleCacheOperation(
+            fn() => $this->cacheService->invalidateToolCaches(),
+            'invalidate after tool update'
+        );
         return new ToolResource($tool);
     }
 
@@ -162,11 +163,10 @@ final class ToolController extends Controller
         $this->toolService->delete($tool, $request->user());
 
         try {
-            $this->cacheService->invalidateToolCaches();
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate tools cache: ' . $e->getMessage());
-        }
-
+        $this->handleCacheOperation(
+            fn() => $this->cacheService->invalidateToolCaches(),
+            'invalidate after tool deletion'
+        );
         return response()->noContent();
     }
 
@@ -176,26 +176,23 @@ final class ToolController extends Controller
 
         $approved = $action->execute($tool, request()->user());
 
-        // Log lightweight activity for admin dashboard
-        try {
-            \App\Models\Activity::create([
+        // Log activity and invalidate cache
+        $this->handleActivityLog(
+            fn() => \App\Models\Activity::create([
                 'subject_type' => get_class($approved),
                 'subject_id' => $approved->id,
                 'action' => 'approved',
                 'user_id' => request()->user()?->id,
                 'meta' => ['title' => $approved->name ?? null],
                 'created_at' => now(),
-            ]);
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to create activity for tool approval: ' . $e->getMessage());
-        }
+            ]),
+            'tool approval'
+        );
 
-        // Invalidate cached tool lists
-        try {
-            $this->cacheService->invalidateToolCaches();
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate tools cache after approval: ' . $e->getMessage());
-        }
+        $this->handleCacheOperation(
+            fn() => $this->cacheService->invalidateToolCaches(),
+            'invalidate after tool approval'
+        );
 
         return response()->json([
             'message' => 'Tool approved successfully',
@@ -211,25 +208,22 @@ final class ToolController extends Controller
 
         $rejected = $action->execute($tool, $request->user(), $reason);
 
-        try {
-            \App\Models\Activity::create([
+        $this->handleActivityLog(
+            fn() => \App\Models\Activity::create([
                 'subject_type' => get_class($rejected),
                 'subject_id' => $rejected->id,
                 'action' => 'rejected',
                 'user_id' => $request->user()?->id,
                 'meta' => ['title' => $rejected->name ?? null, 'reason' => $reason],
                 'created_at' => now(),
-            ]);
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to create activity for tool rejection: ' . $e->getMessage());
-        }
+            ]),
+            'tool rejection'
+        );
 
-        // Invalidate cached tool lists
-        try {
-            $this->cacheService->invalidateToolCaches();
-        } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate tools cache after rejection: ' . $e->getMessage());
-        }
+        $this->handleCacheOperation(
+            fn() => $this->cacheService->invalidateToolCaches(),
+            'invalidate after tool rejection'
+        );
 
         return response()->json([
             'message' => 'Tool rejected',
@@ -244,7 +238,7 @@ final class ToolController extends Controller
         $tools = Tool::where('status', ToolStatus::PENDING->value)
             ->withRelations()
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(config('app.pagination.default_per_page', 20));
 
         return ToolResource::collection($tools);
     }

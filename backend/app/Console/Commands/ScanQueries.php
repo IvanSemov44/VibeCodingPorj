@@ -13,7 +13,7 @@ class ScanQueries extends Command
      *
      * @var string
      */
-    protected $signature = 'scan:queries {--dump-sql : Dump SQL queries captured per path} {--trace : Capture caller stack frame for each query} {--full-trace : Capture full backtrace for each query}';
+    protected $signature = 'scan:queries {--dump-sql : Dump SQL queries captured per path} {--trace : Capture caller stack frame for each query} {--full-trace : Capture full backtrace for each query} {--keep-debugbar : Keep Debugbar middleware enabled and capture collectors}';
 
     /**
      * The console command description.
@@ -44,6 +44,7 @@ class ScanQueries extends Command
         $dumpSql = $this->option('dump-sql');
         $traceEnabled = $this->option('trace');
         $fullTraceEnabled = $this->option('full-trace');
+        $keepDebugbar = (bool) $this->option('keep-debugbar');
 
         foreach ($paths as $path) {
             $queries = 0;
@@ -96,14 +97,14 @@ class ScanQueries extends Command
 
             $start = microtime(true);
             try {
-                // Disable Debugbar more robustly: remove its middleware from the
-                // kernel's middleware groups temporarily so it cannot wrap the
-                // dispatch and trigger collectors that may re-run queries.
+                // Optionally disable Debugbar via middleware strip. When
+                // `--keep-debugbar` is set we intentionally leave Debugbar in
+                // place so we can capture its collectors for reporting.
                 $kernel = app(\App\Http\Kernel::class);
                 $removedDebugbar = false;
                 $originalMiddleware = null;
                 try {
-                    if (class_exists(\Barryvdh\Debugbar\Middleware\InjectDebugbar::class)) {
+                    if (! $keepDebugbar && class_exists(\Barryvdh\Debugbar\Middleware\InjectDebugbar::class)) {
                         $ref = new \ReflectionObject($kernel);
                         if ($ref->hasProperty('middlewareGroups')) {
                             $prop = $ref->getProperty('middlewareGroups');
@@ -156,12 +157,41 @@ class ScanQueries extends Command
                 }
             }
 
+            // Optionally capture Debugbar collectors if requested and available.
+            $debugbarData = null;
+            if ($keepDebugbar && app()->bound('debugbar')) {
+                try {
+                    $debugbar = app('debugbar');
+                    if (method_exists($debugbar, 'getData')) {
+                        $debugbarData = $debugbar->getData();
+                    } elseif (method_exists($debugbar, 'getCollectors')) {
+                        $collectors = $debugbar->getCollectors();
+                        $debugbarData = [];
+                        foreach ($collectors as $name => $col) {
+                            try {
+                                // Attempt to extract queries when present
+                                if (method_exists($col, 'getQueries')) {
+                                    $debugbarData[$name] = $col->getQueries();
+                                } else {
+                                    $debugbarData[$name] = null;
+                                }
+                            } catch (\Throwable $_) {
+                                $debugbarData[$name] = 'error';
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    $debugbarData = ['error' => $e->getMessage()];
+                }
+            }
+
             $results[] = [
                 'path' => $path,
                 'queries' => $queries,
                 'sqls' => $sqls,
                 'status' => $status,
                 'ms' => round($time * 1000, 1),
+                'debugbar' => $debugbarData,
             ];
         }
 

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 
 final class CacheService
 {
-    private const DEFAULT_TTL = 3600; // 1 hour
+    private const DEFAULT_TTL = 3600; // Fallback, prefer config('app.cache_ttl.static_data')
 
     /**
      * Remember a value in cache.
