@@ -33,7 +33,7 @@ function Test-Endpoint {
         'Accept' = 'application/json'
         'Content-Type' = 'application/json'
     }
-    
+
     $allHeaders = $defaultHeaders + $Headers
 
     Write-Host "Testing: $Method $Path" -ForegroundColor Yellow
@@ -66,7 +66,7 @@ function Test-Endpoint {
             try {
                 $debugbarUrl = "http://localhost:8201/_debugbar/open?op=get&id=$debugbarId"
                 $debugData = Invoke-RestMethod -Uri $debugbarUrl -Method Get
-                
+
                 if ($debugData.queries) {
                     $queryCount = $debugData.queries.nb_statements
                     $queryTime = [math]::Round($debugData.queries.accumulated_duration * 1000, 2)
@@ -139,7 +139,7 @@ function Test-Endpoint {
     } catch {
         Write-Host "  ❌ Error: $_" -ForegroundColor Red
         Write-Host ""
-        
+
         $result = [PSCustomObject]@{
             Method = $Method
             Path = $Path
@@ -152,7 +152,7 @@ function Test-Endpoint {
             Success = $false
             Error = $_.Exception.Message
         }
-        
+
         $results += $result
         return $result
     }
@@ -222,7 +222,7 @@ foreach ($endpoint in $queryHeavy) {
 if ($issues.Count -gt 0) {
     Write-Host "`n❌ ISSUES FOUND: $($issues.Count)" -ForegroundColor Red
     Write-Host "===================`n" -ForegroundColor Red
-    
+
     $uniqueIssues = $issues | Select-Object -Unique
     foreach ($issue in $uniqueIssues) {
         Write-Host "  $issue"
