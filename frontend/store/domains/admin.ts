@@ -40,6 +40,7 @@ export function useGetRolesQuery(options?: Record<string, unknown>) {
   return useQuery<{ id: number; name: string }[]>({
     queryKey: [QUERY_KEYS.ROLES],
     queryFn: async () => api.getRoles(),
+    staleTime: 1000 * 60 * 10, // 10 minutes - roles rarely change
     ...(options || {}),
   });
 }
@@ -48,6 +49,7 @@ export function useGetPendingToolsQuery(options?: Record<string, unknown>) {
   return useQuery<unknown>({
     queryKey: ['admin', 'pending-tools'],
     queryFn: async () => api.getPendingTools(),
+    staleTime: 1000 * 30, // 30 seconds - pending tools should be fairly fresh
     ...(options || {}),
   });
 }
@@ -82,6 +84,7 @@ export function useGetAdminStatsQuery(options?: Record<string, unknown>) {
   return useQuery<unknown>({
     queryKey: ['admin', 'stats'],
     queryFn: async () => api.getAdminStats(),
+    staleTime: 1000 * 60 * 5, // 5 minutes - stats don't change that often
     ...(options || {}),
   });
 }
@@ -94,6 +97,7 @@ export function useGetSystemReadyQuery(options?: Record<string, unknown>) {
   }>({
     queryKey: ['system', 'ready'],
     queryFn: async () => api.getReady(),
+    staleTime: 1000 * 60 * 3, // 3 minutes - system status doesn't change often
     ...(options || {}),
   });
 }
@@ -180,6 +184,7 @@ export function useGetActivityStatsQuery(options?: Record<string, unknown>) {
       this_week: number;
       top_actions: { action: string; count: number }[];
     },
+    staleTime: 1000 * 60 * 2, // 2 minutes
     ...(options || {}),
   });
 }

@@ -22,8 +22,8 @@ export default function AdminToolsPage() {
   const { user } = useAuth();
 
   // Check if user is admin
-  const isAdmin = user?.roles?.some((role: any) => 
-    typeof role === 'string' 
+  const isAdmin = user?.roles?.some((role: any) =>
+    typeof role === 'string'
       ? role === 'admin' || role === 'owner'
       : role?.name === 'admin' || role?.name === 'owner'
   );

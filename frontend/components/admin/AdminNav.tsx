@@ -16,7 +16,7 @@ const navItems: NavItem[] = [
 
 export default function AdminNav() {
   const router = useRouter();
-  
+
   const isActive = (href: string) => {
     if (href === '/admin') {
       return router.pathname === '/admin';
@@ -34,7 +34,7 @@ export default function AdminNav() {
               key={item.href}
               href={item.href}
               className={`
-                flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 
+                flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2
                 transition-colors whitespace-nowrap
                 ${
                   active

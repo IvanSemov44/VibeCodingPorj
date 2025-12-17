@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
 import AdminNav from './AdminNav';
@@ -13,12 +13,13 @@ export default function AdminLayout({ children, title, description }: AdminLayou
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Check if user is admin
-  const isAdmin = user?.roles?.some((role: any) =>
-    typeof role === 'string'
-      ? role === 'admin' || role === 'owner'
-      : role?.name === 'admin' || role?.name === 'owner'
-  );
+  // Check if user is admin - memoize to prevent recalculation
+  const isAdmin = useMemo(() =>
+    user?.roles?.some((role: any) =>
+      typeof role === 'string'
+        ? role === 'admin' || role === 'owner'
+        : role?.name === 'admin' || role?.name === 'owner'
+    ), [user?.roles]);
 
   useEffect(() => {
     if (!loading && user && !isAdmin) {

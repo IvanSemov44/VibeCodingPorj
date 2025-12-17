@@ -33,7 +33,7 @@ export const queryClient = new QueryClient({
 
       // Stale time: how long data is considered fresh
       // Data will be refetched in the background after this time
-      staleTime: 1000 * 30, // 30 seconds
+      staleTime: 1000 * 60 * 2, // 2 minutes
     },
     mutations: {
       // Retry mutations only once
