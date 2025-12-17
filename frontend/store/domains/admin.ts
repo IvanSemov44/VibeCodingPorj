@@ -429,8 +429,10 @@ export function useRateToolMutation() {
   const m = useMutation<unknown, Error, { toolId: string | number; score: number; review?: string }>({
     mutationFn: async ({ toolId, score, review }) => api.rateTool(toolId, score, review),
     onSuccess: (_data, vars) => {
+      // Invalidate the tool list
       qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
-      qc.invalidateQueries({ queryKey: ['tool', vars.toolId] });
+      // Invalidate the specific tool to refresh rating display
+      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOL, String(vars.toolId)] });
     },
   });
   const trigger = (arg: { toolId: string | number; score: number; review?: string }) => ({

@@ -48,6 +48,11 @@ class ToolResource extends JsonResource
             ]),
             'status' => $this->status?->value ?? null,
             'rejection_reason' => $this->when(isset($this->rejection_reason), fn () => $this->rejection_reason),
+            'average_rating' => $this->average_rating ? (float) $this->average_rating : null,
+            'rating_count' => $this->rating_count ?? 0,
+            'user_rating' => $this->whenLoaded('userRating', fn () => [
+                'score' => $this->userRating?->score,
+            ]),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

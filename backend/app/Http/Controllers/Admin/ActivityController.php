@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Jobs\ExportActivitiesJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class ActivityController extends Controller
 {
@@ -133,6 +135,75 @@ class ActivityController extends Controller
         } catch (\Throwable $e) {
             Log::error('ActivityController@stats error: ' . $e->getMessage());
             return response()->json(['message' => 'Internal Server Error'], 500);
+        }
+    }
+
+    /**
+     * Export activities to CSV (async via queue job)
+     */
+    public function export(Request $request)
+    {
+        try {
+            $this->authorize('admin_or_owner');
+
+            $validated = $request->validate([
+                'user_id' => 'nullable|integer',
+                'action' => 'nullable|string',
+                'subject_type' => 'nullable|string',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date',
+                'search' => 'nullable|string|max:100',
+            ]);
+
+            $filters = array_filter($validated, fn($v) => $v !== null);
+
+            // Dispatch async job
+            ExportActivitiesJob::dispatch(auth()->user(), $filters);
+
+            Log::info('Activity export job dispatched for user: ' . auth()->user()->id, [
+                'filters' => $filters,
+            ]);
+
+            return response()->json([
+                'message' => '✅ Export started! Check your email for download link when ready.',
+                'status' => 'processing',
+            ], 202);
+        } catch (\Throwable $e) {
+            Log::error('ActivityController@export error: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            return response()->json([
+                'message' => 'Export failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Download exported file (mock endpoint - in production use signed URLs)
+     */
+    public function downloadExport(Request $request, string $filename)
+    {
+        try {
+            $this->authorize('admin_or_owner');
+
+            // Security: validate filename format
+            if (!preg_match('/^activity-export-\d{4}-\d{2}-\d{2}_\d{6}\.csv$/', $filename)) {
+                return response()->json(['message' => 'Invalid filename'], 400);
+            }
+
+            $path = "exports/activities/{$filename}";
+
+            // Check if file exists and belongs to user
+            if (!Storage::exists($path)) {
+                return response()->json(['message' => 'File not found or expired'], 404);
+            }
+
+            // Return file download
+            return Storage::download($path, $filename);
+        } catch (\Throwable $e) {
+            Log::error('Download export error: ' . $e->getMessage());
+            return response()->json(['message' => 'Download failed'], 500);
         }
     }
 }

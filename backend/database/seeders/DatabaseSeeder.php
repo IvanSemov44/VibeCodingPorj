@@ -29,5 +29,7 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\OwnerPermissionSeeder::class);
         // Base recent activity rows for admin dashboard
         $this->call(\Database\Seeders\ActivitySeeder::class);
+        // Seed comments and ratings for all tools
+        $this->call(\Database\Seeders\CommentRatingSeeder::class);
     }
 }

@@ -113,6 +113,8 @@ Route::middleware([
             // Admin activity feed
             Route::get('activities', [\App\Http\Controllers\Admin\ActivityController::class, 'index']);
             Route::get('activities/stats', [\App\Http\Controllers\Admin\ActivityController::class, 'stats']);
+            Route::post('activities/export', [\App\Http\Controllers\Admin\ActivityController::class, 'export']);
+            Route::get('exports/activities/{filename}', [\App\Http\Controllers\Admin\ActivityController::class, 'downloadExport'])->name('admin.exports.download');
 
             // Admin categories & tags management
             Route::get('categories/stats', [\App\Http\Controllers\Admin\CategoryController::class, 'stats']);

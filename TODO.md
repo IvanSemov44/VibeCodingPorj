@@ -1,5 +1,6 @@
 fix categories and tags buts 
 admin/categories admin/tags
+connect who rate what, for history. Now tool just save count of rating.
 
 add seeder default with starting app
 update pagination logic for Active Users and Tools and Pending Tool Approvals

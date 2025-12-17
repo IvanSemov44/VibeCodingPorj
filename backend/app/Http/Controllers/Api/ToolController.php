@@ -123,7 +123,7 @@ final class ToolController extends Controller
 
     public function show(Tool $tool): ToolResource
     {
-        $tool->load(['categories', 'tags', 'roles']);
+        $tool->load(['categories', 'tags', 'roles', 'userRating']);
 
         return new ToolResource($tool);
     }

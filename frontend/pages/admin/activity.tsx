@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useGetActivitiesQuery, useGetActivityStatsQuery } from '../../store/domains';
+import { useToast } from '../../components/Toast';
 
 interface Activity {
   id: number;
@@ -27,6 +28,8 @@ interface ActivityStats {
 }
 
 export default function ActivityLogPage() {
+  const { addToast } = useToast();
+  
   // Filters
   const [filters, setFilters] = useState({
     action: '',
@@ -40,6 +43,7 @@ export default function ActivityLogPage() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(20);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Build query params
   const params: Record<string, unknown> = {
@@ -77,6 +81,36 @@ export default function ActivityLogPage() {
       search: '',
     });
     setCurrentPage(1);
+  };
+
+  const handleExportToServer = async () => {
+    try {
+      setIsExporting(true);
+
+      const response = await fetch('/api/admin/activities/export', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(filters),
+      });
+
+      if (response.status === 202) {
+        addToast('✅ Export started! Check your email for the download link.', 'success');
+      } else if (response.status === 401) {
+        addToast('Unauthorized. Please login again.', 'error');
+      } else if (response.status === 403) {
+        addToast('You do not have permission to export data.', 'error');
+      } else {
+        const error = await response.json();
+        addToast(error.message || 'Export failed', 'error');
+      }
+    } catch (err) {
+      addToast('Export error: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const exportToCSV = () => {
@@ -227,145 +261,138 @@ export default function ActivityLogPage() {
         </div>
 
         {/* Export Button */}
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end gap-2 mb-4">
+          <button
+            onClick={handleExportToServer}
+            disabled={isExporting}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          >
+            {isExporting ? '⏳ Exporting...' : '📧 Export & Email (Large)'}
+          </button>
           <button
             onClick={exportToCSV}
             disabled={activities.length === 0}
             className="px-4 py-2 bg-[var(--success)] text-white rounded-md hover:bg-[var(--success-hover)] disabled:bg-[var(--secondary-bg)] disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[var(--success)]"
           >
-            📥 Export to CSV
+            📥 Download Now (Current Page)
           </button>
         </div>
 
-        {/* Activity Table */}
-        <div className="bg-[var(--card-bg)] rounded-lg shadow overflow-hidden border border-[var(--border-color)]">
+        {/* Activity List (Card View) */}
+        <div className="space-y-3">
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[var(--border-color)] border-t-[var(--accent)]"></div>
               <p className="mt-2 text-[var(--text-secondary)]">Loading activities...</p>
             </div>
           ) : error ? (
-            <div className="p-8 text-center text-[var(--danger)]">{error.message}</div>
+            <div className="p-8 text-center text-red-600">{error.message}</div>
           ) : activities.length === 0 ? (
-            <div className="p-8 text-center text-[var(--text-secondary)]">No activities found</div>
+            <div className="p-8 text-center text-[var(--text-secondary)] bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)]">
+              No activities found
+            </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-[var(--border-color)]">
-                  <thead className="bg-[var(--secondary-bg)]">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                        ID
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                        User
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                        Action
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                        Subject
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
-                        Details
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-[var(--card-bg)] divide-y divide-[var(--border-color)]">
-                    {activities.map((activity) => (
-                      <tr key={activity.id} className="hover:bg-[var(--secondary-bg)]">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
-                          #{activity.id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div>{new Date(activity.created_at).toLocaleDateString()}</div>
-                          <div className="text-xs text-gray-500">{activity.created_at_human}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {activity.user ? (
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{activity.user.name}</div>
-                              <div className="text-xs text-gray-500">{activity.user.email}</div>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-gray-400">System</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getActionBadgeColor(
-                              activity.action
-                            )}`}
-                          >
-                            {activity.action}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div>{activity.subject_type.split('\\').pop()}</div>
-                          <div className="text-xs text-gray-500">ID: {activity.subject_id}</div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                          {activity.meta && Object.keys(activity.meta).length > 0 ? (
-                            <details className="cursor-pointer">
-                              <summary className="text-blue-600 hover:text-blue-800">View details</summary>
-                              <pre className="mt-2 text-xs bg-gray-50 p-2 rounded overflow-auto max-w-md">
+              {/* Activity Cards */}
+              {activities.map((activity) => {
+                const subject = activity.subject_type.split('\\').pop();
+                const actionColor = getActionBadgeColor(activity.action);
+
+                return (
+                  <div
+                    key={activity.id}
+                    className="bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)] p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-start">
+                      {/* ID */}
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">ID</p>
+                        <p className="text-lg font-mono font-bold text-[var(--accent)]">#{activity.id}</p>
+                      </div>
+
+                      {/* Date & Time */}
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Date & Time</p>
+                        <p className="text-sm font-medium text-[var(--text-primary)]">
+                          {new Date(activity.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </p>
+                        <p className="text-xs text-[var(--text-secondary)] mt-1">{activity.created_at_human}</p>
+                      </div>
+
+                      {/* User & Email */}
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">User</p>
+                        {activity.user ? (
+                          <>
+                            <p className="text-sm font-medium text-[var(--text-primary)] truncate">{activity.user.name}</p>
+                            <p className="text-xs text-[var(--text-secondary)] truncate">{activity.user.email}</p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-[var(--text-secondary)]">System</p>
+                        )}
+                      </div>
+
+                      {/* Action */}
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Action</p>
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${actionColor}`}>
+                          {activity.action}
+                        </span>
+                      </div>
+
+                      {/* Subject */}
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Subject</p>
+                        <p className="text-sm font-medium text-[var(--text-primary)]">{subject}</p>
+                        <p className="text-xs text-[var(--text-secondary)]">ID: {activity.subject_id}</p>
+                      </div>
+
+                      {/* Details */}
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Details</p>
+                        {activity.meta && Object.keys(activity.meta).length > 0 ? (
+                          <details className="cursor-pointer text-blue-600 hover:text-blue-800 text-sm">
+                            <summary className="font-medium">View details</summary>
+                            <div className="mt-3 p-3 bg-[var(--primary-bg)] rounded border border-[var(--border-color)] overflow-auto max-h-48">
+                              <pre className="text-xs whitespace-pre-wrap break-words">
                                 {JSON.stringify(activity.meta, null, 2)}
                               </pre>
-                            </details>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                            </div>
+                          </details>
+                        ) : (
+                          <p className="text-sm text-[var(--text-secondary)]">-</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
 
               {/* Pagination */}
-              <div className="bg-[var(--card-bg)] px-4 py-3 flex items-center justify-between border-t border-[var(--border-color)] sm:px-6">
-                <div className="flex-1 flex justify-between sm:hidden">
+              <div className="flex items-center justify-between mt-6 p-4 bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)]">
+                <div className="text-sm text-[var(--text-primary)]">
+                  Page <span className="font-semibold">{currentPage}</span> of{' '}
+                  <span className="font-semibold">{totalPages}</span>
+                </div>
+                <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-4 py-2 border border-[var(--border-color)] text-sm font-medium rounded-md text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:bg-[var(--secondary-bg)] disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-sm border border-[var(--border-color)] text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors"
                   >
-                    Previous
+                    ← Previous
                   </button>
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-[var(--border-color)] text-sm font-medium rounded-md text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:bg-[var(--secondary-bg)] disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-sm border border-[var(--border-color)] text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors"
                   >
-                    Next
+                    Next →
                   </button>
-                </div>
-                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm text-[var(--text-primary)]">
-                      Page <span className="font-medium">{currentPage}</span> of{' '}
-                      <span className="font-medium">{totalPages}</span>
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-4 py-2 border border-[var(--border-color)] text-sm font-medium rounded-md text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:bg-[var(--secondary-bg)] disabled:cursor-not-allowed"
-                    >
-                      Previous
-                    </button>
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="relative inline-flex items-center px-4 py-2 border border-[var(--border-color)] text-sm font-medium rounded-md text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:bg-[var(--secondary-bg)] disabled:cursor-not-allowed"
-                    >
-                      Next
-                    </button>
-                  </div>
                 </div>
               </div>
             </>
