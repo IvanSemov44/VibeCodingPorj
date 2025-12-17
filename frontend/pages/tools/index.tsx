@@ -8,6 +8,7 @@ import {
 import Link from 'next/link';
 import ToolEntry from '../../components/ToolEntry';
 import TagMultiSelect from '../../components/TagMultiSelect';
+import { SkeletonCard } from '../../components/Loading/SkeletonCard';
 
 export default function ToolsIndex(): React.ReactElement {
   const [page, setPage] = useState<number>(1);
@@ -153,7 +154,11 @@ export default function ToolsIndex(): React.ReactElement {
       </div>
 
       {isLoading ? (
-        <div>Loading...</div>
+        <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       ) : queryError ? (
         <div className="p-3 rounded-md alert-error">
           Unable to load tools. {String(queryError)}

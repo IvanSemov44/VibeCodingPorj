@@ -70,3 +70,14 @@ export async function deleteTag(id: number | string): Promise<void> {
   const res = await fetchWithAuth(`/api/tags/${id}`, { method: 'DELETE' });
   if (!res.ok) await parseJson(res as unknown as Response);
 }
+
+// Health endpoints (liveness / readiness)
+export async function getHealth(): Promise<any> {
+  const res = await fetchWithAuth(`/api/health`);
+  return await parseJson<any>(res);
+}
+
+export async function getReady(): Promise<any> {
+  const res = await fetchWithAuth(`/api/ready`);
+  return await parseJson<any>(res);
+}

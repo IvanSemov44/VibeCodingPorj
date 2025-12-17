@@ -1,5 +1,7 @@
 
+add seeder default with starting app
 update pagination logic for Active Users and Tools and Pending Tool Approvals
+update the view for tool
 
 Add server-side unit tests for EnsureAdminOrOwner middleware.
 Add an e2e test that logs in and verifies /admin access.

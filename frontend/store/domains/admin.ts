@@ -86,6 +86,18 @@ export function useGetAdminStatsQuery(options?: Record<string, unknown>) {
   });
 }
 
+// System health / readiness
+export function useGetSystemReadyQuery(options?: Record<string, unknown>) {
+  return useQuery<{
+    status?: string;
+    checks?: Record<string, string>;
+  }>({
+    queryKey: ['system', 'ready'],
+    queryFn: async () => api.getReady(),
+    ...(options || {}),
+  });
+}
+
 export function useGetAdminUsersQuery(params: Record<string, unknown> = {}, options?: Record<string, unknown>) {
   const key = ['admin', 'users', params];
   return useQuery<{
