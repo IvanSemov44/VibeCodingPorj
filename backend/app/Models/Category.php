@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string $slug
  * @property string|null $description
+ * @property int|null $tools_count
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Tool> $tools
@@ -20,7 +21,7 @@ class Category extends Model
 
     protected $fillable = ['name', 'slug', 'description'];
 
-    public function tools()
+    public function tools(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Tool::class, 'category_tool');
     }

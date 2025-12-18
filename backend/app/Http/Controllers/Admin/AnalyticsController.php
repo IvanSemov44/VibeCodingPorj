@@ -119,8 +119,8 @@ class AnalyticsController extends Controller
             ->get()
             ->map(fn ($view) => [
                 'tool_id' => $view->tool_id,
-                'tool_name' => $view->tool?->name,
-                'tool_slug' => $view->tool?->slug,
+                'tool_name' => $view->tool->name,
+                'tool_slug' => $view->tool->slug,
                 'views' => $view->view_count,
             ]);
     }

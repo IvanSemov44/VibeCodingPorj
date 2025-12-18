@@ -46,7 +46,8 @@ class ToolResource extends JsonResource
                 'name' => $this->user?->name,
                 'email' => $this->user?->email,
             ]),
-            'status' => $this->status?->value ?? null,
+            'status' => $this->status->value ?? null,
+            // @phpstan-ignore-next-line - rejection_reason is a dynamic property
             'rejection_reason' => $this->when(isset($this->rejection_reason), fn () => $this->rejection_reason),
             'average_rating' => $this->average_rating ? (float) $this->average_rating : null,
             'rating_count' => $this->rating_count ?? 0,

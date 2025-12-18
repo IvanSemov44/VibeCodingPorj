@@ -48,8 +48,8 @@ class AdminController extends Controller
                 'title' => $t->name ?? $t->title ?? 'Untitled',
                 'slug' => $t->slug,
                 'user' => [
-                    'name' => $t->user?->name ?? null,
-                    'id' => $t->user?->id ?? null,
+                    'name' => $t->user->name ?? null,
+                    'id' => $t->user->id ?? null,
                 ],
                 'created_at' => $t->created_at?->toDateTimeString(),
             ];

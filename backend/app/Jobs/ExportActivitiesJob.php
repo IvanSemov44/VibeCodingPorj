@@ -123,7 +123,7 @@ class ExportActivitiesJob implements ShouldQueue
 
                         fputcsv($file, [
                             $activity->id,
-                            $activity->created_at?->format('Y-m-d H:i:s') ?? 'N/A',
+                            $activity->created_at->format('Y-m-d H:i:s') ?? 'N/A',
                             $user->name ?? 'System',
                             $user->email ?? 'system@app.local',
                             $roles,

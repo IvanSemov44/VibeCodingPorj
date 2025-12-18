@@ -84,8 +84,8 @@ class ActivityController extends Controller
                             'action' => $a->action,
                             'user' => $actor,
                             'meta' => $a->meta,
-                            'created_at' => $a->created_at?->toIso8601String(),
-                            'created_at_human' => $a->created_at?->diffForHumans(),
+                            'created_at' => $a->created_at->toIso8601String(),
+                            'created_at_human' => $a->created_at->diffForHumans(),
                         ];
                     });
             });
