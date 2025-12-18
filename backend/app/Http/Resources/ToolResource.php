@@ -52,6 +52,7 @@ class ToolResource extends JsonResource
             'average_rating' => $this->average_rating ? (float) $this->average_rating : null,
             'rating_count' => $this->rating_count ?? 0,
             'user_rating' => $this->whenLoaded('userRating', fn () => [
+                // @phpstan-ignore-next-line - userRating is a Rating model loaded relation
                 'score' => $this->userRating?->score,
             ]),
             'created_at' => $this->created_at,

@@ -130,8 +130,6 @@ class ActivityController extends Controller
                     'activity_by_day' => $activityByDay,
                 ];
             });
-
-            return response()->json($result);
         } catch (\Throwable $e) {
             Log::error('ActivityController@stats error: '.$e->getMessage());
 
