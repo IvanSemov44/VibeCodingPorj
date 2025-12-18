@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import Pagination from '../../components/admin/Pagination';
+import { CreateEditModal, type FieldConfig } from '../../components/admin/CreateEditModal';
 import {
   useGetAdminCategoriesQuery,
   useCreateAdminCategoryMutation,
@@ -8,15 +9,7 @@ import {
   useDeleteAdminCategoryMutation,
   useGetCategoryStatsQuery,
 } from '../../store/domains/admin';
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  tools_count?: number;
-  created_at?: string;
-}
+import type { Category } from '../../lib/types';
 
 export default function CategoriesPage() {
   const [page, setPage] = useState(1);
@@ -37,6 +30,11 @@ export default function CategoriesPage() {
     last_page: data?.last_page || 1,
     total: data?.total || 0,
   };
+
+  const categoryFields: FieldConfig[] = [
+    { name: 'name', label: 'Name *', type: 'text', required: true, placeholder: 'e.g. Web Development' },
+    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Optional description...' },
+  ];
 
   const handleOpenCreate = () => {
     setFormData({ name: '', description: '' });
@@ -189,60 +187,16 @@ export default function CategoriesPage() {
       />
 
       {/* Create/Edit Modal */}
-      {showModal && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="bg-[var(--secondary-bg)] p-6 rounded-lg border border-[var(--border-color)] w-full max-w-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
-              {editingCategory ? 'Edit Category' : 'Create Category'}
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[var(--text-secondary)] mb-2">Name *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)]"
-                  placeholder="e.g. Development Tools"
-                />
-              </div>
-              <div>
-                <label className="block text-[var(--text-secondary)] mb-2">Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] resize-none"
-                  placeholder="Optional description..."
-                  rows={3}
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleSave}
-                disabled={
-                  !formData.name.trim() || createMutation.isPending || updateMutation.isPending
-                }
-                className="flex-1 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
-              >
-                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] hover:bg-[var(--primary-bg)] transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateEditModal
+        isOpen={showModal}
+        title={editingCategory ? 'Edit Category' : 'Create Category'}
+        formData={formData}
+        onFormChange={setFormData}
+        onSave={handleSave}
+        fields={categoryFields}
+        isLoading={createMutation.isPending || updateMutation.isPending}
+        onClose={() => setShowModal(false)}
+      />
     </AdminLayout>
   );
 }

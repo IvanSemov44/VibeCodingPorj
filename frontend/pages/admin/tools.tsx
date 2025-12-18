@@ -4,6 +4,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import ToolApprovalCard from '../../components/admin/ToolApprovalCard';
 import { ApprovalModals } from '../../components/admin/ApprovalModals';
 import { ToolsTable } from '../../components/admin/ToolsTable';
+import Pagination from '../../components/admin/Pagination';
 import { SkeletonCard } from '../../components/Loading/SkeletonCard';
 import { SkeletonTableRow } from '../../components/Loading/SkeletonTableRow';
 import { useToast } from '../../components/Toast';
@@ -23,6 +24,7 @@ export default function AdminToolsPage() {
     typeof router.query.status === 'string' ? (router.query.status as string) : undefined;
   const pendingMode = status === 'pending';
   const { user } = useAuth();
+  const [page, setPage] = useState(1);
 
   // Check if user is admin
   const isAdmin = user?.roles?.some((role: string | Tool['user']) =>
@@ -33,7 +35,7 @@ export default function AdminToolsPage() {
 
   // Always call hooks unconditionally
   const pendingResult = useGetPendingToolsQuery();
-  const toolsResult = useGetToolsQuery({ per_page: 20, page: Number(router.query.page ?? 1) });
+  const toolsResult = useGetToolsQuery({ per_page: 20, page });
 
   const { data, isLoading } = pendingMode ? pendingResult : toolsResult;
   const { refetch } = pendingMode ? pendingResult : toolsResult;
@@ -48,6 +50,11 @@ export default function AdminToolsPage() {
   const [approvingTool, setApprovingTool] = useState<Tool | null>(null);
 
   const payload = data as ApiListResponse<Tool>;
+  const pagination = {
+    current_page: payload?.meta?.current_page || payload?.current_page || 1,
+    last_page: payload?.meta?.last_page || payload?.last_page || 1,
+    total: payload?.meta?.total || payload?.total || 0,
+  };
   const tools: Tool[] = Array.isArray(payload?.data) ? payload.data : [];
 
   async function performApprove(id: number | string) {
@@ -153,48 +160,24 @@ export default function AdminToolsPage() {
           ))}
         </div>
       ) : (
-        <ToolsTable
-          tools={tools}
-          isAdmin={isAdmin}
-          onRequestApprove={requestApprove}
-          onRequestReject={(tool) => setRejectingTool(tool)}
-        />
-      )}
+        <>
+          <ToolsTable
+            tools={tools}
+            isAdmin={isAdmin}
+            onRequestApprove={requestApprove}
+            onRequestReject={(tool) => setRejectingTool(tool)}
+          />
 
-      {/* Pagination for full tools list */}
-      {!pendingMode && (
-        <div className="mt-4 flex items-center gap-2">
-          <button
-            className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-            onClick={() =>
-              router.push({
-                pathname: router.pathname,
-                query: {
-                  ...router.query,
-                  page: Math.max(1, (payload?.meta?.current_page ?? 1) - 1),
-                },
-              })
-            }
-            disabled={(payload?.meta?.current_page ?? 1) <= 1}
-          >
-            Previous
-          </button>
-          <div className="text-[var(--text-primary)]">
-            Page {payload?.meta?.current_page ?? 1} of {payload?.meta?.last_page ?? '-'}
-          </div>
-          <button
-            className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-            onClick={() =>
-              router.push({
-                pathname: router.pathname,
-                query: { ...router.query, page: (payload?.meta?.current_page ?? 0) + 1 },
-              })
-            }
-            disabled={(payload?.meta?.current_page ?? 0) >= (payload?.meta?.last_page ?? 1)}
-          >
-            Next
-          </button>
-        </div>
+          {/* Pagination for full tools list */}
+          <Pagination
+            currentPage={pagination.current_page}
+            lastPage={pagination.last_page}
+            total={pagination.total}
+            perPage={20}
+            onPageChange={setPage}
+            loading={isLoading}
+          />
+        </>
       )}
 
       <ApprovalModals

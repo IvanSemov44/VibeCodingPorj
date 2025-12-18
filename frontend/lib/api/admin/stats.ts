@@ -1,6 +1,7 @@
 import { fetchWithAuth, parseJson } from '../fetch';
+import type { AdminStats } from '../../types';
 
-export async function getAdminStats(): Promise<unknown> {
+export async function getAdminStats(): Promise<AdminStats> {
   const res = await fetchWithAuth(`/api/admin/stats`);
-  return await parseJson(res as unknown as Response);
+  return (await parseJson(res as unknown as Response)) as AdminStats;
 }

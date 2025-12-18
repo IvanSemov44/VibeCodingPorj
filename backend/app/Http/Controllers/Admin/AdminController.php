@@ -6,6 +6,8 @@ use App\Enums\ToolStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Tool;
 use App\Models\User;
+use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -41,6 +43,10 @@ class AdminController extends Controller
 
         $tAfterUserStats = microtime(true);
 
+        // Category and tag counts
+        $totalCategories = Category::count();
+        $totalTags = Tag::count();
+
         // Recent tools with eager loading
         $recent = Tool::withRelations()->latest()->take(10)->get()->map(function (Tool $t) {
             return [
@@ -71,6 +77,8 @@ class AdminController extends Controller
             'rejectedTools' => $toolStats->get(ToolStatus::REJECTED->value, 0),
             'activeUsers' => $activeUsers,
             'totalUsers' => $totalUsers,
+            'totalCategories' => $totalCategories,
+            'totalTags' => $totalTags,
             'recentTools' => $recent,
         ]);
     }

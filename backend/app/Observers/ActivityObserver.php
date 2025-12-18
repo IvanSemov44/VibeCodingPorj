@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Http\Controllers\Admin\ActivityController;
 use App\Models\Activity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,9 @@ class ActivityObserver
                 'user_id' => Auth::id(),
                 'meta' => $model->only(array_slice(array_keys($model->getAttributes()), 0, 10)),
             ]);
+
+            // Clear activity cache when new activities are created
+            ActivityController::clearCache();
         } catch (\Throwable $e) {
             // Don't break request if logging fails
             logger()->warning('Failed to record activity: '.$e->getMessage());

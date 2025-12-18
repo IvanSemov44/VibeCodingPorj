@@ -23,6 +23,7 @@ export interface Tag {
   name: string;
   slug?: string | null;
   description?: string;
+  tools_count?: number;
 }
 
 export interface Category {
@@ -30,6 +31,7 @@ export interface Category {
   name: string;
   slug?: string | null;
   description?: string;
+  tools_count?: number;
 }
 
 export interface Tool {
@@ -187,14 +189,24 @@ export interface TagStats {
 }
 
 export interface AdminStats {
-  total_users: number;
-  active_users: number;
-  total_tools: number;
-  pending_tools: number;
-  approved_tools: number;
-  rejected_tools: number;
-  total_categories: number;
-  total_tags: number;
+  totalTools: number;
+  pendingTools: number;
+  approvedTools: number;
+  rejectedTools: number;
+  activeUsers: number;
+  totalUsers: number;
+  totalCategories: number;
+  totalTags: number;
+  recentTools: Array<{
+    id: number;
+    title: string;
+    slug: string;
+    user: {
+      name: string | null;
+      id: number | null;
+    };
+    created_at: string | null;
+  }>;
 }
 
 export interface Comment {

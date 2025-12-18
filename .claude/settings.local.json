@@ -18,7 +18,9 @@
       "Bash(timeout 120 npm test -- --reporter=verbose)",
       "Bash(timeout 60 npm test -- --run --reporter=verbose)",
       "Bash(tee:*)",
-      "Bash(composer check:*)"
+      "Bash(composer check:*)",
+      "Bash(composer analyse:*)",
+      "Bash(./vendor/bin/phpstan analyse:*)"
     ]
   }
 }

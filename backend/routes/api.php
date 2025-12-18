@@ -18,6 +18,8 @@ Route::get('tags', [\App\Http\Controllers\Api\TagController::class, 'index']);
 // Keep the index (and show) public so frontend discovery works without auth.
 Route::get('tools', [\App\Http\Controllers\Api\ToolController::class, 'index']);
 Route::get('tools/{tool}', [\App\Http\Controllers\Api\ToolController::class, 'show']);
+// Public comments - anyone can view comments on tools
+Route::get('tools/{tool}/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
 
 // Debug endpoint (public, for testing auth)
 Route::get('admin/analytics/debug', [\App\Http\Controllers\Admin\AnalyticsController::class, 'debug']);
@@ -60,8 +62,7 @@ Route::middleware([
         Route::put('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'update']);
         Route::delete('tags/{tag}', [\App\Http\Controllers\Api\TagController::class, 'destroy']);
 
-        // Comments (authenticated)
-        Route::get('tools/{tool}/comments', [\App\Http\Controllers\Api\CommentController::class, 'index']);
+        // Comments - post and delete require authentication
         Route::post('tools/{tool}/comments', [\App\Http\Controllers\Api\CommentController::class, 'store'])
             ->middleware('throttle:10,60'); // 10 comments per hour
         Route::delete('comments/{comment}', [\App\Http\Controllers\Api\CommentController::class, 'destroy']);

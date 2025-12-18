@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import Pagination from '../../../components/admin/Pagination';
+import { ConfirmationModal } from '../../../components/admin/ConfirmationModal';
 import {
   useGetAdminUsersQuery,
   useActivateUserMutation,
@@ -9,7 +10,6 @@ import {
   useSetUserRolesMutation,
 } from '../../../store/domains';
 import { useToast } from '../../../components/Toast';
-import Modal from '../../../components/Modal';
 
 export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
@@ -34,7 +34,6 @@ export default function AdminUsersPage() {
     newRoleId?: number | string;
     newRoleName?: string;
   }>(null);
-  const [isSavingRole, setIsSavingRole] = useState(false);
   const [confirmAction, setConfirmAction] = useState<null | {
     type: 'activate' | 'deactivate';
     userId: number | string;
@@ -146,91 +145,69 @@ export default function AdminUsersPage() {
       />
 
       {roleChangePending && (
-        <Modal onClose={() => setRoleChangePending(null)}>
-          <div className="p-4">
-            <h2 className="text-lg font-bold mb-2">Confirm role change</h2>
-            <p className="mb-4">
+        <ConfirmationModal
+          isOpen={!!roleChangePending}
+          title="Confirm role change"
+          message={
+            <>
               Change role for <strong>{roleChangePending.userName}</strong> to{' '}
               <strong>{roleChangePending.newRoleName || '(none)'}</strong>?
-            </p>
-            <div className="flex gap-2 justify-end">
-              <button
-                className="px-3 py-1 border rounded bg-[var(--primary-bg)]"
-                onClick={() => setRoleChangePending(null)}
-                disabled={isSavingRole}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-3 py-1 rounded bg-[var(--accent)] text-white"
-                onClick={async () => {
-                  if (!roleChangePending) return;
-                  setIsSavingRole(true);
-                  try {
-                    await setRolesTrigger({
-                      userId: roleChangePending.userId,
-                      roles: roleChangePending.newRoleId
-                        ? [Number(roleChangePending.newRoleId)]
-                        : [],
-                    }).unwrap();
-                    addToast('Role updated', 'success');
-                    setRoleChangePending(null);
-                  } catch (err) {
-                    console.error(err);
-                    addToast('Failed to update role', 'error');
-                  } finally {
-                    setIsSavingRole(false);
-                  }
-                }}
-                disabled={isSavingRole}
-              >
-                {isSavingRole ? 'Saving…' : 'Confirm'}
-              </button>
-            </div>
-          </div>
-        </Modal>
+            </>
+          }
+          confirmText="Confirm"
+          cancelText="Cancel"
+          isLoading={setRolesMutation.isPending}
+          onConfirm={async () => {
+            if (!roleChangePending) return;
+            try {
+              await setRolesTrigger({
+                userId: roleChangePending.userId,
+                roles: roleChangePending.newRoleId
+                  ? [Number(roleChangePending.newRoleId)]
+                  : [],
+              }).unwrap();
+              addToast('Role updated', 'success');
+              setRoleChangePending(null);
+            } catch (err) {
+              console.error(err);
+              addToast('Failed to update role', 'error');
+            }
+          }}
+          onClose={() => setRoleChangePending(null)}
+        />
       )}
+
       {confirmAction && (
-        <Modal onClose={() => setConfirmAction(null)}>
-          <div className="p-4">
-            <h2 className="text-lg font-bold mb-2">
-              Confirm {confirmAction.type === 'deactivate' ? 'deactivation' : 'activation'}
-            </h2>
-            <p className="mb-4">
+        <ConfirmationModal
+          isOpen={!!confirmAction}
+          title={`Confirm ${confirmAction.type === 'deactivate' ? 'deactivation' : 'activation'}`}
+          message={
+            <>
               Are you sure you want to {confirmAction.type}{' '}
               <strong>{confirmAction.userName}</strong>?
-            </p>
-            <div className="flex gap-2 justify-end">
-              <button
-                className="px-3 py-1 border rounded bg-[var(--primary-bg)]"
-                onClick={() => setConfirmAction(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-3 py-1 rounded bg-[var(--accent)] text-white"
-                onClick={async () => {
-                  if (!confirmAction) return;
-                  try {
-                    if (confirmAction.type === 'deactivate') {
-                      await deactivateTrigger(confirmAction.userId).unwrap();
-                      addToast('User deactivated', 'success');
-                    } else {
-                      await activateTrigger(confirmAction.userId).unwrap();
-                      addToast('User activated', 'success');
-                    }
-                    setConfirmAction(null);
-                  } catch (err) {
-                    console.error(err);
-                    addToast('Action failed', 'error');
-                  }
-                }}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </Modal>
+            </>
+          }
+          confirmText="Confirm"
+          cancelText="Cancel"
+          isDangerous={confirmAction.type === 'deactivate'}
+          onConfirm={async () => {
+            if (!confirmAction) return;
+            try {
+              if (confirmAction.type === 'deactivate') {
+                await deactivateTrigger(confirmAction.userId).unwrap();
+                addToast('User deactivated', 'success');
+              } else {
+                await activateTrigger(confirmAction.userId).unwrap();
+                addToast('User activated', 'success');
+              }
+              setConfirmAction(null);
+            } catch (err) {
+              console.error(err);
+              addToast('Action failed', 'error');
+            }
+          }}
+          onClose={() => setConfirmAction(null)}
+        />
       )}
     </AdminLayout>
   );

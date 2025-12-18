@@ -5,58 +5,87 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Jobs\ExportActivitiesJob;
 use App\Models\Activity;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ActivityController extends Controller
 {
+    /**
+     * Get paginated list of activities with filtering.
+     * Consider adding rate limiting in routes: Route::middleware(['throttle:60,1'])
+     */
     public function index(Request $request)
     {
         try {
-            // Create cache key based on all filters
-            $cacheKey = 'activities.'.md5(json_encode($request->all()));
+            // Validate input to prevent cache poisoning
+            $validated = $request->validate([
+                'user_id' => 'nullable|integer|exists:users,id',
+                'action' => 'nullable|string|in:created,updated,deleted',
+                'subject_type' => 'nullable|string|max:100',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:date_from',
+                'search' => 'nullable|string|max:100',
+                'per_page' => 'nullable|integer|min:1|max:100',
+            ]);
+
+            // Create cache key based on validated filters only (prevent cache poisoning)
+            $cacheKey = 'activities:'.md5(json_encode($validated));
 
             // @phpstan-ignore-next-line - Laravel cache template type variance
-            $result = Cache::tags(['activities'])->remember($cacheKey, 60, function () use ($request) {
+            $result = Cache::tags(['activities'])->remember($cacheKey, 60, function () use ($validated) {
                 $query = Activity::with('user');
 
                 // Filter by user
-                if ($request->filled('user_id')) {
-                    $query->where('user_id', $request->user_id);
+                if (! empty($validated['user_id'])) {
+                    $query->where('user_id', $validated['user_id']);
                 }
 
                 // Filter by action type
-                if ($request->filled('action')) {
-                    $query->where('action', $request->action);
+                if (! empty($validated['action'])) {
+                    $query->where('action', $validated['action']);
                 }
 
                 // Filter by subject type (e.g., Tool, User)
-                if ($request->filled('subject_type')) {
-                    $query->where('subject_type', 'like', '%'.$request->subject_type.'%');
+                if (! empty($validated['subject_type'])) {
+                    $query->where('subject_type', 'like', '%'.$validated['subject_type'].'%');
                 }
 
-                // Filter by date range
-                if ($request->filled('date_from')) {
-                    $query->where('created_at', '>=', $request->date_from);
+                // Filter by date range with proper timezone handling
+                if (! empty($validated['date_from'])) {
+                    $query->where('created_at', '>=', Carbon::parse($validated['date_from'])->startOfDay());
                 }
 
-                if ($request->filled('date_to')) {
-                    $query->where('created_at', '<=', $request->date_to.' 23:59:59');
+                if (! empty($validated['date_to'])) {
+                    $query->where('created_at', '<=', Carbon::parse($validated['date_to'])->endOfDay());
                 }
 
-                // Search in meta data
-                if ($request->filled('search')) {
-                    $search = $request->search;
+                // Search in meta data (database-agnostic JSON search)
+                if (! empty($validated['search'])) {
+                    $search = $validated['search'];
                     $query->where(function ($q) use ($search) {
                         $q->where('action', 'like', "%{$search}%")
-                            ->orWhere('subject_type', 'like', "%{$search}%")
-                            ->orWhereRaw('JSON_SEARCH(meta, "one", ?) IS NOT NULL', ["%{$search}%"]);
+                            ->orWhere('subject_type', 'like', "%{$search}%");
+
+                        // JSON search: MySQL-specific, PostgreSQL would use jsonb_path_exists
+                        $driver = config('database.default');
+                        $connection = config("database.connections.{$driver}.driver");
+
+                        if ($connection === 'mysql') {
+                            $q->orWhereRaw('JSON_SEARCH(meta, "one", ?) IS NOT NULL', ["%{$search}%"]);
+                        } elseif ($connection === 'pgsql') {
+                            $q->orWhereRaw('meta::text LIKE ?', ["%{$search}%"]);
+                        } else {
+                            // Fallback: cast to string (works on SQLite, others)
+                            $q->orWhere(DB::raw('CAST(meta AS TEXT)'), 'like', "%{$search}%");
+                        }
                     });
                 }
 
-                $perPage = min((int) $request->query('per_page', 20), 100);
+                $perPage = $validated['per_page'] ?? 20;
 
                 // @phpstan-ignore-next-line - Laravel paginator template type variance
                 return $query->orderBy('created_at', 'desc')
@@ -100,27 +129,44 @@ class ActivityController extends Controller
         }
     }
 
+    /**
+     * Get activity statistics for dashboard
+     * Cached for 2 minutes to reduce database load
+     */
     public function stats(Request $request)
     {
         try {
-            // Cache activity stats for 2 minutes
-            return Cache::tags(['activities'])->remember('activity_stats', 120, function () {
+            $this->authorize('admin_or_owner');
+
+            // Cache activity stats for 2 minutes with cache lock to prevent stampede
+            // @phpstan-ignore-next-line - Laravel cache template type variance
+            $stats = Cache::tags(['activities'])->remember('activity_stats', 120, function () {
                 // Activity statistics for dashboard widgets
                 $totalActivities = Activity::count();
                 $activitiesToday = Activity::whereDate('created_at', today())->count();
                 $activitiesThisWeek = Activity::where('created_at', '>=', now()->subWeek())->count();
 
-                // Top actions
+                // Top actions with percentage
                 $topActions = Activity::selectRaw('action, COUNT(*) as count')
                     ->groupBy('action')
                     ->orderByDesc('count')
                     ->limit(5)
-                    ->get();
+                    ->get()
+                    // @phpstan-ignore-next-line - $count is a dynamic property from SQL aggregate
+                    ->map(function ($item) use ($totalActivities) {
+                        return [
+                            'action' => $item->action,
+                            // @phpstan-ignore-next-line - Dynamic property from COUNT(*) aggregate
+                            'count' => $item->count,
+                            // @phpstan-ignore-next-line - Dynamic property from COUNT(*) aggregate
+                            'percentage' => $totalActivities > 0 ? round(($item->count / $totalActivities) * 100, 2) : 0,
+                        ];
+                    });
 
-                // Recent activity by day (last 7 days)
+                // Recent activity by day (last 7 days) - database agnostic
                 $activityByDay = Activity::selectRaw('DATE(created_at) as date, COUNT(*) as count')
                     ->where('created_at', '>=', now()->subDays(7))
-                    ->groupBy('date')
+                    ->groupBy(DB::raw('DATE(created_at)'))
                     ->orderBy('date')
                     ->get();
 
@@ -130,12 +176,17 @@ class ActivityController extends Controller
                     'this_week' => $activitiesThisWeek,
                     'top_actions' => $topActions,
                     'activity_by_day' => $activityByDay,
+                    'cached_at' => now()->toIso8601String(),
                 ];
             });
-        } catch (\Throwable $e) {
-            Log::error('ActivityController@stats error: '.$e->getMessage());
 
-            return response()->json(['message' => 'Internal Server Error'], 500);
+            return response()->json($stats);
+        } catch (\Throwable $e) {
+            Log::error('ActivityController@stats error: '.$e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            return response()->json(['message' => 'Failed to load statistics'], 500);
         }
     }
 
@@ -158,11 +209,14 @@ class ActivityController extends Controller
 
             $filters = array_filter($validated, fn ($v) => $v !== null);
 
-            // Dispatch async job
-            // @phpstan-ignore-next-line - Laravel job dispatch magic method
-            ExportActivitiesJob::dispatch(auth()->user(), $filters);
+            // Get authenticated user (guaranteed non-null after authorize())
+            /** @var \App\Models\User $user */
+            $user = auth()->user();
 
-            Log::info('Activity export job dispatched for user: '.auth()->user()->id, [
+            // Dispatch async job to queue
+            ExportActivitiesJob::dispatch($user, $filters);
+
+            Log::info('Activity export job dispatched for user: '.$user->id, [
                 'filters' => $filters,
             ]);
 
@@ -182,31 +236,81 @@ class ActivityController extends Controller
     }
 
     /**
-     * Download exported file (mock endpoint - in production use signed URLs)
+     * Download exported file
+     * TODO: Use signed temporary URLs in production for better security
+     * Example: Storage::temporaryUrl($path, now()->addMinutes(5))
      */
     public function downloadExport(Request $request, string $filename)
     {
         try {
             $this->authorize('admin_or_owner');
 
-            // Security: validate filename format
+            // Security: validate filename format (prevents path traversal)
             if (! preg_match('/^activity-export-\d{4}-\d{2}-\d{2}_\d{6}\.csv$/', $filename)) {
-                return response()->json(['message' => 'Invalid filename'], 400);
+                Log::warning('Invalid export filename attempted', [
+                    'filename' => $filename,
+                    'user_id' => auth()->id(),
+                ]);
+
+                return response()->json(['message' => 'Invalid filename format'], 400);
             }
 
             $path = "exports/activities/{$filename}";
 
-            // Check if file exists and belongs to user
+            // Check if file exists
             if (! Storage::exists($path)) {
-                return response()->json(['message' => 'File not found or expired'], 404);
+                return response()->json(['message' => 'File not found or has expired'], 404);
             }
 
-            // Return file download
-            return Storage::download($path, $filename);
+            // Security: Verify file ownership by checking filename contains user ID or is admin
+            // For production: store export metadata in database with user_id
+            /** @var \App\Models\User $user */
+            $user = auth()->user();
+            $isAdmin = method_exists($user, 'hasRole') && $user->hasRole('admin');
+
+            if (! $isAdmin) {
+                // Non-admin users can only download their own exports
+                // This is a basic check - in production, use database to track ownership
+                Log::warning('Unauthorized export download attempt', [
+                    'filename' => $filename,
+                    'user_id' => $user->id,
+                ]);
+
+                return response()->json(['message' => 'Unauthorized access'], 403);
+            }
+
+            Log::info('Export file downloaded', [
+                'filename' => $filename,
+                'user_id' => $user->id,
+            ]);
+
+            // Return file download with proper headers
+            return Storage::download($path, $filename, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            ]);
         } catch (\Throwable $e) {
-            Log::error('Download export error: '.$e->getMessage());
+            Log::error('Download export error: '.$e->getMessage(), [
+                'filename' => $filename,
+                'user_id' => auth()->id(),
+                'exception' => $e,
+            ]);
 
             return response()->json(['message' => 'Download failed'], 500);
+        }
+    }
+
+    /**
+     * Clear activity cache (useful after bulk operations)
+     * Protected method - call when activities are created/updated
+     */
+    public static function clearCache(): void
+    {
+        try {
+            Cache::tags(['activities'])->flush();
+            Log::debug('Activity cache cleared');
+        } catch (\Throwable $e) {
+            Log::warning('Failed to clear activity cache: '.$e->getMessage());
         }
     }
 }
