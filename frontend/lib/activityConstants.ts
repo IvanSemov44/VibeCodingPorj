@@ -1,3 +1,5 @@
+export type SelectOption = { value: string; label: string };
+
 export const ACTION_COLORS: Record<string, string> = {
   created: 'bg-green-100 text-green-800',
   updated: 'bg-blue-100 text-blue-800',
@@ -8,7 +10,7 @@ export const ACTION_COLORS: Record<string, string> = {
   logout: 'bg-gray-100 text-gray-800',
 };
 
-export const ACTION_OPTIONS = [
+export const ACTION_OPTIONS: SelectOption[] = [
   { value: '', label: 'All Actions' },
   { value: 'created', label: 'Created' },
   { value: 'updated', label: 'Updated' },
@@ -19,7 +21,7 @@ export const ACTION_OPTIONS = [
   { value: 'logout', label: 'Logout' },
 ];
 
-export const SUBJECT_TYPE_OPTIONS = [
+export const SUBJECT_TYPE_OPTIONS: SelectOption[] = [
   { value: '', label: 'All Types' },
   { value: 'Tool', label: 'Tool' },
   { value: 'User', label: 'User' },

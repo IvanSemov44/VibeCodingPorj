@@ -76,23 +76,23 @@ export default function TagsPage() {
       {/* Stats Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
-            <div className="text-[var(--text-secondary)] text-sm">Total Tags</div>
-            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.total}</div>
+          <div className="stat-card">
+            <div className="stat-label">Total Tags</div>
+            <div className="stat-value">{stats.total}</div>
           </div>
-          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
-            <div className="text-[var(--text-secondary)] text-sm">With Tools</div>
-            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.with_tools}</div>
+          <div className="stat-card">
+            <div className="stat-label">With Tools</div>
+            <div className="stat-value">{stats.with_tools}</div>
           </div>
-          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
-            <div className="text-[var(--text-secondary)] text-sm">Without Tools</div>
-            <div className="text-[var(--text-primary)] text-2xl font-bold">
+          <div className="stat-card">
+            <div className="stat-label">Without Tools</div>
+            <div className="stat-value">
               {stats.without_tools}
             </div>
           </div>
-          <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
-            <div className="text-[var(--text-secondary)] text-sm">Avg Tools per Tag</div>
-            <div className="text-[var(--text-primary)] text-2xl font-bold">
+          <div className="stat-card">
+            <div className="stat-label">Avg Tools per Tag</div>
+            <div className="stat-value">
               {stats.avg_tools_per_tag}
             </div>
           </div>
@@ -109,11 +109,11 @@ export default function TagsPage() {
             setSearch(e.target.value);
             setPage(1);
           }}
-          className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)]"
+          className="input-secondary flex-1"
         />
         <button
           onClick={handleOpenCreate}
-          className="px-6 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
+          className="btn-primary"
         >
           + Create Tag
         </button>
@@ -127,7 +127,7 @@ export default function TagsPage() {
       ) : tags.length === 0 ? (
         <div className="text-center py-8 text-[var(--text-secondary)]">No tags found</div>
       ) : (
-        <div className="bg-[var(--secondary-bg)] rounded-lg border border-[var(--border-color)] overflow-hidden">
+        <div className="card-secondary overflow-hidden">
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-color)]">
@@ -144,7 +144,7 @@ export default function TagsPage() {
               {tags.map((tag: Tag) => (
                 <tr
                   key={tag.id}
-                  className="border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--primary-bg)] transition-colors"
+                  className="table-row-hover"
                 >
                   <td className="p-4 text-[var(--text-primary)] font-medium">{tag.name}</td>
                   <td className="p-4 text-[var(--text-secondary)]">{tag.slug}</td>

@@ -1,4 +1,10 @@
-import { ACTION_COLORS } from '../../lib/activityConstants';
+const ACTION_COLORS: Record<string, string> = {
+  created: 'bg-green-100 text-green-800',
+  updated: 'bg-yellow-100 text-yellow-800',
+  deleted: 'bg-red-100 text-red-800',
+  restored: 'bg-blue-100 text-blue-800',
+  // add other action keys as needed
+};
 
 interface Activity {
   id: number;
@@ -26,7 +32,7 @@ export default function ActivityCard({ activity }: ActivityCardProps) {
 
   return (
     <div
-      className="bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)] p-4 hover:shadow-md transition-shadow"
+      className="card-base p-4 hover:shadow-md transition-shadow"
       role="article"
       aria-label={`Activity ${activity.id}: ${activity.action} on ${activity.subject_type}`}
     >

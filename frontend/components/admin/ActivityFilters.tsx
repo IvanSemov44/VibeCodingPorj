@@ -1,4 +1,21 @@
-import { ACTION_OPTIONS, SUBJECT_TYPE_OPTIONS } from '../../lib/activityConstants';
+type SelectOption = {
+  value: string;
+  label: string;
+};
+
+const ACTION_OPTIONS: SelectOption[] = [
+  { value: '', label: 'All' },
+  { value: 'create', label: 'Create' },
+  { value: 'update', label: 'Update' },
+  { value: 'delete', label: 'Delete' },
+];
+
+const SUBJECT_TYPE_OPTIONS: SelectOption[] = [
+  { value: '', label: 'All' },
+  { value: 'post', label: 'Post' },
+  { value: 'comment', label: 'Comment' },
+  { value: 'user', label: 'User' },
+];
 
 interface ActivityFiltersProps {
   filters: {
@@ -19,7 +36,7 @@ export default function ActivityFilters({
   onClearFilters,
 }: ActivityFiltersProps) {
   return (
-    <div className="bg-[var(--card-bg)] rounded-lg shadow p-6 mb-6 border border-[var(--border-color)]">
+    <div className="card-base p-6 mb-6">
       <h2 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Filters</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
@@ -35,7 +52,7 @@ export default function ActivityFilters({
             value={filters.search}
             onChange={(e) => onFilterChange('search', e.target.value)}
             placeholder="Search actions, types..."
-            className="w-full px-3 py-2 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded-md focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+            className="input-base"
             aria-label="Search activities"
           />
         </div>
@@ -50,12 +67,12 @@ export default function ActivityFilters({
             id="action-select"
             value={filters.action}
             onChange={(e) => onFilterChange('action', e.target.value)}
-            className="w-full px-3 py-2 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded-md focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+            className="input-base"
             aria-label="Filter by action"
           >
-            {ACTION_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+            {ACTION_OPTIONS.map(({ value, label }: SelectOption) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>
@@ -71,12 +88,12 @@ export default function ActivityFilters({
             id="subject-select"
             value={filters.subject_type}
             onChange={(e) => onFilterChange('subject_type', e.target.value)}
-            className="w-full px-3 py-2 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded-md focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+            className="input-base"
             aria-label="Filter by subject type"
           >
-            {SUBJECT_TYPE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+            {SUBJECT_TYPE_OPTIONS.map(({ value, label }: SelectOption) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>
@@ -93,7 +110,7 @@ export default function ActivityFilters({
             type="date"
             value={filters.date_from}
             onChange={(e) => onFilterChange('date_from', e.target.value)}
-            className="w-full px-3 py-2 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded-md focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+            className="input-base"
             aria-label="Filter from date"
           />
         </div>
@@ -109,14 +126,14 @@ export default function ActivityFilters({
             type="date"
             value={filters.date_to}
             onChange={(e) => onFilterChange('date_to', e.target.value)}
-            className="w-full px-3 py-2 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded-md focus:ring-[var(--accent)] focus:border-[var(--accent)]"
+            className="input-base"
             aria-label="Filter to date"
           />
         </div>
         <div className="flex items-end gap-2">
           <button
             onClick={onClearFilters}
-            className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] text-[var(--text-primary)] rounded-md hover:bg-[var(--tertiary-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--border-color)] transition-colors"
+            className="btn-secondary flex-1"
             aria-label="Clear all filters"
           >
             Clear

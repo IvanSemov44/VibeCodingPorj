@@ -49,7 +49,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
   return (
     <div className="max-w-7xl my-6 mx-auto px-4">
       {/* Header Card */}
-      <div className="bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6 mb-6">
+      <div className="card-primary p-6 mb-6">
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
             <div className="flex items-start justify-between gap-4 mb-4">
@@ -83,7 +83,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
             </div>
 
             {/* Star Rating Section */}
-            <div className="bg-[var(--secondary-bg)] rounded-lg p-4 border border-[var(--border-color)]">
+            <div className="card-secondary p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-2">
@@ -117,7 +117,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
                 {tool.screenshots.map((s: string, idx: number) => (
                   <div
                     key={s}
-                    className="rounded-lg overflow-hidden border border-[var(--border-color)] bg-[var(--secondary-bg)]"
+                    className="card-secondary border-0 overflow-hidden"
                   >
                     <Image
                       src={s}
@@ -130,7 +130,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
                 ))}
               </div>
             ) : (
-              <div className="p-4 rounded-lg border border-[var(--border-color)] text-sm text-[var(--text-secondary)] text-center">
+              <div className="card-base p-4 text-center">
                 No screenshots available
               </div>
             )}
@@ -142,7 +142,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Usage Card */}
         {t.usage ? (
-          <div className="lg:col-span-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6">
+          <div className="card-primary p-6">
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">Usage</h2>
             <div className="text-[var(--text-secondary)] whitespace-pre-wrap">
               {String(t.usage)}
@@ -152,7 +152,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
 
         {/* Meta Information Card */}
         <div
-          className={`bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6 ${
+          className={`card-primary p-6 ${
             !t.usage ? 'lg:col-span-3' : ''
           }`}
         >

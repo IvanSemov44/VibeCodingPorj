@@ -1,0 +1,78 @@
+/* Reusable component utility classes */
+
+/* Card & Containers */
+.card-base {
+  @apply bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)];
+}
+
+.card-secondary {
+  @apply bg-[var(--secondary-bg)] rounded-lg border border-[var(--border-color)];
+}
+
+.card-primary {
+  @apply bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg;
+}
+
+/* Form Inputs */
+.input-base {
+  @apply w-full px-3 py-2 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded-md focus:ring-[var(--accent)] focus:border-[var(--accent)];
+}
+
+.input-secondary {
+  @apply w-full px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)];
+}
+
+/* Buttons */
+.btn-primary {
+  @apply px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity font-medium;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] hover:bg-[var(--tertiary-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--border-color)] transition-colors;
+}
+
+.btn-small {
+  @apply px-3 py-2 text-sm border border-[var(--border-color)] text-[var(--text-primary)] bg-[var(--card-bg)] hover:bg-[var(--secondary-bg)] disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors;
+}
+
+.btn-danger {
+  @apply px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors;
+}
+
+/* Table Elements */
+.table-row-hover {
+  @apply border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--primary-bg)] transition-colors;
+}
+
+/* Stat Cards (4 column grid) */
+.stat-card {
+  @apply bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)];
+}
+
+/* Text Classes */
+.stat-label {
+  @apply text-[var(--text-secondary)] text-sm;
+}
+
+.stat-value {
+  @apply text-[var(--text-primary)] text-2xl font-bold;
+}
+
+/* Pagination */
+.pagination-container {
+  @apply flex items-center justify-between mt-6 p-4 bg-[var(--card-bg)] rounded-lg border border-[var(--border-color)];
+}
+
+/* Search/Filter Container */
+.filter-container {
+  @apply flex gap-4 mb-6;
+}
+
+/* Loading/Empty States */
+.empty-state {
+  @apply text-center py-8 text-[var(--text-secondary)];
+}
+
+.error-state {
+  @apply text-center py-8 text-red-500;
+}

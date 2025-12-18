@@ -201,7 +201,7 @@ export default function AnalyticsDashboard() {
         </div>
 
         {/* Most Viewed Tools */}
-        <div className="rounded-lg p-6 shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
+        <div className="card-base p-6">
           <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
             🏆 Top 10 Most Viewed Tools
           </h2>
@@ -289,7 +289,7 @@ export default function AnalyticsDashboard() {
         {/* Trending Tools & Top Referrers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Trending Tools Chart */}
-          <div className="rounded-lg p-6 shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
+          <div className="card-base p-6">
             <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               🔥 Trending Tools
             </h2>
@@ -338,7 +338,7 @@ export default function AnalyticsDashboard() {
           </div>
 
           {/* Top Referrers Chart */}
-          <div className="rounded-lg p-6 shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
+          <div className="card-base p-6">
             <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               🔗 Top Referrers
             </h2>
@@ -503,7 +503,7 @@ function MetricCard({
 }) {
   return (
     <div
-      className="rounded-lg p-6 shadow transition-transform hover:scale-105"
+      className="card-base p-6 shadow transition-transform hover:scale-105"
       style={{ backgroundColor: 'var(--card-bg)' }}
     >
       <div className="flex items-center justify-between">
