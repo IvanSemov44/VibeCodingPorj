@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\CacheService;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Services\CacheService;
 
 class HealthController extends BaseController
 {
@@ -15,6 +15,7 @@ class HealthController extends BaseController
     {
         $this->cacheService = $cacheService;
     }
+
     /**
      * Lightweight public health check — inexpensive and safe.
      */
@@ -39,7 +40,7 @@ class HealthController extends BaseController
             DB::connection()->getPdo();
             $checks['database'] = 'ok';
         } catch (\Exception $e) {
-            $checks['database'] = 'error: ' . $e->getMessage();
+            $checks['database'] = 'error: '.$e->getMessage();
         }
 
         // Cache check (safe read)
@@ -47,7 +48,7 @@ class HealthController extends BaseController
             $val = $this->cacheService->get('health_check_key');
             $checks['cache'] = 'ok';
         } catch (\Exception $e) {
-            $checks['cache'] = 'error: ' . $e->getMessage();
+            $checks['cache'] = 'error: '.$e->getMessage();
         }
 
         // Storage check (is storage path writable)
@@ -55,12 +56,12 @@ class HealthController extends BaseController
             $writable = is_writable(storage_path('app'));
             $checks['storage'] = $writable ? 'ok' : 'not_writable';
         } catch (\Exception $e) {
-            $checks['storage'] = 'error: ' . $e->getMessage();
+            $checks['storage'] = 'error: '.$e->getMessage();
         }
 
-        $failed = array_filter($checks, fn($v) => $v !== 'ok');
+        $failed = array_filter($checks, fn ($v) => $v !== 'ok');
 
-        if (!empty($failed)) {
+        if (! empty($failed)) {
             return response()->json([
                 'status' => 'degraded',
                 'checks' => $checks,

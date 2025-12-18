@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Activity;
 use App\Jobs\ExportActivitiesJob;
+use App\Models\Activity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ActivityController extends Controller
@@ -16,7 +16,7 @@ class ActivityController extends Controller
     {
         try {
             // Create cache key based on all filters
-            $cacheKey = 'activities.' . md5(json_encode($request->all()));
+            $cacheKey = 'activities.'.md5(json_encode($request->all()));
 
             $result = Cache::tags(['activities'])->remember($cacheKey, 60, function () use ($request) {
                 $query = Activity::with('user');
@@ -33,7 +33,7 @@ class ActivityController extends Controller
 
                 // Filter by subject type (e.g., Tool, User)
                 if ($request->filled('subject_type')) {
-                    $query->where('subject_type', 'like', '%' . $request->subject_type . '%');
+                    $query->where('subject_type', 'like', '%'.$request->subject_type.'%');
                 }
 
                 // Filter by date range
@@ -42,7 +42,7 @@ class ActivityController extends Controller
                 }
 
                 if ($request->filled('date_to')) {
-                    $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
+                    $query->where('created_at', '<=', $request->date_to.' 23:59:59');
                 }
 
                 // Search in meta data
@@ -50,8 +50,8 @@ class ActivityController extends Controller
                     $search = $request->search;
                     $query->where(function ($q) use ($search) {
                         $q->where('action', 'like', "%{$search}%")
-                          ->orWhere('subject_type', 'like', "%{$search}%")
-                          ->orWhereRaw('JSON_SEARCH(meta, "one", ?) IS NOT NULL', ["%{$search}%"]);
+                            ->orWhere('subject_type', 'like', "%{$search}%")
+                            ->orWhereRaw('JSON_SEARCH(meta, "one", ?) IS NOT NULL', ["%{$search}%"]);
                     });
                 }
 
@@ -80,19 +80,19 @@ class ActivityController extends Controller
                         return [
                             'id' => $a->id,
                             'subject_type' => $a->subject_type,
-                        'subject_id' => $a->subject_id,
-                        'action' => $a->action,
-                        'user' => $actor,
-                        'meta' => $a->meta,
-                        'created_at' => $a->created_at?->toIso8601String(),
-                        'created_at_human' => $a->created_at?->diffForHumans(),
-                    ];
-                });
+                            'subject_id' => $a->subject_id,
+                            'action' => $a->action,
+                            'user' => $actor,
+                            'meta' => $a->meta,
+                            'created_at' => $a->created_at?->toIso8601String(),
+                            'created_at_human' => $a->created_at?->diffForHumans(),
+                        ];
+                    });
             });
 
             return response()->json($result);
         } catch (\Throwable $e) {
-            Log::error('ActivityController@index error: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('ActivityController@index error: '.$e->getMessage(), ['exception' => $e]);
 
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
@@ -133,7 +133,8 @@ class ActivityController extends Controller
 
             return response()->json($result);
         } catch (\Throwable $e) {
-            Log::error('ActivityController@stats error: ' . $e->getMessage());
+            Log::error('ActivityController@stats error: '.$e->getMessage());
+
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
     }
@@ -155,12 +156,12 @@ class ActivityController extends Controller
                 'search' => 'nullable|string|max:100',
             ]);
 
-            $filters = array_filter($validated, fn($v) => $v !== null);
+            $filters = array_filter($validated, fn ($v) => $v !== null);
 
             // Dispatch async job
             ExportActivitiesJob::dispatch(auth()->user(), $filters);
 
-            Log::info('Activity export job dispatched for user: ' . auth()->user()->id, [
+            Log::info('Activity export job dispatched for user: '.auth()->user()->id, [
                 'filters' => $filters,
             ]);
 
@@ -169,12 +170,12 @@ class ActivityController extends Controller
                 'status' => 'processing',
             ], 202);
         } catch (\Throwable $e) {
-            Log::error('ActivityController@export error: ' . $e->getMessage(), [
+            Log::error('ActivityController@export error: '.$e->getMessage(), [
                 'exception' => $e,
             ]);
 
             return response()->json([
-                'message' => 'Export failed: ' . $e->getMessage(),
+                'message' => 'Export failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -188,21 +189,22 @@ class ActivityController extends Controller
             $this->authorize('admin_or_owner');
 
             // Security: validate filename format
-            if (!preg_match('/^activity-export-\d{4}-\d{2}-\d{2}_\d{6}\.csv$/', $filename)) {
+            if (! preg_match('/^activity-export-\d{4}-\d{2}-\d{2}_\d{6}\.csv$/', $filename)) {
                 return response()->json(['message' => 'Invalid filename'], 400);
             }
 
             $path = "exports/activities/{$filename}";
 
             // Check if file exists and belongs to user
-            if (!Storage::exists($path)) {
+            if (! Storage::exists($path)) {
                 return response()->json(['message' => 'File not found or expired'], 404);
             }
 
             // Return file download
             return Storage::download($path, $filename);
         } catch (\Throwable $e) {
-            Log::error('Download export error: ' . $e->getMessage());
+            Log::error('Download export error: '.$e->getMessage());
+
             return response()->json(['message' => 'Download failed'], 500);
         }
     }

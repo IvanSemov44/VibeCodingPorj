@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Tool;
 use App\Models\Rating;
+use App\Models\Tool;
 use Illuminate\Console\Command;
 
 class CheckRatings extends Command
 {
     protected $signature = 'check:ratings';
+
     protected $description = 'Check and update tool ratings';
 
     public function handle()

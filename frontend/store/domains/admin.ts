@@ -222,7 +222,7 @@ export function useGetAdminCategoryQuery(id?: string | number, options?: Record<
   });
 }
 
-export function useCreateCategoryMutation() {
+export function useCreateAdminCategoryMutation() {
   const qc = useQueryClient();
   const m = useMutation<unknown, Error, { name: string; description?: string }>({
     mutationFn: async (data) => api.createCategory(data),
@@ -235,7 +235,7 @@ export function useCreateCategoryMutation() {
   return [trigger, m] as const;
 }
 
-export function useUpdateCategoryMutation() {
+export function useUpdateAdminCategoryMutation() {
   const qc = useQueryClient();
   const m = useMutation<unknown, Error, { id: string | number; data: { name: string; description?: string } }>({
     mutationFn: async ({ id, data }) => api.updateCategory(id, data),
@@ -249,7 +249,7 @@ export function useUpdateCategoryMutation() {
   return [trigger, m] as const;
 }
 
-export function useDeleteCategoryMutation() {
+export function useDeleteAdminCategoryMutation() {
   const qc = useQueryClient();
   const m = useMutation<unknown, Error, string | number>({
     mutationFn: async (id) => api.deleteCategory(id),
@@ -316,7 +316,7 @@ export function useGetAdminTagQuery(id?: string | number, options?: Record<strin
   });
 }
 
-export function useCreateTagMutation() {
+export function useCreateAdminTagMutation() {
   const qc = useQueryClient();
   const m = useMutation<unknown, Error, { name: string; description?: string }>({
     mutationFn: async (data) => api.createTag(data),
@@ -329,7 +329,7 @@ export function useCreateTagMutation() {
   return [trigger, m] as const;
 }
 
-export function useUpdateTagMutation() {
+export function useUpdateAdminTagMutation() {
   const qc = useQueryClient();
   const m = useMutation<unknown, Error, { id: string | number; data: { name: string; description?: string } }>({
     mutationFn: async ({ id, data }) => api.updateTag(id, data),
@@ -343,7 +343,7 @@ export function useUpdateTagMutation() {
   return [trigger, m] as const;
 }
 
-export function useDeleteTagMutation() {
+export function useDeleteAdminTagMutation() {
   const qc = useQueryClient();
   const m = useMutation<unknown, Error, string | number>({
     mutationFn: async (id) => api.deleteTag(id),
@@ -392,7 +392,17 @@ export function useGetCommentsQuery(toolId: string | number, options?: Record<st
     }>;
   }>({
     queryKey: ['comments', toolId],
-    queryFn: async () => api.getComments(toolId),
+    queryFn: async () => api.getComments(toolId) as Promise<{
+      data: Array<{
+        id: number;
+        content: string;
+        user: { id: number; name: string };
+        created_at: string;
+        upvotes: number;
+        downvotes: number;
+        replies?: Array<{ id: number; content: string; user: { id: number; name: string }; created_at: string }>;
+      }>;
+    }>,
     enabled: !!toolId,
     ...(options || {}),
   });

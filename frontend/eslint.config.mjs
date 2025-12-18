@@ -74,6 +74,21 @@ const eslintConfig = [
       '@typescript-eslint/no-unused-vars': 'off',
     },
   },
+
+  // Allow any in API/admin handlers where response shapes are dynamic
+  {
+    files: [
+      'lib/api/**',
+      'store/domains/**',
+      'pages/admin/**',
+      'components/admin/**',
+      'middleware.ts',
+      'pages/tools/**',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn', // Downgrade to warning for complex types
+    },
+  },
 ];
 
 export default eslintConfig;

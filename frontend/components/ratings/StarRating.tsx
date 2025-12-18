@@ -35,9 +35,10 @@ export default function StarRating({
       try {
         await rateTool({ toolId, score }).unwrap();
         addToast(`Rated ${score} stars!`, 'success');
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Handle rate limiting
-        if (error?.status === 429) {
+        const apiError = error as Record<string, unknown>;
+        if (apiError?.status === 429) {
           addToast('Too many rating attempts. Please try again later.', 'warning');
         } else {
           addToast('Failed to submit rating', 'error');

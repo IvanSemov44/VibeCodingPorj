@@ -29,6 +29,7 @@ class ToolViewSeeder extends Seeder
 
         if ($tools->isEmpty()) {
             $this->command->warn('No tools found. Please run ToolSeeder first.');
+
             return;
         }
 
@@ -122,7 +123,7 @@ class ToolViewSeeder extends Seeder
             }
 
             // Insert remaining views
-            if (!empty($views)) {
+            if (! empty($views)) {
                 ToolView::insert($views);
             }
 

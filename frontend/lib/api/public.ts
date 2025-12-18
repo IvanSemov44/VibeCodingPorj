@@ -72,12 +72,12 @@ export async function deleteTag(id: number | string): Promise<void> {
 }
 
 // Health endpoints (liveness / readiness)
-export async function getHealth(): Promise<any> {
+export async function getHealth(): Promise<Record<string, unknown>> {
   const res = await fetchWithAuth(`/api/health`);
-  return await parseJson<any>(res);
+  return await parseJson<Record<string, unknown>>(res);
 }
 
-export async function getReady(): Promise<any> {
+export async function getReady(): Promise<Record<string, unknown>> {
   const res = await fetchWithAuth(`/api/ready`);
   return await parseJson<any>(res);
 }

@@ -277,7 +277,7 @@ export default function AnalyticsDashboard() {
                     legend: { display: false },
                     tooltip: {
                       callbacks: {
-                        label: (context) => `+${context.parsed.x.toFixed(1)}%`,
+                        label: (context) => `+${(context.parsed.x ?? 0).toFixed(1)}%`,
                       },
                     },
                   },

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../hooks/useAuth';
 import { ROUTES } from '../../lib/constants';
+import type { Role } from '../../lib/types';
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth(true);
@@ -12,10 +13,10 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     let roleNames: string[] = [];
     if (Array.isArray(user?.roles)) {
       roleNames = user.roles
-        .map((r: any) => (typeof r === 'string' ? r : r?.name))
+        .map((r: string | Role) => (typeof r === 'string' ? r : r?.name))
         .filter(Boolean) as string[];
-    } else if ((user as any)?.role) {
-      roleNames = [(user as any).role];
+    } else if ((user as unknown as Record<string, unknown>)?.role) {
+      roleNames = [(user as unknown as Record<string, unknown>).role as string];
     }
     const isAdmin = roleNames.includes('admin') || roleNames.includes('owner');
     // Debug: log resolved user/roles so we can see why redirects happen

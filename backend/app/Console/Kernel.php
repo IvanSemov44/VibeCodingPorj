@@ -13,8 +13,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\MigrateAndSeedWithLock::class,
-            \App\Console\Commands\WarmCache::class,
-            \App\Console\Commands\ScanQueries::class,
+        \App\Console\Commands\WarmCache::class,
+        \App\Console\Commands\ScanQueries::class,
     ];
 
     /**

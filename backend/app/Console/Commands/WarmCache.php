@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
+use App\Enums\ToolStatus;
 use App\Models\Category;
 use App\Models\Tool;
-use App\Enums\ToolStatus;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class WarmCache extends Command
 {
@@ -37,7 +37,7 @@ class WarmCache extends Command
                 $this->info('Cached categories (fallback)');
             }
         } catch (\Throwable $e) {
-            $this->warn('Failed to cache categories: ' . $e->getMessage());
+            $this->warn('Failed to cache categories: '.$e->getMessage());
         }
 
         // Try to cache tags if model exists
@@ -55,7 +55,7 @@ class WarmCache extends Command
                 }
             }
         } catch (\Throwable $e) {
-            $this->warn('Failed to cache tags: ' . $e->getMessage());
+            $this->warn('Failed to cache tags: '.$e->getMessage());
         }
 
         // Try to cache roles if Spatie is available
@@ -73,7 +73,7 @@ class WarmCache extends Command
                 }
             }
         } catch (\Throwable $e) {
-            $this->warn('Failed to cache roles: ' . $e->getMessage());
+            $this->warn('Failed to cache roles: '.$e->getMessage());
         }
 
         // Cache first page of approved tools (default per-page 20)
@@ -87,13 +87,13 @@ class WarmCache extends Command
                     $cacheService->putWithTags(['tools'], 'tools.approved.page.1.perpage.20', $tools, 300);
                     $this->info('Cached tools page 1 (fallback)');
                 }
-                } catch (\Throwable $e) {
-                    $cacheService = app(\App\Services\CacheService::class);
-                    $cacheService->putWithTags(['tools'], 'tools.approved.page.1.perpage.20', $tools, 300);
-                    $this->info('Cached tools page 1 (fallback)');
-                }
+            } catch (\Throwable $e) {
+                $cacheService = app(\App\Services\CacheService::class);
+                $cacheService->putWithTags(['tools'], 'tools.approved.page.1.perpage.20', $tools, 300);
+                $this->info('Cached tools page 1 (fallback)');
+            }
         } catch (\Throwable $e) {
-            $this->warn('Failed to cache tools: ' . $e->getMessage());
+            $this->warn('Failed to cache tools: '.$e->getMessage());
         }
 
         $this->info('Cache warm complete.');

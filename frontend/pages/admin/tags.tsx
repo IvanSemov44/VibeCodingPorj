@@ -3,9 +3,9 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import Pagination from '../../components/admin/Pagination';
 import {
   useGetAdminTagsQuery,
-  useCreateTagMutation,
-  useUpdateTagMutation,
-  useDeleteTagMutation,
+  useCreateAdminTagMutation,
+  useUpdateAdminTagMutation,
+  useDeleteAdminTagMutation,
   useGetTagStatsQuery,
 } from '../../store/domains/admin';
 
@@ -27,9 +27,9 @@ export default function TagsPage() {
 
   const { data, isLoading, error } = useGetAdminTagsQuery({ page, search, per_page: 20 });
   const { data: stats } = useGetTagStatsQuery();
-  const [createTag, createMutation] = useCreateTagMutation();
-  const [updateTag, updateMutation] = useUpdateTagMutation();
-  const [deleteTag, deleteMutation] = useDeleteTagMutation();
+  const [createTag, createMutation] = useCreateAdminTagMutation();
+  const [updateTag, updateMutation] = useUpdateAdminTagMutation();
+  const [deleteTag, deleteMutation] = useDeleteAdminTagMutation();
 
   const tags = data?.data || [];
   const pagination = {

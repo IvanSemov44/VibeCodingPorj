@@ -75,7 +75,7 @@ class CommentController extends Controller
     {
         // Allow comment owner or admin/owner to delete
         $user = auth()->user();
-        if ($comment->user_id !== $user->id && !$user->hasAnyRole(['admin', 'owner'])) {
+        if ($comment->user_id !== $user->id && ! $user->hasAnyRole(['admin', 'owner'])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -90,7 +90,7 @@ class CommentController extends Controller
     public function moderate(Comment $comment, Request $request)
     {
         $user = auth()->user();
-        if (!$user->hasAnyRole(['admin', 'owner'])) {
+        if (! $user->hasAnyRole(['admin', 'owner'])) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

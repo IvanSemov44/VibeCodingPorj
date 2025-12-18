@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/domains';
 import { useAppTheme } from '../hooks/useAppTheme';
-import type { User } from '../lib/types';
+import type { User, Role } from '../lib/types';
 
 export default function Layout({ children }: { children: React.ReactNode }): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
@@ -14,9 +14,9 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
   // Determine admin/owner role safely — roles may be strings or objects, or missing
   const isAdmin = React.useMemo(() => {
-    const r = (user && (user as any).roles) || null;
-    if (!Array.isArray(r)) return false;
-    return r.some((role: any) => {
+    const roles = (user?.roles) || null;
+    if (!Array.isArray(roles)) return false;
+    return roles.some((role: string | Role | undefined) => {
       if (!role) return false;
       if (typeof role === 'string') return role === 'owner' || role === 'admin';
       if (typeof role === 'object' && 'name' in role) return role.name === 'owner' || role.name === 'admin';
@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
   // Keep stable refs to the latest `csrfTrigger` and `data` so the main
   // effect can depend only on `refetch` (prevents unnecessary re-runs).
   type CsrfTrigger = (() => { unwrap: () => Promise<unknown> }) | undefined;
-  const csrfTriggerRef = useRef<CsrfTrigger>(csrfTrigger as CsrfTrigger);
+  const csrfTriggerRef = useRef<CsrfTrigger>(csrfTrigger);
   const dataRef = useRef(data);
 
   useEffect(() => {

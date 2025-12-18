@@ -18,6 +18,7 @@ class AnalyzeQueriesCommand extends Command
     protected $description = 'Analyze database queries for all routes and identify performance issues';
 
     protected array $results = [];
+
     protected array $issues = [];
 
     public function handle(): int
@@ -116,7 +117,7 @@ class AnalyzeQueriesCommand extends Command
             $normalized = preg_replace('/\d+/', '?', $sql);
             $normalized = preg_replace("/'[^']*'/", '?', $normalized);
 
-            if (!isset($querySignatures[$normalized])) {
+            if (! isset($querySignatures[$normalized])) {
                 $querySignatures[$normalized] = 0;
             }
             $querySignatures[$normalized]++;
@@ -126,7 +127,7 @@ class AnalyzeQueriesCommand extends Command
             if ($count > 3) {
                 $this->issues[] = "⚠️  {$uri}: N+1 query detected (repeated {$count} times)";
                 if ($this->option('verbose')) {
-                    $this->warn("    Query: " . substr($sql, 0, 100) . "...");
+                    $this->warn('    Query: '.substr($sql, 0, 100).'...');
                 }
             }
         }
@@ -136,6 +137,7 @@ class AnalyzeQueriesCommand extends Command
     {
         if (empty($this->results)) {
             $this->warn('No routes analyzed successfully');
+
             return;
         }
 
@@ -152,7 +154,7 @@ class AnalyzeQueriesCommand extends Command
                 ['Routes Analyzed', count($this->results)],
                 ['Total Queries', $totalQueries],
                 ['Avg Queries/Route', number_format($avgQueries, 2)],
-                ['Avg Query Time', number_format($avgQueryTime, 2) . 'ms'],
+                ['Avg Query Time', number_format($avgQueryTime, 2).'ms'],
             ]
         );
 
@@ -169,7 +171,7 @@ class AnalyzeQueriesCommand extends Command
 
         $this->table(
             ['Route', 'Queries', 'Query Time (ms)', 'Total Time (ms)'],
-            $heavy->map(fn($r) => [
+            $heavy->map(fn ($r) => [
                 $r['route'],
                 $r['queries'],
                 number_format($r['query_time'], 2),
@@ -190,7 +192,7 @@ class AnalyzeQueriesCommand extends Command
 
         $this->table(
             ['Route', 'Query Time (ms)', 'Queries', 'Total Time (ms)'],
-            $slow->map(fn($r) => [
+            $slow->map(fn ($r) => [
                 $r['route'],
                 number_format($r['query_time'], 2),
                 $r['queries'],
@@ -201,8 +203,8 @@ class AnalyzeQueriesCommand extends Command
         $this->newLine();
 
         // Issues
-        if (!empty($this->issues)) {
-            $this->error('❌ Issues Found (' . count($this->issues) . ')');
+        if (! empty($this->issues)) {
+            $this->error('❌ Issues Found ('.count($this->issues).')');
             $this->error('==================');
             foreach (array_unique($this->issues) as $issue) {
                 $this->warn($issue);

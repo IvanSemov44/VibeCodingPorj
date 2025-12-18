@@ -45,8 +45,9 @@ final class CacheService
      * Remember a value using tags when supported by the store.
      *
      * @template T
-     * @param array<string> $tags
-     * @param callable(): T $callback
+     *
+     * @param  array<string>  $tags
+     * @param  callable(): T  $callback
      * @return T
      */
     public function rememberWithTags(array $tags, string $key, callable $callback, ?int $ttl = null): mixed
@@ -80,15 +81,14 @@ final class CacheService
 
     /**
      * Get a value from cache.
-     *
-     * @return mixed
      */
     public function get(string $key): mixed
     {
         try {
             return Cache::get($key);
         } catch (\Throwable $e) {
-            logger()->warning('Cache get failed for key ' . $key . ': ' . $e->getMessage());
+            logger()->warning('Cache get failed for key '.$key.': '.$e->getMessage());
+
             return null;
         }
     }
@@ -119,9 +119,10 @@ final class CacheService
         if ($this->supportsTags()) {
             try {
                 Cache::tags(['tools'])->flush();
+
                 return;
             } catch (\Throwable $e) {
-                logger()->warning('Failed to flush tool cache tags: ' . $e->getMessage());
+                logger()->warning('Failed to flush tool cache tags: '.$e->getMessage());
             }
         }
 
@@ -138,7 +139,7 @@ final class CacheService
     /**
      * Invalidate caches by tags when supported.
      *
-     * @param array<string> $tags
+     * @param  array<string>  $tags
      */
     public function invalidateTags(array $tags): void
     {
@@ -149,14 +150,14 @@ final class CacheService
         try {
             Cache::tags($tags)->flush();
         } catch (\Throwable $e) {
-            logger()->warning('Failed to flush cache tags: ' . $e->getMessage());
+            logger()->warning('Failed to flush cache tags: '.$e->getMessage());
         }
     }
 
     /**
      * Put a value into cache using tags when supported.
      *
-     * @param array<string> $tags
+     * @param  array<string>  $tags
      */
     public function putWithTags(array $tags, string $key, mixed $value, ?int $ttl = null): bool
     {
@@ -164,14 +165,14 @@ final class CacheService
             try {
                 return Cache::tags($tags)->put($key, $value, $ttl ?? self::DEFAULT_TTL);
             } catch (\Throwable $e) {
-                logger()->warning('Failed to put cache with tags: ' . $e->getMessage());
+                logger()->warning('Failed to put cache with tags: '.$e->getMessage());
             }
         }
 
         try {
             return Cache::put($key, $value, $ttl ?? self::DEFAULT_TTL);
         } catch (\Throwable $e) {
-            logger()->warning('Failed to put cache (fallback): ' . $e->getMessage());
+            logger()->warning('Failed to put cache (fallback): '.$e->getMessage());
         }
 
         return false;

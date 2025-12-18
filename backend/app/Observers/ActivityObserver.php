@@ -22,7 +22,7 @@ class ActivityObserver
             ]);
         } catch (\Throwable $e) {
             // Don't break request if logging fails
-            logger()->warning('Failed to record activity: ' . $e->getMessage());
+            logger()->warning('Failed to record activity: '.$e->getMessage());
         }
     }
 

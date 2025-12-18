@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ScanQueries extends Command
 {
@@ -60,14 +60,14 @@ class ScanQueries extends Command
                     if ($traceEnabled) {
                         foreach ($bt as $frame) {
                             if (isset($frame['file']) && ! str_contains($frame['file'], '/vendor/')) {
-                                $caller = ($frame['file'] ?? '') . ':' . ($frame['line'] ?? '');
+                                $caller = ($frame['file'] ?? '').':'.($frame['line'] ?? '');
                                 break;
                             }
                         }
                     }
                 }
 
-                $key = md5($query->sql . '|' . serialize($query->bindings) . '|' . ($caller ?? ''));
+                $key = md5($query->sql.'|'.serialize($query->bindings).'|'.($caller ?? ''));
                 if (isset($seen[$key])) {
                     // Skip duplicate collector emissions to reduce noise
                     return;
@@ -85,8 +85,10 @@ class ScanQueries extends Command
                         $frames = [];
                         $limit = 0;
                         foreach ($bt as $frame) {
-                            if ($limit++ > 30) break;
-                            $frames[] = ((($frame['file'] ?? '[internal]') . ':' . ($frame['line'] ?? '?') . ' ' . ($frame['function'] ?? '')));
+                            if ($limit++ > 30) {
+                                break;
+                            }
+                            $frames[] = ((($frame['file'] ?? '[internal]').':'.($frame['line'] ?? '?').' '.($frame['function'] ?? '')));
                         }
                         $entry['trace'] = $frames;
                     }
@@ -130,7 +132,7 @@ class ScanQueries extends Command
                     }
                 } catch (\Throwable $e) {
                     // best-effort; continue even if reflection fails
-                    logger()->warning('Failed to strip debugbar middleware for scan: ' . $e->getMessage());
+                    logger()->warning('Failed to strip debugbar middleware for scan: '.$e->getMessage());
                 }
 
                 // Create a request and dispatch via the application kernel.
@@ -153,7 +155,7 @@ class ScanQueries extends Command
                         $prop->setValue($kernel, $originalMiddleware);
                     }
                 } catch (\Throwable $e) {
-                    logger()->warning('Failed to restore kernel middleware after scan: ' . $e->getMessage());
+                    logger()->warning('Failed to restore kernel middleware after scan: '.$e->getMessage());
                 }
             }
 
@@ -203,14 +205,16 @@ class ScanQueries extends Command
             foreach ($results as $r) {
                 $this->info("\n--- SQL for {$r['path']} ({$r['queries']} queries) ---");
                 foreach ($r['sqls'] as $i => $s) {
-                    $line = ($i + 1) . ") " . $s['sql'] . ' [' . implode(', ', array_map(function ($b) { return is_scalar($b) ? (string) $b : gettype($b); }, $s['bindings'] ?? [])) . ']';
+                    $line = ($i + 1).') '.$s['sql'].' ['.implode(', ', array_map(function ($b) {
+                        return is_scalar($b) ? (string) $b : gettype($b);
+                    }, $s['bindings'] ?? [])).']';
                     if (! empty($s['caller'] ?? null)) {
-                        $line .= ' -- caller: ' . $s['caller'];
+                        $line .= ' -- caller: '.$s['caller'];
                     }
                     $this->line($line);
                     if (! empty($s['trace'] ?? null) && is_array($s['trace'])) {
                         foreach ($s['trace'] as $frame) {
-                            $this->line('    at ' . $frame);
+                            $this->line('    at '.$frame);
                         }
                     }
                 }

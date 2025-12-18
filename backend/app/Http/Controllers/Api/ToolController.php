@@ -4,27 +4,28 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Tool\ApproveToolAction;
+use App\Actions\Tool\RejectToolAction;
 use App\DataTransferObjects\ToolData;
+use App\Enums\ToolStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreToolRequest;
 use App\Http\Requests\UpdateToolRequest;
 use App\Http\Resources\ToolResource;
 use App\Models\Tool;
+use App\Services\CacheService;
 use App\Services\ToolService;
-use App\Actions\Tool\ApproveToolAction;
-use App\Actions\Tool\RejectToolAction;
-use App\Enums\ToolStatus;
+use App\Traits\HandlesServiceErrors;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
-use App\Services\CacheService;
-use App\Traits\HandlesServiceErrors;
 
 final class ToolController extends Controller
 {
     use HandlesServiceErrors;
+
     public function __construct(
         private readonly ToolService $toolService,
         private readonly CacheService $cacheService,
@@ -96,7 +97,7 @@ final class ToolController extends Controller
                         return $query->orderBy('name')->paginate($perPage);
                     }, config('app.cache_ttl.dynamic_queries', 300));
                 } catch (\Throwable $e) {
-                    logger()->warning('Cache read failed, falling back to DB: ' . $e->getMessage());
+                    logger()->warning('Cache read failed, falling back to DB: '.$e->getMessage());
                     $tools = $query->orderBy('name')->paginate($perPage);
                 }
 
@@ -135,7 +136,7 @@ final class ToolController extends Controller
         $tool = $this->toolService->create($toolData, $request->user());
 
         $this->handleCacheOperation(
-            fn() => $this->cacheService->invalidateToolCaches(),
+            fn () => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool creation'
         );
 
@@ -149,7 +150,7 @@ final class ToolController extends Controller
         $tool = $this->toolService->update($tool, $toolData, $request->user());
 
         $this->handleCacheOperation(
-            fn() => $this->cacheService->invalidateToolCaches(),
+            fn () => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool update'
         );
 
@@ -163,7 +164,7 @@ final class ToolController extends Controller
         $this->toolService->delete($tool, $request->user());
 
         $this->handleCacheOperation(
-            fn() => $this->cacheService->invalidateToolCaches(),
+            fn () => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool deletion'
         );
 
@@ -178,7 +179,7 @@ final class ToolController extends Controller
 
         // Log activity and invalidate cache
         $this->handleActivityLog(
-            fn() => \App\Models\Activity::create([
+            fn () => \App\Models\Activity::create([
                 'subject_type' => get_class($approved),
                 'subject_id' => $approved->id,
                 'action' => 'approved',
@@ -190,7 +191,7 @@ final class ToolController extends Controller
         );
 
         $this->handleCacheOperation(
-            fn() => $this->cacheService->invalidateToolCaches(),
+            fn () => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool approval'
         );
 
@@ -209,7 +210,7 @@ final class ToolController extends Controller
         $rejected = $action->execute($tool, $request->user(), $reason);
 
         $this->handleActivityLog(
-            fn() => \App\Models\Activity::create([
+            fn () => \App\Models\Activity::create([
                 'subject_type' => get_class($rejected),
                 'subject_id' => $rejected->id,
                 'action' => 'rejected',
@@ -221,7 +222,7 @@ final class ToolController extends Controller
         );
 
         $this->handleCacheOperation(
-            fn() => $this->cacheService->invalidateToolCaches(),
+            fn () => $this->cacheService->invalidateToolCaches(),
             'invalidate after tool rejection'
         );
 

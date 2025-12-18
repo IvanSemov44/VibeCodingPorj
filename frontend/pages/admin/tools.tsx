@@ -14,6 +14,7 @@ import {
   useGetToolsQuery,
 } from '../../store/domains';
 import { useAuth } from '../../hooks/useAuth';
+import type { Tool, Role, ApiListResponse } from '../../lib/types';
 
 export default function AdminToolsPage() {
   const router = useRouter();
@@ -22,51 +23,58 @@ export default function AdminToolsPage() {
   const { user } = useAuth();
 
   // Check if user is admin
-  const isAdmin = user?.roles?.some((role: any) =>
+  const isAdmin = user?.roles?.some((role: string | Role) =>
     typeof role === 'string'
       ? role === 'admin' || role === 'owner'
       : role?.name === 'admin' || role?.name === 'owner'
   );
 
-  const { data, isLoading, refetch } = pendingMode
-    ? useGetPendingToolsQuery()
-    : useGetToolsQuery({ per_page: 20, page: Number(router.query.page ?? 1) });
+  // Always call hooks unconditionally
+  const pendingResult = useGetPendingToolsQuery();
+  const toolsResult = useGetToolsQuery({ per_page: 20, page: Number(router.query.page ?? 1) });
+  
+  const { data, isLoading } = pendingMode ? pendingResult : toolsResult;
+  const { refetch } = pendingMode ? pendingResult : toolsResult;
+  
   const [approveTrigger] = useApproveToolMutation();
   const [rejectTrigger] = useRejectToolMutation();
   const { addToast } = useToast();
   const qc = useQueryClient();
 
-  const [rejectingTool, setRejectingTool] = useState<any | null>(null);
+  const [rejectingTool, setRejectingTool] = useState<Tool | null>(null);
   const [rejectReason, setRejectReason] = useState<string>('');
-  const [approvingTool, setApprovingTool] = useState<any | null>(null);
+  const [approvingTool, setApprovingTool] = useState<Tool | null>(null);
 
-  const payload: any = data;
-  const tools = Array.isArray(payload?.data) ? payload.data : (Array.isArray(payload) ? payload : payload?.data ?? []);
+  const payload = data as ApiListResponse<Tool>;
+  const tools: Tool[] = Array.isArray(payload?.data)
+    ? payload.data
+    : [];
 
   async function performApprove(id: number | string) {
     const key = ['admin', 'pending-tools'];
-    const previous = qc.getQueryData<any>(key);
+    const previous = qc.getQueryData<ApiListResponse<Tool>>(key);
     try {
-      qc.setQueryData(key, (old: any) => {
+      qc.setQueryData(key, (old: ApiListResponse<Tool> | Tool[] | undefined) => {
         if (!old) return old;
-        if (Array.isArray(old.data)) {
-          return { ...old, data: old.data.filter((t: any) => t.id !== id) };
+        if (Array.isArray((old as ApiListResponse<Tool>).data)) {
+          const response = old as ApiListResponse<Tool>;
+          return { ...response, data: response.data.filter((t: Tool) => t.id !== id) };
         }
-        if (Array.isArray(old)) return old.filter((t: any) => t.id !== id);
+        if (Array.isArray(old)) return (old as Tool[]).filter((t: Tool) => t.id !== id);
         return old;
       });
 
       await approveTrigger(id).unwrap();
       await refetch();
       addToast('Tool approved', 'success');
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
       qc.setQueryData(key, previous);
       addToast('Approve failed', 'error');
     }
   }
 
-  function requestApprove(tool: any) {
+  function requestApprove(tool: Tool) {
     setApprovingTool(tool);
   }
 

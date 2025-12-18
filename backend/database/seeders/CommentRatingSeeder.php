@@ -20,6 +20,7 @@ class CommentRatingSeeder extends Seeder
 
         if ($users->isEmpty() || $tools->isEmpty()) {
             $this->command->warn('No users or tools found. Please seed users and tools first.');
+
             return;
         }
 

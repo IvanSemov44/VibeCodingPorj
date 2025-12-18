@@ -3,9 +3,9 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import Pagination from '../../components/admin/Pagination';
 import {
   useGetAdminCategoriesQuery,
-  useCreateCategoryMutation,
-  useUpdateCategoryMutation,
-  useDeleteCategoryMutation,
+  useCreateAdminCategoryMutation,
+  useUpdateAdminCategoryMutation,
+  useDeleteAdminCategoryMutation,
   useGetCategoryStatsQuery,
 } from '../../store/domains/admin';
 
@@ -27,9 +27,9 @@ export default function CategoriesPage() {
 
   const { data, isLoading, error } = useGetAdminCategoriesQuery({ page, search, per_page: 20 });
   const { data: stats } = useGetCategoryStatsQuery();
-  const [createCategory, createMutation] = useCreateCategoryMutation();
-  const [updateCategory, updateMutation] = useUpdateCategoryMutation();
-  const [deleteCategory, deleteMutation] = useDeleteCategoryMutation();
+  const [createCategory, createMutation] = useCreateAdminCategoryMutation();
+  const [updateCategory, updateMutation] = useUpdateAdminCategoryMutation();
+  const [deleteCategory, deleteMutation] = useDeleteAdminCategoryMutation();
 
   const categories = data?.data || [];
   const pagination = {

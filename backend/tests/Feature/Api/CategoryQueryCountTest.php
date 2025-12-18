@@ -3,8 +3,8 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Category;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CategoryQueryCountTest extends TestCase

@@ -70,13 +70,13 @@ export default function ToolDetailPage(): React.ReactElement | null {
                     </button>
                   </a>
                 )}
-                {t.docs_url && (
-                  <a href={t.docs_url as string} target="_blank" rel="noreferrer">
+                {typeof t.docs_url === 'string' && t.docs_url ? (
+                  <a href={t.docs_url} target="_blank" rel="noreferrer">
                     <button className="py-2 px-4 rounded-md border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] hover:bg-[var(--secondary-bg)] transition-colors">
                       Docs
                     </button>
                   </a>
-                )}
+                ) : null}
               </div>
             </div>
 
@@ -128,12 +128,12 @@ export default function ToolDetailPage(): React.ReactElement | null {
       {/* Details Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Usage Card */}
-        {t.usage && (
+        {t.usage ? (
           <div className="lg:col-span-2 bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6">
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">Usage</h2>
             <div className="text-[var(--text-secondary)] whitespace-pre-wrap">{String(t.usage)}</div>
           </div>
-        )}
+        ) : null}
 
         {/* Meta Information Card */}
         <div className={`bg-[var(--primary-bg)] border border-[var(--border-color)] rounded-lg p-6 ${!t.usage ? 'lg:col-span-3' : ''}`}>

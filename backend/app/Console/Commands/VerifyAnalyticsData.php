@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class VerifyAnalyticsData extends Command
 {
     protected $signature = 'seed:verify-analytics';
+
     protected $description = 'Verify analytics seed data is populated';
 
     public function handle(): int
@@ -27,8 +28,8 @@ class VerifyAnalyticsData extends Command
         // Authenticated vs Anonymous
         $authenticated = ToolView::whereNotNull('user_id')->count();
         $anonymous = ToolView::whereNull('user_id')->count();
-        $this->line("Authenticated Views:  {$authenticated} (" . round(($authenticated / $totalViews) * 100, 1) . "%)");
-        $this->line("Anonymous Views:      {$anonymous} (" . round(($anonymous / $totalViews) * 100, 1) . "%)");
+        $this->line("Authenticated Views:  {$authenticated} (".round(($authenticated / $totalViews) * 100, 1).'%)');
+        $this->line("Anonymous Views:      {$anonymous} (".round(($anonymous / $totalViews) * 100, 1).'%)');
 
         // Unique visitors
         $uniqueIPs = ToolView::distinct('ip_address')->count();

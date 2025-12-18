@@ -6,28 +6,30 @@ export type Theme = 'light' | 'dark';
 
 export type BadgeVariant = 'primary' | 'success' | 'error' | 'warning' | 'purple' | 'default';
 
+export interface Role {
+  id: ID;
+  name: string;
+}
+
 export interface User {
   id: ID;
   name: string;
   email: string;
-  roles?: string[];
+  roles?: (string | Role)[];
 }
 
 export interface Tag {
   id: ID;
   name: string;
   slug?: string | null;
+  description?: string;
 }
 
 export interface Category {
   id: ID;
   name: string;
   slug?: string | null;
-}
-
-export interface Role {
-  id: ID;
-  name: string;
+  description?: string;
 }
 
 export interface Tool {
@@ -35,7 +37,14 @@ export interface Tool {
   name?: string;
   description?: string | null;
   url?: string | null;
+  docs_url?: string | null;
+  usage?: string | null;
+  examples?: string | null;
+  difficulty?: string;
   screenshots?: string[];
+  average_rating?: number;
+  rating_count?: number;
+  user_rating?: { score: number };
   [key: string]: unknown;
 }
 
@@ -58,6 +67,7 @@ export type ToolUpdatePayload = Partial<ToolCreatePayload>;
 export interface CategoryCreatePayload {
   name: string;
   slug?: string | null;
+  description?: string;
 }
 
 export type CategoryUpdatePayload = Partial<CategoryCreatePayload>;
@@ -65,6 +75,7 @@ export type CategoryUpdatePayload = Partial<CategoryCreatePayload>;
 export interface TagCreatePayload {
   name: string;
   slug?: string | null;
+  description?: string;
 }
 
 export type TagUpdatePayload = Partial<TagCreatePayload>;
@@ -126,4 +137,70 @@ export interface PaginationMeta {
 export interface ApiListResponse<T = unknown> {
   data: T[];
   meta?: PaginationMeta;
+  current_page?: number;
+  last_page?: number;
+  per_page?: number;
+  total?: number;
+}
+
+// Admin types
+export interface PendingToolStatus {
+  id: ID;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
+export interface AdminUser extends User {
+  is_active: boolean;
+  email_verified_at?: string | null;
+}
+
+export interface ActivityLog {
+  id: ID;
+  user_id: ID;
+  action: string;
+  model: string;
+  model_id: ID;
+  changes?: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface CategoryStats {
+  total: number;
+  with_tools: number;
+  without_tools: number;
+  avg_tools_per_category: number;
+  top_categories: Array<{ id: ID; name: string; slug: string; tools_count: number }>;
+}
+
+export interface TagStats {
+  total: number;
+  with_tools: number;
+  without_tools: number;
+  avg_tools_per_tag: number;
+  top_tags: Array<{ id: ID; name: string; slug: string; tools_count: number }>;
+}
+
+export interface AdminStats {
+  total_users: number;
+  active_users: number;
+  total_tools: number;
+  pending_tools: number;
+  approved_tools: number;
+  rejected_tools: number;
+  total_categories: number;
+  total_tags: number;
+}
+
+export interface Comment {
+  id: ID;
+  content: string;
+  user: { id: ID; name: string };
+  created_at: string;
+  upvotes: number;
+  downvotes: number;
+  replies?: Comment[];
+}
+
+export interface CommentResponse {
+  data: Comment[];
 }

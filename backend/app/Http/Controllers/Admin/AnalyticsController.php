@@ -117,7 +117,7 @@ class AnalyticsController extends Controller
             ->limit($limit)
             ->with('tool:id,name,slug')
             ->get()
-            ->map(fn($view) => [
+            ->map(fn ($view) => [
                 'tool_id' => $view->tool_id,
                 'tool_name' => $view->tool?->name,
                 'tool_slug' => $view->tool?->slug,
@@ -158,7 +158,8 @@ class AnalyticsController extends Controller
             }
         }
 
-        usort($trending, fn($a, $b) => $b['growth_percentage'] <=> $a['growth_percentage']);
+        usort($trending, fn ($a, $b) => $b['growth_percentage'] <=> $a['growth_percentage']);
+
         return array_slice($trending, 0, 5);
     }
 
@@ -194,6 +195,7 @@ class AnalyticsController extends Controller
         for ($i = 0; $i < $days; $i++) {
             $labels[] = $startDate->copy()->addDays($i)->format('M d');
         }
+
         return $labels;
     }
 
@@ -206,7 +208,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('count')
             ->limit($limit)
             ->pluck('count', 'referer')
-            ->map(fn($count, $referer) => [
+            ->map(fn ($count, $referer) => [
                 'referer' => $referer ? parse_url($referer, PHP_URL_HOST) ?? $referer : 'Direct',
                 'views' => $count,
             ])
@@ -241,7 +243,7 @@ class AnalyticsController extends Controller
             ->orderByDesc('count')
             ->limit($limit)
             ->get()
-            ->map(fn($view) => [
+            ->map(fn ($view) => [
                 'referer' => parse_url($view->referer, PHP_URL_HOST) ?? $view->referer,
                 'views' => $view->count,
             ])

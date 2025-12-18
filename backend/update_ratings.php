@@ -12,7 +12,7 @@ $tools = App\Models\Tool::all();
 foreach ($tools as $tool) {
     $before = [
         'avg' => $tool->average_rating,
-        'count' => $tool->rating_count
+        'count' => $tool->rating_count,
     ];
 
     $tool->updateAverageRating();

@@ -5,7 +5,22 @@ export const config = {
   matcher: ['/admin', '/admin/:path*', '/api/admin/:path*'],
 };
 
-    async function getUserFromApi(req: NextRequest, apiBase: string) {
+interface FetchResult {
+  ok: boolean;
+  status: number;
+  url: string;
+  body: string;
+  json?: Record<string, unknown> | null;
+}
+
+interface UserResponse {
+  id: number;
+  name: string;
+  email: string;
+  roles?: Array<{ name: string } | string>;
+}
+
+    async function getUserFromApi(req: NextRequest, apiBase: string): Promise<FetchResult> {
       const headers: HeadersInit = {};
       const cookie = req.headers.get('cookie');
       if (!cookie) return { ok: false, status: 0, url: apiBase, body: 'no-cookie' };
@@ -20,23 +35,30 @@ export const config = {
         'http://127.0.0.1:8201/api',
       ];
 
-      let lastErr: any = null;
+      let lastErr: FetchResult | null = null;
       for (const base of candidates) {
         const userPath = buildPath(base);
         try {
           const res = await fetch(userPath, { headers, cache: 'no-store' });
           const text = await res.text();
-          let json = null;
-          try { json = text ? JSON.parse(text) : null; } catch (e) { json = null; }
+          let json: Record<string, unknown> | null = null;
+          try { json = text ? JSON.parse(text) : null; } catch { json = null; }
           if (res.ok) return { ok: true, status: res.status, url: userPath, body: text, json };
           // record non-ok response but continue trying
           lastErr = { ok: false, status: res.status, url: userPath, body: text, json };
-        } catch (e) {
-          lastErr = { ok: false, status: 0, url: userPath, body: String(e) };
+        } catch (error) {
+          lastErr = { ok: false, status: 0, url: userPath, body: String(error) };
         }
       }
       return lastErr ?? { ok: false, status: 0, url: apiBase, body: 'unreachable' };
     }
+
+interface UserResponse {
+  id?: number;
+  name?: string;
+  email?: string;
+  roles?: Array<{ name: string }>;
+}
 
 export default async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
@@ -44,7 +66,7 @@ export default async function middleware(req: NextRequest) {
   // Protect admin UI pages: call backend to validate session + roles.
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     const apiBase = process.env.NEXT_PUBLIC_API_URL ?? new URL(req.url).origin;
-    let result = await getUserFromApi(req, apiBase as string);
+    let result = await getUserFromApi(req, apiBase);
     // Fallback: try localhost backend in case container hostname cannot be reached
     if (!result.ok) {
       const fallback = await getUserFromApi(req, 'http://localhost:8201/api');
@@ -89,7 +111,7 @@ export default async function middleware(req: NextRequest) {
   if (pathname.startsWith('/api/admin')) {
     const apiBase = process.env.NEXT_PUBLIC_API_URL ?? new URL(req.url).origin;
     const userJson = await getUserFromApi(req, apiBase as string);
-    const user = userJson?.user ?? userJson?.data ?? userJson ?? null;
+    const user = (userJson as Record<string, unknown>)?.user ?? (userJson as Record<string, unknown>)?.data ?? userJson ?? null;
 
     if (!user) {
       return new NextResponse(JSON.stringify({ message: 'Unauthenticated.' }), {

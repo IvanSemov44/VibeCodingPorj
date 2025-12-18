@@ -97,7 +97,7 @@ export async function getAdminCategory(id: string | number): Promise<unknown> {
   return await parseJson(res as unknown as Response);
 }
 
-export async function createCategory(data: { name: string; description?: string }): Promise<unknown> {
+export async function createAdminCategory(data: { name: string; description?: string }): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/categories`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -106,7 +106,7 @@ export async function createCategory(data: { name: string; description?: string 
   return await parseJson(res as unknown as Response);
 }
 
-export async function updateCategory(id: string | number, data: { name: string; description?: string }): Promise<unknown> {
+export async function updateAdminCategory(id: string | number, data: { name: string; description?: string }): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/categories/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -115,7 +115,7 @@ export async function updateCategory(id: string | number, data: { name: string; 
   return await parseJson(res as unknown as Response);
 }
 
-export async function deleteCategory(id: string | number): Promise<unknown> {
+export async function deleteAdminCategory(id: string | number): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/categories/${id}`, { method: 'DELETE' });
   return await parseJson(res as unknown as Response);
 }
@@ -138,7 +138,7 @@ export async function getAdminTag(id: string | number): Promise<unknown> {
   return await parseJson(res as unknown as Response);
 }
 
-export async function createTag(data: { name: string; description?: string }): Promise<unknown> {
+export async function createAdminTag(data: { name: string; description?: string }): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/tags`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -147,7 +147,7 @@ export async function createTag(data: { name: string; description?: string }): P
   return await parseJson(res as unknown as Response);
 }
 
-export async function updateTag(id: string | number, data: { name: string; description?: string }): Promise<unknown> {
+export async function updateAdminTag(id: string | number, data: { name: string; description?: string }): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/tags/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -156,7 +156,7 @@ export async function updateTag(id: string | number, data: { name: string; descr
   return await parseJson(res as unknown as Response);
 }
 
-export async function deleteTag(id: string | number): Promise<unknown> {
+export async function deleteAdminTag(id: string | number): Promise<unknown> {
   const res = await fetchWithAuth(`/api/admin/tags/${id}`, { method: 'DELETE' });
   return await parseJson(res as unknown as Response);
 }

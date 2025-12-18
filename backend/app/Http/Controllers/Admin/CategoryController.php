@@ -23,7 +23,7 @@ class CategoryController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('slug', 'like', "%{$search}%");
+                    ->orWhere('slug', 'like', "%{$search}%");
             });
         }
 
@@ -63,8 +63,8 @@ class CategoryController extends Controller
         $category = Category::with(['tools' => function ($query) {
             $query->select('tools.id', 'tools.name', 'tools.slug')->limit(10);
         }])
-        ->withCount('tools')
-        ->findOrFail($id);
+            ->withCount('tools')
+            ->findOrFail($id);
 
         return response()->json($category);
     }

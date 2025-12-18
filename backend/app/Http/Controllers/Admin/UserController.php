@@ -85,7 +85,7 @@ class UserController extends Controller
                 'ip' => $request->ip(),
             ]);
         } catch (\Throwable $ex) {
-            \Log::error('setRoles logging failed: ' . $ex->getMessage());
+            \Log::error('setRoles logging failed: '.$ex->getMessage());
         }
 
         // If the 'users.edit' permission or assignment to 'owner' is missing,
@@ -129,10 +129,10 @@ class UserController extends Controller
 
             if ($ownerRole && ! $ownerRole->hasPermissionTo($perm)) {
                 $ownerRole->givePermissionTo($perm);
-                \Log::info("Assigned permission users.edit to owner role at runtime");
+                \Log::info('Assigned permission users.edit to owner role at runtime');
             }
         } catch (\Throwable $ex) {
-            \Log::error('failed to ensure owner permission: ' . $ex->getMessage());
+            \Log::error('failed to ensure owner permission: '.$ex->getMessage());
         }
 
         $this->authorize('users.edit');
@@ -153,7 +153,7 @@ class UserController extends Controller
         try {
             activity()->performedOn($user)->log('user_roles_updated');
         } catch (\Throwable $e) {
-            \Log::warning('spatie activity() helper not available: ' . $e->getMessage());
+            \Log::warning('spatie activity() helper not available: '.$e->getMessage());
         }
 
         // Also write to our lightweight activities table so RecentActivity can display it
@@ -167,7 +167,7 @@ class UserController extends Controller
                 'created_at' => now(),
             ]);
         } catch (\Throwable $e) {
-            \Log::warning('Failed to create Activity record: ' . $e->getMessage());
+            \Log::warning('Failed to create Activity record: '.$e->getMessage());
         }
 
         return response()->json($user->load('roles'));

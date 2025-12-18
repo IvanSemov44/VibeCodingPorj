@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { API_BASE_URL } from '../../lib/constants'
+import type { ActivityLog } from '../../lib/types'
 
-type Activity = {
-  id: number
+type Activity = ActivityLog & {
   subject_type?: string
   subject_id?: number
-  action?: string
-  user?: { id?: number; name?: string; email?: string; roles?: string[] }
-  meta?: any
-  created_at?: string
+  meta?: Record<string, unknown>
 }
 
 function Avatar({ name, id }: { name?: string; id?: number }) {

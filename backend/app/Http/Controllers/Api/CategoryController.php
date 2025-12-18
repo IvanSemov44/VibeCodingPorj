@@ -5,17 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\User;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
-use App\Services\CacheService;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function __construct(private readonly CacheService $cacheService)
-    {
-    }
+    public function __construct(private readonly CacheService $cacheService) {}
+
     public function index(Request $request)
     {
         try {
@@ -23,7 +22,7 @@ class CategoryController extends Controller
                 return Category::orderBy('name')->get(['id', 'name', 'slug']);
             }, 3600);
         } catch (\Throwable $e) {
-            logger()->warning('Category cache read failed, falling back to direct DB: ' . $e->getMessage());
+            logger()->warning('Category cache read failed, falling back to direct DB: '.$e->getMessage());
             $categories = Category::orderBy('name')->get(['id', 'name', 'slug']);
         }
 
@@ -60,7 +59,7 @@ class CategoryController extends Controller
                 Cache::forget('categories');
             }
         } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate categories cache: ' . $e->getMessage());
+            logger()->warning('Failed to invalidate categories cache: '.$e->getMessage());
         }
 
         return response()->json($category, 201);
@@ -92,7 +91,7 @@ class CategoryController extends Controller
                 Cache::forget('categories');
             }
         } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate categories cache: ' . $e->getMessage());
+            logger()->warning('Failed to invalidate categories cache: '.$e->getMessage());
         }
 
         return response()->json($category);
@@ -116,7 +115,7 @@ class CategoryController extends Controller
                 Cache::forget('categories');
             }
         } catch (\Throwable $e) {
-            logger()->warning('Failed to invalidate categories cache: ' . $e->getMessage());
+            logger()->warning('Failed to invalidate categories cache: '.$e->getMessage());
         }
 
         return response()->noContent();

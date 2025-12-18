@@ -31,7 +31,7 @@ export default function CommentList({ toolId, currentUserId }: CommentListProps)
   }
 
   // Handle paginated response structure: { data: [...] }
-  const comments = Array.isArray((data as any)?.data) ? (data as any).data : [];
+  const comments: Comment[] = Array.isArray((data as Record<string, unknown>)?.data) ? (data as Record<string, unknown>).data as Comment[] : [];
 
   return (
     <div className="space-y-6">
@@ -48,7 +48,7 @@ export default function CommentList({ toolId, currentUserId }: CommentListProps)
         </div>
       ) : (
         <div className="space-y-6">
-          {comments.map((comment: any) => (
+          {comments.map((comment: Comment) => (
             <CommentItem
               key={comment.id}
               comment={comment}

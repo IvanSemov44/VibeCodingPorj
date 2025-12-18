@@ -19,6 +19,7 @@ class EnsureAdminOrOwner
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);
             }
+
             return redirect('/');
         }
 
@@ -32,13 +33,13 @@ class EnsureAdminOrOwner
             }
 
             // Method 2: Direct roles check (backup)
-            if (!$allowed && method_exists($user, 'roles')) {
+            if (! $allowed && method_exists($user, 'roles')) {
                 $roles = $user->roles()->pluck('name')->toArray();
                 $allowed = in_array('admin', $roles) || in_array('owner', $roles);
             }
 
             // Method 3: Check is_admin flag (backup)
-            if (!$allowed && isset($user->is_admin) && $user->is_admin) {
+            if (! $allowed && isset($user->is_admin) && $user->is_admin) {
                 $allowed = true;
             }
         } catch (\Throwable $e) {
@@ -58,6 +59,7 @@ class EnsureAdminOrOwner
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => 'Forbidden. Admin access required.'], 403);
             }
+
             return redirect('/');
         }
 

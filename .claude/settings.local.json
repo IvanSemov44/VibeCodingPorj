@@ -17,7 +17,8 @@
       "Bash(npx prettier:*)",
       "Bash(timeout 120 npm test -- --reporter=verbose)",
       "Bash(timeout 60 npm test -- --run --reporter=verbose)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(composer check:*)"
     ]
   }
 }
