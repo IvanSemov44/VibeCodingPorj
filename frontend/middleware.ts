@@ -59,6 +59,7 @@ async function getUserFromApi(req: NextRequest, apiBase: string): Promise<FetchR
   for (const base of candidates) {
     const userPath = buildPath(base);
     try {
+      // Note: Direct fetch here is intentional - this is server-side middleware auth check
       const res = await fetch(userPath, { headers, cache: 'no-store' });
       const text = await res.text();
       let json: Record<string, unknown> | null = null;

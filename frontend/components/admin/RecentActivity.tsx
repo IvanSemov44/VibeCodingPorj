@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { API_BASE_URL } from '../../lib/constants';
+import { getActivities } from '../../lib/api';
 import type { ActivityLog } from '../../lib/types';
 
 type Activity = ActivityLog & {
@@ -144,10 +144,7 @@ export default function RecentActivity() {
     let mounted = true;
     (async () => {
       try {
-        const url = `${API_BASE_URL.replace(/\/$/, '')}/admin/activities`;
-        const res = await fetch(url, { credentials: 'include' });
-        if (!res.ok) throw new Error('fetch failed');
-        const data = await res.json();
+        const data = await getActivities() as any;
         if (mounted) setActivities(data.data ?? []);
       } catch (e) {
         if (mounted) setActivities([]);
