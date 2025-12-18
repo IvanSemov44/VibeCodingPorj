@@ -89,7 +89,10 @@ class ExportActivitiesJob implements ShouldQueue
             $fullPath = Storage::path($path);
 
             // Ensure directory exists
-            Storage::ensureDirectoryExists('exports/activities');
+            $exportDir = Storage::path('exports/activities');
+            if (! file_exists($exportDir)) {
+                mkdir($exportDir, 0755, true);
+            }
 
             // Open file for writing
             $file = fopen($fullPath, 'w');
@@ -121,8 +124,8 @@ class ExportActivitiesJob implements ShouldQueue
                         fputcsv($file, [
                             $activity->id,
                             $activity->created_at?->format('Y-m-d H:i:s') ?? 'N/A',
-                            $user?->name ?? 'System',
-                            $user?->email ?? 'system@app.local',
+                            $user->name ?? 'System',
+                            $user->email ?? 'system@app.local',
                             $roles,
                             $activity->action,
                             $subject,

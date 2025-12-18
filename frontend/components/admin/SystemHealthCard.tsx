@@ -31,8 +31,13 @@ export default function SystemHealthCard(): JSX.Element {
     <div className="p-4 rounded-md border" style={{ borderColor: 'var(--border-color)' }}>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-medium">System Health</h3>
-        <div className={`inline-flex items-center px-3 py-1 rounded-full ${statusColor(data?.status)}`} style={{ color: data?.status === 'ok' ? '#fff' : 'var(--text-primary)' }}>
-          <span className="text-sm font-semibold">{isLoading ? 'Checking…' : data?.status ?? (error ? 'error' : 'unknown')}</span>
+        <div
+          className={`inline-flex items-center px-3 py-1 rounded-full ${statusColor(data?.status)}`}
+          style={{ color: data?.status === 'ok' ? '#fff' : 'var(--text-primary)' }}
+        >
+          <span className="text-sm font-semibold">
+            {isLoading ? 'Checking…' : data?.status ?? (error ? 'error' : 'unknown')}
+          </span>
         </div>
       </div>
 
@@ -44,7 +49,9 @@ export default function SystemHealthCard(): JSX.Element {
 
       <div className="space-y-2">
         {isLoading ? (
-          <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading checks…</div>
+          <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            Loading checks…
+          </div>
         ) : (
           <>
             {data?.checks ? (
@@ -52,19 +59,37 @@ export default function SystemHealthCard(): JSX.Element {
                 {Object.entries(data.checks).map(([k, v]) => (
                   <li key={k} className="flex items-center justify-between text-sm">
                     <span className="capitalize">{k.replace('_', ' ')}</span>
-                    <span className="font-medium" style={{ color: v === 'ok' ? 'var(--success)' : v === 'not_writable' ? 'var(--alert-warning-text)' : 'var(--danger)' }}>{String(v)}</span>
+                    <span
+                      className="font-medium"
+                      style={{
+                        color:
+                          v === 'ok'
+                            ? 'var(--success)'
+                            : v === 'not_writable'
+                            ? 'var(--alert-warning-text)'
+                            : 'var(--danger)',
+                      }}
+                    >
+                      {String(v)}
+                    </span>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>No checks available.</div>
+              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                No checks available.
+              </div>
             )}
           </>
         )}
       </div>
 
       <div className="mt-4 flex gap-2">
-        <button onClick={() => refetch()} className="px-3 py-1 rounded-md text-sm" style={{ background: 'var(--accent)', color: '#fff' }}>
+        <button
+          onClick={() => refetch()}
+          className="px-3 py-1 rounded-md text-sm"
+          style={{ background: 'var(--accent)', color: '#fff' }}
+        >
           Refresh
         </button>
         <button
@@ -75,7 +100,9 @@ export default function SystemHealthCard(): JSX.Element {
         >
           {pinging ? 'Pinging…' : 'Quick ping'}
         </button>
-        {lastPing && <div className="text-xs text-[var(--text-secondary)] self-center">Last: {lastPing}</div>}
+        {lastPing && (
+          <div className="text-xs text-[var(--text-secondary)] self-center">Last: {lastPing}</div>
+        )}
       </div>
     </div>
   );

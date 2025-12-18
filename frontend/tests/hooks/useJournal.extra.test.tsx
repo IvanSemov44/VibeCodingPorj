@@ -123,7 +123,11 @@ describe('useJournal extra', () => {
   });
 
   test('createEntry calls mutation on failure', async () => {
-    const failFn = vi.fn((d: any) => ({ unwrap: async () => { throw new Error('create-fail'); } }));
+    const failFn = vi.fn((d: any) => ({
+      unwrap: async () => {
+        throw new Error('create-fail');
+      },
+    }));
     vi.mocked(api.useCreateEntryMutation).mockImplementation(
       () => [failFn, { isLoading: false }] as any,
     );
@@ -150,7 +154,11 @@ describe('useJournal extra', () => {
   });
 
   test('deleteEntry calls mutation on failure', async () => {
-    const errFn = vi.fn((id: any) => ({ unwrap: async () => { throw new Error('del-fail'); } }));
+    const errFn = vi.fn((id: any) => ({
+      unwrap: async () => {
+        throw new Error('del-fail');
+      },
+    }));
     vi.mocked(api.useDeleteEntryMutation).mockImplementation(
       () => [errFn, { isLoading: false }] as any,
     );

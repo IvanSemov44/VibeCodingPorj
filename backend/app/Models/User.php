@@ -21,6 +21,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $failed_login_attempts
  * @property \Illuminate\Support\Carbon|null $locked_until
  * @property bool $is_active
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_type
+ * @property string|null $two_factor_recovery_codes
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, JournalEntry> $journalEntries

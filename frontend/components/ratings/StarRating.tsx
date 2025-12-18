@@ -15,7 +15,7 @@ export default function StarRating({
   currentRating,
   averageRating,
   ratingCount,
-  editable = true
+  editable = true,
 }: StarRatingProps) {
   const [hoveredStar, setHoveredStar] = useState(0);
   const [rateTool, { isPending }] = useRateToolMutation();

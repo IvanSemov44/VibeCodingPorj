@@ -26,6 +26,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property array|null $screenshots
  * @property ToolStatus $status
  * @property int|null $submitted_by
+ * @property float|null $average_rating
+ * @property int $rating_count
+ * @property int|null $user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Category> $categories

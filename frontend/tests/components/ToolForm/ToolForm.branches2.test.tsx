@@ -17,7 +17,6 @@ vi.mock('../../../store/domains', () => ({
   useDeleteToolScreenshotMutation: vi.fn(),
 }));
 
-
 import ToolForm from '../../../components/ToolForm';
 import {
   useCreateToolMutation,
@@ -30,7 +29,10 @@ import {
 describe('ToolForm branch coverage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useGetCsrfMutation as unknown as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
+    (useGetCsrfMutation as unknown as any).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ]);
     (useDeleteToolScreenshotMutation as unknown as any).mockReturnValue([
       () => ({ unwrap: () => Promise.resolve() }),
       {},

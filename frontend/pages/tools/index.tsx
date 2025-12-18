@@ -98,7 +98,7 @@ export default function ToolsIndex(): React.ReactElement {
       </div>
 
       <div className="flex gap-3 mb-3 items-center flex-wrap">
-          <select
+        <select
           value={selectedCategory}
           onChange={(e) => {
             setSelectedCategory(e.target.value);
@@ -160,9 +160,7 @@ export default function ToolsIndex(): React.ReactElement {
           ))}
         </div>
       ) : queryError ? (
-        <div className="p-3 rounded-md alert-error">
-          Unable to load tools. {String(queryError)}
-        </div>
+        <div className="p-3 rounded-md alert-error">Unable to load tools. {String(queryError)}</div>
       ) : (
         <div>
           {toolsData.length === 0 ? (
@@ -192,8 +190,8 @@ export default function ToolsIndex(): React.ReactElement {
                   key={pn}
                   onClick={() => setPage(pn)}
                   className={`py-1.5 px-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-secondary)] transition-colors ${
-                      (metaData.current_page || page) === pn ? 'font-bold' : 'font-normal'
-                    }`}
+                    (metaData.current_page || page) === pn ? 'font-bold' : 'font-normal'
+                  }`}
                 >
                   {pn}
                 </button>

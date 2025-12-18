@@ -32,7 +32,10 @@ describe('ToolForm', () => {
       () => ({ unwrap: () => Promise.resolve() }),
       {},
     ]);
-    (useGetCsrfMutation as unknown as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
+    (useGetCsrfMutation as unknown as any).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ]);
   });
 
   test('submits create mutation when creating a new tool', async () => {

@@ -60,7 +60,7 @@ class ScanQueries extends Command
                     if ($traceEnabled) {
                         foreach ($bt as $frame) {
                             if (isset($frame['file']) && ! str_contains($frame['file'], '/vendor/')) {
-                                $caller = ($frame['file'] ?? '').':'.($frame['line'] ?? '');
+                                $caller = $frame['file'].':'.($frame['line'] ?? '');
                                 break;
                             }
                         }
@@ -88,7 +88,10 @@ class ScanQueries extends Command
                             if ($limit++ > 30) {
                                 break;
                             }
-                            $frames[] = ((($frame['file'] ?? '[internal]').':'.($frame['line'] ?? '?').' '.($frame['function'] ?? '')));
+                            $file = $frame['file'] ?? '[internal]';
+                            $line = $frame['line'] ?? '?';
+                            $function = $frame['function'];
+                            $frames[] = $file.':'.$line.' '.$function;
                         }
                         $entry['trace'] = $frames;
                     }
@@ -98,11 +101,11 @@ class ScanQueries extends Command
             });
 
             $start = microtime(true);
+            $kernel = app(\App\Http\Kernel::class);
             try {
                 // Optionally disable Debugbar via middleware strip. When
                 // `--keep-debugbar` is set we intentionally leave Debugbar in
                 // place so we can capture its collectors for reporting.
-                $kernel = app(\App\Http\Kernel::class);
                 $removedDebugbar = false;
                 $originalMiddleware = null;
                 try {

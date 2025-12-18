@@ -28,7 +28,10 @@ describe('ScreenshotManager edge cases', () => {
     // provide safe default hook returns so component can destructure
     const defaultTrigger = () => ({ unwrap: () => Promise.resolve() });
     vi.mocked(domains.useDeleteToolScreenshotMutation).mockReturnValue([defaultTrigger, {}] as any);
-    vi.mocked(domains.useGetCsrfMutation).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}] as any);
+    vi.mocked(domains.useGetCsrfMutation).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ] as any);
   });
 
   test('adds invalid url shows alert and does not call change', () => {
@@ -138,7 +141,9 @@ describe('ScreenshotManager edge cases', () => {
     const ref = { current: null } as any;
     // first call rejects with object having status 401 then resolves
     const mutateAsync = vi.fn();
-    mutateAsync.mockRejectedValueOnce({ status: 401 }).mockResolvedValueOnce({ screenshots: ['b'] });
+    mutateAsync
+      .mockRejectedValueOnce({ status: 401 })
+      .mockResolvedValueOnce({ screenshots: ['b'] });
     const trigger = vi.fn(() => ({ unwrap: () => mutateAsync() }));
     vi.mocked(domains.useDeleteToolScreenshotMutation).mockReturnValue([trigger, {}] as any);
 

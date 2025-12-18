@@ -20,7 +20,12 @@ interface CommentItemProps {
   depth?: number;
 }
 
-export default function CommentItem({ comment, toolId, currentUserId, depth = 0 }: CommentItemProps) {
+export default function CommentItem({
+  comment,
+  toolId,
+  currentUserId,
+  depth = 0,
+}: CommentItemProps) {
   const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(true);
   const [deleteComment, { isPending: isDeleting }] = useDeleteCommentMutation();
@@ -60,7 +65,11 @@ export default function CommentItem({ comment, toolId, currentUserId, depth = 0 
   };
 
   return (
-    <div className={`space-y-3 ${depth > 0 ? 'ml-8 pl-4 border-l-2 border-[var(--border-color)]' : ''}`}>
+    <div
+      className={`space-y-3 ${
+        depth > 0 ? 'ml-8 pl-4 border-l-2 border-[var(--border-color)]' : ''
+      }`}
+    >
       <div className="flex gap-3">
         {/* Avatar */}
         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--primary-color)] text-white flex items-center justify-center text-sm font-medium">
@@ -71,7 +80,9 @@ export default function CommentItem({ comment, toolId, currentUserId, depth = 0 
           {/* Header */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-[var(--text-primary)]">{comment.user.name}</span>
-            <span className="text-xs text-[var(--text-secondary)]">{timeAgo(comment.created_at)}</span>
+            <span className="text-xs text-[var(--text-secondary)]">
+              {timeAgo(comment.created_at)}
+            </span>
           </div>
 
           {/* Content */}
@@ -103,7 +114,8 @@ export default function CommentItem({ comment, toolId, currentUserId, depth = 0 
                 onClick={() => setShowReplies(!showReplies)}
                 className="text-[var(--text-secondary)] hover:text-[var(--primary-color)] transition-colors"
               >
-                {showReplies ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                {showReplies ? 'Hide' : 'Show'} {comment.replies.length}{' '}
+                {comment.replies.length === 1 ? 'reply' : 'replies'}
               </button>
             )}
           </div>

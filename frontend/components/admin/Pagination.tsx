@@ -79,7 +79,7 @@ export default function Pagination({
               >
                 {pageNum}
               </button>
-            )
+            ),
           )}
         </div>
 

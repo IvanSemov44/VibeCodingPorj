@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { API_BASE_URL } from '../../lib/constants'
-import type { ActivityLog } from '../../lib/types'
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { API_BASE_URL } from '../../lib/constants';
+import type { ActivityLog } from '../../lib/types';
 
 type Activity = ActivityLog & {
-  subject_type?: string
-  subject_id?: number
-  meta?: Record<string, unknown>
-  user?: { id: number; name: string; email?: string; roles?: string[] }
-}
+  subject_type?: string;
+  subject_id?: number;
+  meta?: Record<string, unknown>;
+  user?: { id: number; name: string; email?: string; roles?: string[] };
+};
 
 function Avatar({ name, id }: { name?: string; id?: number }) {
   const label = (name || 'S')
@@ -16,7 +16,7 @@ function Avatar({ name, id }: { name?: string; id?: number }) {
     .map((s) => s.charAt(0))
     .slice(0, 2)
     .join('')
-    .toUpperCase()
+    .toUpperCase();
 
   const colors = [
     'from-indigo-500 to-pink-500',
@@ -24,11 +24,11 @@ function Avatar({ name, id }: { name?: string; id?: number }) {
     'from-yellow-400 to-orange-500',
     'from-sky-400 to-indigo-600',
     'from-rose-400 to-fuchsia-500',
-  ]
+  ];
 
-  const hash = (id ?? name?.split('').reduce((s, c) => s + c.charCodeAt(0), 0) ?? 0) as number
-  const idx = Math.abs(hash) % colors.length
-  const bg = colors[idx]
+  const hash = (id ?? name?.split('').reduce((s, c) => s + c.charCodeAt(0), 0) ?? 0) as number;
+  const idx = Math.abs(hash) % colors.length;
+  const bg = colors[idx];
 
   return (
     <div
@@ -37,23 +37,27 @@ function Avatar({ name, id }: { name?: string; id?: number }) {
     >
       {label}
     </div>
-  )
+  );
 }
 
 function SubjectLink({ activity }: { activity: Activity }) {
-  const type = activity.subject_type ?? ''
-  const id = activity.subject_id
-  const nameValue = activity.meta?.name || activity.meta?.title || activity.meta?.slug || (type.split('\\').pop() + ' #' + id)
-  const name = String(nameValue)
+  const type = activity.subject_type ?? '';
+  const id = activity.subject_id;
+  const nameValue =
+    activity.meta?.name ||
+    activity.meta?.title ||
+    activity.meta?.slug ||
+    type.split('\\').pop() + ' #' + id;
+  const name = String(nameValue);
 
-  if (!id) return <span className="font-medium">{name}</span>
+  if (!id) return <span className="font-medium">{name}</span>;
 
   if (type.indexOf('Tool') !== -1) {
     return (
       <Link href={`/admin/tools/${id}`} className="font-medium text-indigo-600 hover:underline">
         {name}
       </Link>
-    )
+    );
   }
 
   if (type.indexOf('User') !== -1) {
@@ -61,76 +65,100 @@ function SubjectLink({ activity }: { activity: Activity }) {
       <Link href={`/admin/users/${id}`} className="font-medium text-indigo-600 hover:underline">
         {name}
       </Link>
-    )
+    );
   }
 
-  return <span className="font-medium">{name}</span>
+  return <span className="font-medium">{name}</span>;
 }
 
 function MetaDetails({ meta }: { meta?: any }) {
-  if (!meta) return null
+  if (!meta) return null;
   if (meta.roles && Array.isArray(meta.roles)) {
     return (
       <div className="mt-2 flex flex-wrap gap-2">
         {meta.roles.map((r: string) => (
-          <span key={r} className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">{r}</span>
+          <span
+            key={r}
+            className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+          >
+            {r}
+          </span>
         ))}
       </div>
-    )
+    );
   }
 
   // Common fields
   return (
     <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
       {meta.email && <div>Email: {meta.email}</div>}
-      {meta.url && <div>URL: <a className="text-indigo-500" href={meta.url} target="_blank" rel="noreferrer">{meta.url}</a></div>}
-      {!meta.email && !meta.url && <pre className="whitespace-pre-wrap text-xs text-gray-400">{JSON.stringify(meta)}</pre>}
+      {meta.url && (
+        <div>
+          URL:{' '}
+          <a className="text-indigo-500" href={meta.url} target="_blank" rel="noreferrer">
+            {meta.url}
+          </a>
+        </div>
+      )}
+      {!meta.email && !meta.url && (
+        <pre className="whitespace-pre-wrap text-xs text-gray-400">{JSON.stringify(meta)}</pre>
+      )}
     </div>
-  )
+  );
 }
 
 function ActorDetails({ user }: { user?: Activity['user'] }) {
-  if (!user) return <div className="text-sm text-gray-500">System</div>
+  if (!user) return <div className="text-sm text-gray-500">System</div>;
   return (
     <div className="text-sm text-gray-700 dark:text-gray-200">
       <div className="flex items-center gap-2">
-        <Link href={`/admin/users/${user.id}`} className="font-medium text-indigo-600 hover:underline">{user.name}</Link>
+        <Link
+          href={`/admin/users/${user.id}`}
+          className="font-medium text-indigo-600 hover:underline"
+        >
+          {user.name}
+        </Link>
         {user.roles && user.roles.length > 0 && (
           <div className="flex items-center gap-1">
             {user.roles.map((r) => (
-              <span key={r} className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">{r}</span>
+              <span
+                key={r}
+                className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+              >
+                {r}
+              </span>
             ))}
           </div>
         )}
       </div>
       {user.email && <div className="text-xs text-gray-500">{user.email}</div>}
     </div>
-  )
+  );
 }
 
 export default function RecentActivity() {
-  const [activities, setActivities] = useState<Activity[]>([])
-  const [loading, setLoading] = useState(true)
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true
-    ;(async () => {
+    let mounted = true;
+    (async () => {
       try {
-        const url = `${API_BASE_URL.replace(/\/$/, '')}/admin/activities`
-        const res = await fetch(url, { credentials: 'include' })
-        if (!res.ok) throw new Error('fetch failed')
-        const data = await res.json()
-        if (mounted) setActivities(data.data ?? [])
+        const url = `${API_BASE_URL.replace(/\/$/, '')}/admin/activities`;
+        const res = await fetch(url, { credentials: 'include' });
+        if (!res.ok) throw new Error('fetch failed');
+        const data = await res.json();
+        if (mounted) setActivities(data.data ?? []);
       } catch (e) {
-        if (mounted) setActivities([])
+        if (mounted) setActivities([]);
       } finally {
-        if (mounted) setLoading(false)
+        if (mounted) setLoading(false);
       }
-    })()
+    })();
     return () => {
-      mounted = false
-    }
-  }, [])
+      mounted = false;
+    };
+  }, []);
 
   return (
     <section className="rounded-md p-4 shadow-sm bg-gradient-to-b from-white/50 to-white/30 dark:from-gray-800/60 dark:to-gray-800/40">
@@ -159,10 +187,14 @@ export default function RecentActivity() {
                       <div>
                         <span className="capitalize">{a.action}</span>
                         {a.subject_type ? (
-                          <span className="text-xs text-gray-500 ml-2">{a.subject_type.split('\\').pop()}</span>
+                          <span className="text-xs text-gray-500 ml-2">
+                            {a.subject_type.split('\\').pop()}
+                          </span>
                         ) : null}
                       </div>
-                      <time className="text-xs text-gray-400">{a.created_at ? new Date(a.created_at).toLocaleString() : ''}</time>
+                      <time className="text-xs text-gray-400">
+                        {a.created_at ? new Date(a.created_at).toLocaleString() : ''}
+                      </time>
                     </div>
                     <div className="mt-2">
                       <SubjectLink activity={a} />
@@ -179,5 +211,5 @@ export default function RecentActivity() {
         </ul>
       )}
     </section>
-  )
+  );
 }

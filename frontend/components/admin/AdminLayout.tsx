@@ -14,12 +14,15 @@ export default function AdminLayout({ children, title, description }: AdminLayou
   const router = useRouter();
 
   // Check if user is admin - memoize to prevent recalculation
-  const isAdmin = useMemo(() =>
-    user?.roles?.some((role: any) =>
-      typeof role === 'string'
-        ? role === 'admin' || role === 'owner'
-        : role?.name === 'admin' || role?.name === 'owner'
-    ), [user?.roles]);
+  const isAdmin = useMemo(
+    () =>
+      user?.roles?.some((role: any) =>
+        typeof role === 'string'
+          ? role === 'admin' || role === 'owner'
+          : role?.name === 'admin' || role?.name === 'owner',
+      ),
+    [user?.roles],
+  );
 
   useEffect(() => {
     if (!loading && user && !isAdmin) {
@@ -46,7 +49,9 @@ export default function AdminLayout({ children, title, description }: AdminLayou
         {(title || description) && (
           <div className="mb-6">
             {title && <h1 className="text-2xl font-bold text-[var(--text-primary)]">{title}</h1>}
-            {description && <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>}
+            {description && (
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
+            )}
           </div>
         )}
 

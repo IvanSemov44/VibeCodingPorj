@@ -59,7 +59,8 @@ class VerifyAnalyticsData extends Command
 
         foreach ($topTools as $idx => $toolView) {
             $rank = $idx + 1;
-            $name = $toolView->tool?->name ?? "Tool #{$toolView->tool_id}";
+            /** @var \App\Models\ToolView $toolView */
+            $name = $toolView->tool->name ?? "Tool #{$toolView->tool_id}";
             $this->line("  {$rank}. {$name}: {$toolView->view_count} views");
         }
 

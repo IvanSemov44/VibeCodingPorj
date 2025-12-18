@@ -77,6 +77,10 @@ console.log(`Files analyzed: ${perFile.length}`);
 console.log('Top 20 files by % covered:');
 perFile.slice(0, 20).forEach((f) => console.log(`${f.pct}% — ${f.file} (${f.covered}/${f.total})`));
 console.log('...');
-console.log(`Overall approx coverage: ${((grandCovered / grandTotal) * 100).toFixed(1)}% (${grandCovered}/${grandTotal})`);
+console.log(
+  `Overall approx coverage: ${((grandCovered / grandTotal) * 100).toFixed(
+    1,
+  )}% (${grandCovered}/${grandTotal})`,
+);
 
 process.exit(0);

@@ -18,7 +18,7 @@ class ActivityObserver
                 'subject_id' => $model->getKey(),
                 'action' => $action,
                 'user_id' => Auth::id(),
-                'meta' => method_exists($model, 'toArray') ? $model->only(array_slice(array_keys($model->getAttributes()), 0, 10)) : null,
+                'meta' => $model->only(array_slice(array_keys($model->getAttributes()), 0, 10)),
             ]);
         } catch (\Throwable $e) {
             // Don't break request if logging fails

@@ -24,7 +24,10 @@ describe('ToolForm additional branches', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     addToast.mockClear();
-    (domains.useGetCsrfMutation as unknown as any).mockReturnValue([() => ({ unwrap: () => Promise.resolve() }), {}]);
+    (domains.useGetCsrfMutation as unknown as any).mockReturnValue([
+      () => ({ unwrap: () => Promise.resolve() }),
+      {},
+    ]);
 
     (domains.useDeleteToolScreenshotMutation as unknown as any).mockReturnValue([
       () => ({ unwrap: () => Promise.resolve() }),

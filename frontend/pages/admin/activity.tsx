@@ -49,9 +49,7 @@ export default function ActivityLogPage() {
   const params: Record<string, unknown> = {
     page: currentPage,
     per_page: perPage,
-    ...Object.fromEntries(
-      Object.entries(filters).filter(([_, v]) => v !== '')
-    ),
+    ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== '')),
   };
 
   // Fetch data using React Query
@@ -91,7 +89,7 @@ export default function ActivityLogPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(filters),
       });
@@ -159,8 +157,12 @@ export default function ActivityLogPage() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-[var(--card-bg)] rounded-lg shadow p-6 border border-[var(--border-color)]">
-              <div className="text-sm font-medium text-[var(--text-secondary)]">Total Activities</div>
-              <div className="mt-2 text-3xl font-bold text-[var(--text-primary)]">{stats.total.toLocaleString()}</div>
+              <div className="text-sm font-medium text-[var(--text-secondary)]">
+                Total Activities
+              </div>
+              <div className="mt-2 text-3xl font-bold text-[var(--text-primary)]">
+                {stats.total.toLocaleString()}
+              </div>
             </div>
             <div className="bg-[var(--card-bg)] rounded-lg shadow p-6 border border-[var(--border-color)]">
               <div className="text-sm font-medium text-[var(--text-secondary)]">Today</div>
@@ -175,7 +177,9 @@ export default function ActivityLogPage() {
               <div className="mt-2 text-lg font-bold text-[var(--accent)]">
                 {stats.top_actions[0]?.action || 'N/A'}
               </div>
-              <div className="text-sm text-[var(--text-secondary)]">{stats.top_actions[0]?.count || 0} times</div>
+              <div className="text-sm text-[var(--text-secondary)]">
+                {stats.top_actions[0]?.count || 0} times
+              </div>
             </div>
           </div>
         )}
@@ -185,7 +189,9 @@ export default function ActivityLogPage() {
           <h2 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Filters</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Search</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                Search
+              </label>
               <input
                 type="text"
                 value={filters.search}
@@ -195,7 +201,9 @@ export default function ActivityLogPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Action</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                Action
+              </label>
               <select
                 value={filters.action}
                 onChange={(e) => handleFilterChange('action', e.target.value)}
@@ -212,7 +220,9 @@ export default function ActivityLogPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Subject Type</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                Subject Type
+              </label>
               <select
                 value={filters.subject_type}
                 onChange={(e) => handleFilterChange('subject_type', e.target.value)}
@@ -226,7 +236,9 @@ export default function ActivityLogPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Date From</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                Date From
+              </label>
               <input
                 type="date"
                 value={filters.date_from}
@@ -235,7 +247,9 @@ export default function ActivityLogPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Date To</label>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                Date To
+              </label>
               <input
                 type="date"
                 value={filters.date_to}
@@ -306,13 +320,19 @@ export default function ActivityLogPage() {
                     <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-start">
                       {/* ID */}
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">ID</p>
-                        <p className="text-lg font-mono font-bold text-[var(--accent)]">#{activity.id}</p>
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">
+                          ID
+                        </p>
+                        <p className="text-lg font-mono font-bold text-[var(--accent)]">
+                          #{activity.id}
+                        </p>
                       </div>
 
                       {/* Date & Time */}
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Date & Time</p>
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">
+                          Date & Time
+                        </p>
                         <p className="text-sm font-medium text-[var(--text-primary)]">
                           {new Date(activity.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
@@ -320,16 +340,24 @@ export default function ActivityLogPage() {
                             day: 'numeric',
                           })}
                         </p>
-                        <p className="text-xs text-[var(--text-secondary)] mt-1">{activity.created_at_human}</p>
+                        <p className="text-xs text-[var(--text-secondary)] mt-1">
+                          {activity.created_at_human}
+                        </p>
                       </div>
 
                       {/* User & Email */}
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">User</p>
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">
+                          User
+                        </p>
                         {activity.user ? (
                           <>
-                            <p className="text-sm font-medium text-[var(--text-primary)] truncate">{activity.user.name}</p>
-                            <p className="text-xs text-[var(--text-secondary)] truncate">{activity.user.email}</p>
+                            <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+                              {activity.user.name}
+                            </p>
+                            <p className="text-xs text-[var(--text-secondary)] truncate">
+                              {activity.user.email}
+                            </p>
                           </>
                         ) : (
                           <p className="text-sm text-[var(--text-secondary)]">System</p>
@@ -338,22 +366,32 @@ export default function ActivityLogPage() {
 
                       {/* Action */}
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Action</p>
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${actionColor}`}>
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">
+                          Action
+                        </p>
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${actionColor}`}
+                        >
                           {activity.action}
                         </span>
                       </div>
 
                       {/* Subject */}
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Subject</p>
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">
+                          Subject
+                        </p>
                         <p className="text-sm font-medium text-[var(--text-primary)]">{subject}</p>
-                        <p className="text-xs text-[var(--text-secondary)]">ID: {activity.subject_id}</p>
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          ID: {activity.subject_id}
+                        </p>
                       </div>
 
                       {/* Details */}
                       <div className="min-w-0">
-                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">Details</p>
+                        <p className="text-xs text-[var(--text-secondary)] uppercase font-semibold mb-1">
+                          Details
+                        </p>
                         {activity.meta && Object.keys(activity.meta).length > 0 ? (
                           <details className="cursor-pointer text-blue-600 hover:text-blue-800 text-sm">
                             <summary className="font-medium">View details</summary>

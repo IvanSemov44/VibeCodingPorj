@@ -17,7 +17,9 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
   const { user } = useAuth(false);
 
   const canManage = Boolean(
-    user && (user.id === (tool.user && (tool.user as Record<string, unknown>).id) || (user.roles && user.roles.includes('owner')))
+    user &&
+      (user.id === (tool.user && (tool.user as Record<string, unknown>).id) ||
+        (user.roles && user.roles.includes('owner'))),
   );
 
   const handleDelete = async () => {

@@ -134,11 +134,7 @@ export default function ToolForm({
       >
         {({ values, setFieldValue, isSubmitting }) => (
           <Form>
-            {error && (
-              <div className="mb-4 rounded-lg text-sm alert-error p-3">
-                {error}
-              </div>
-            )}
+            {error && <div className="mb-4 rounded-lg text-sm alert-error p-3">{error}</div>}
 
             <NameField />
 

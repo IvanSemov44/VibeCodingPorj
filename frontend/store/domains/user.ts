@@ -26,7 +26,10 @@ export function useGetCsrfMutation(): readonly [
   () => { unwrap: () => Promise<Response> },
   UseMutationResult<Response, unknown, void>,
 ] {
-  const m = useMutation<Response, unknown, void>({ mutationFn: async () => api.getCsrf(), retry: false });
+  const m = useMutation<Response, unknown, void>({
+    mutationFn: async () => api.getCsrf(),
+    retry: false,
+  });
   // Return a stable trigger that directly calls the API shim. We rely on
   // api.getCsrf()'s internal dedupe to avoid duplicate network requests.
   const trigger = useCallback(() => ({ unwrap: () => api.getCsrf() }), []);

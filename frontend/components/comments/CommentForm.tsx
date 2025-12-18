@@ -15,7 +15,7 @@ export default function CommentForm({
   parentId,
   onSuccess,
   onCancel,
-  placeholder = 'Write a comment...'
+  placeholder = 'Write a comment...',
 }: CommentFormProps) {
   const [content, setContent] = useState('');
   const [postComment, { isPending }] = usePostCommentMutation();
@@ -53,9 +53,7 @@ export default function CommentForm({
       />
 
       <div className="flex justify-between items-center">
-        <span className="text-xs text-[var(--text-secondary)]">
-          {content.length}/2000
-        </span>
+        <span className="text-xs text-[var(--text-secondary)]">{content.length}/2000</span>
 
         <div className="flex gap-2">
           {onCancel && (

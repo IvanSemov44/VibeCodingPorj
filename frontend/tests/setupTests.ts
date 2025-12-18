@@ -58,7 +58,10 @@ vi.mock('../store/domains', () => {
     useCreateToolMutation: () => [noopTrigger, {}],
     useUpdateToolMutation: () => [noopTrigger, {}],
     useDeleteToolMutation: () => [noopTrigger, {}],
-    useUploadToolScreenshotsMutation: () => [vi.fn(() => ({ unwrap: () => Promise.resolve({ screenshots: [] }) })), {}],
+    useUploadToolScreenshotsMutation: () => [
+      vi.fn(() => ({ unwrap: () => Promise.resolve({ screenshots: [] }) })),
+      {},
+    ],
     useDeleteToolScreenshotMutation: () => [noopTrigger, {}],
     useGetCsrfMutation: () => [noopTrigger, {}],
   } as any;

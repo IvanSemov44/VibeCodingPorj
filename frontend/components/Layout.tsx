@@ -14,12 +14,13 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
   // Determine admin/owner role safely — roles may be strings or objects, or missing
   const isAdmin = React.useMemo(() => {
-    const roles = (user?.roles) || null;
+    const roles = user?.roles || null;
     if (!Array.isArray(roles)) return false;
     return roles.some((role: string | Role | undefined) => {
       if (!role) return false;
       if (typeof role === 'string') return role === 'owner' || role === 'admin';
-      if (typeof role === 'object' && 'name' in role) return role.name === 'owner' || role.name === 'admin';
+      if (typeof role === 'object' && 'name' in role)
+        return role.name === 'owner' || role.name === 'admin';
       return false;
     });
   }, [user]);

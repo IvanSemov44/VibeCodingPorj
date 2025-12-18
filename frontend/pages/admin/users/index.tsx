@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import Pagination from '../../../components/admin/Pagination';
-import { useGetAdminUsersQuery, useActivateUserMutation, useDeactivateUserMutation, useGetRolesQuery, useSetUserRolesMutation } from '../../../store/domains';
+import {
+  useGetAdminUsersQuery,
+  useActivateUserMutation,
+  useDeactivateUserMutation,
+  useGetRolesQuery,
+  useSetUserRolesMutation,
+} from '../../../store/domains';
 import { useToast } from '../../../components/Toast';
 import Modal from '../../../components/Modal';
 
@@ -22,13 +28,21 @@ export default function AdminUsersPage() {
   const [deactivateTrigger, deactivateMutation] = useDeactivateUserMutation();
   const [setRolesTrigger, setRolesMutation] = useSetUserRolesMutation();
   const { addToast } = useToast();
-  const [roleChangePending, setRoleChangePending] = useState<null | { userId: number | string; userName?: string; newRoleId?: number | string; newRoleName?: string }>(null);
+  const [roleChangePending, setRoleChangePending] = useState<null | {
+    userId: number | string;
+    userName?: string;
+    newRoleId?: number | string;
+    newRoleName?: string;
+  }>(null);
   const [isSavingRole, setIsSavingRole] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<null | { type: 'activate' | 'deactivate'; userId: number | string; userName?: string }>(null);
+  const [confirmAction, setConfirmAction] = useState<null | {
+    type: 'activate' | 'deactivate';
+    userId: number | string;
+    userName?: string;
+  }>(null);
 
   return (
     <AdminLayout title="User Management" description="Manage user accounts, roles, and permissions">
-
       <div className="mb-4 flex gap-2">
         <input
           className="px-2 py-1 rounded border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]"
@@ -75,28 +89,42 @@ export default function AdminUsersPage() {
                     value={(u.roles && u.roles[0] && String(u.roles[0].id)) || ''}
                     onChange={(e) => {
                       const val = e.target.value;
-                      const role = Array.isArray(rolesList) ? rolesList.find((rr: any) => String(rr.id) === val) : null;
-                      setRoleChangePending({ userId: u.id, userName: u.name, newRoleId: val ? Number(val) : undefined, newRoleName: role?.name });
+                      const role = Array.isArray(rolesList)
+                        ? rolesList.find((rr: any) => String(rr.id) === val)
+                        : null;
+                      setRoleChangePending({
+                        userId: u.id,
+                        userName: u.name,
+                        newRoleId: val ? Number(val) : undefined,
+                        newRoleName: role?.name,
+                      });
                     }}
                   >
                     <option value="">(none)</option>
-                    {Array.isArray(rolesList) && rolesList.map((r: any) => (
-                      <option key={r.id} value={String(r.id)}>{r.name}</option>
-                    ))}
+                    {Array.isArray(rolesList) &&
+                      rolesList.map((r: any) => (
+                        <option key={r.id} value={String(r.id)}>
+                          {r.name}
+                        </option>
+                      ))}
                   </select>
                 </td>
                 <td className="p-2 text-[var(--text-primary)]">
                   {u.is_active ? (
                     <button
                       className="px-2 py-1 bg-[var(--danger)] text-white rounded"
-                      onClick={() => setConfirmAction({ type: 'deactivate', userId: u.id, userName: u.name })}
+                      onClick={() =>
+                        setConfirmAction({ type: 'deactivate', userId: u.id, userName: u.name })
+                      }
                     >
                       Deactivate
                     </button>
                   ) : (
                     <button
                       className="px-2 py-1 bg-[var(--success)] text-white rounded"
-                      onClick={() => setConfirmAction({ type: 'activate', userId: u.id, userName: u.name })}
+                      onClick={() =>
+                        setConfirmAction({ type: 'activate', userId: u.id, userName: u.name })
+                      }
                     >
                       Activate
                     </button>
@@ -121,7 +149,10 @@ export default function AdminUsersPage() {
         <Modal onClose={() => setRoleChangePending(null)}>
           <div className="p-4">
             <h2 className="text-lg font-bold mb-2">Confirm role change</h2>
-            <p className="mb-4">Change role for <strong>{roleChangePending.userName}</strong> to <strong>{roleChangePending.newRoleName || '(none)'}</strong>?</p>
+            <p className="mb-4">
+              Change role for <strong>{roleChangePending.userName}</strong> to{' '}
+              <strong>{roleChangePending.newRoleName || '(none)'}</strong>?
+            </p>
             <div className="flex gap-2 justify-end">
               <button
                 className="px-3 py-1 border rounded bg-[var(--primary-bg)]"
@@ -136,7 +167,12 @@ export default function AdminUsersPage() {
                   if (!roleChangePending) return;
                   setIsSavingRole(true);
                   try {
-                    await setRolesTrigger({ userId: roleChangePending.userId, roles: roleChangePending.newRoleId ? [Number(roleChangePending.newRoleId)] : [] }).unwrap();
+                    await setRolesTrigger({
+                      userId: roleChangePending.userId,
+                      roles: roleChangePending.newRoleId
+                        ? [Number(roleChangePending.newRoleId)]
+                        : [],
+                    }).unwrap();
                     addToast('Role updated', 'success');
                     setRoleChangePending(null);
                   } catch (err) {
@@ -157,8 +193,13 @@ export default function AdminUsersPage() {
       {confirmAction && (
         <Modal onClose={() => setConfirmAction(null)}>
           <div className="p-4">
-            <h2 className="text-lg font-bold mb-2">Confirm {confirmAction.type === 'deactivate' ? 'deactivation' : 'activation'}</h2>
-            <p className="mb-4">Are you sure you want to {confirmAction.type} <strong>{confirmAction.userName}</strong>?</p>
+            <h2 className="text-lg font-bold mb-2">
+              Confirm {confirmAction.type === 'deactivate' ? 'deactivation' : 'activation'}
+            </h2>
+            <p className="mb-4">
+              Are you sure you want to {confirmAction.type}{' '}
+              <strong>{confirmAction.userName}</strong>?
+            </p>
             <div className="flex gap-2 justify-end">
               <button
                 className="px-3 py-1 border rounded bg-[var(--primary-bg)]"

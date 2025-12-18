@@ -28,7 +28,6 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading(! app()->isProduction());
 
         // Register model observer for activity logging on key models
-        \App\Observers\ActivityObserver::class; // ensure class exists
         \App\Models\User::observe(\App\Observers\ActivityObserver::class);
 
         // Ensure login rate limiter exists for Fortify/login routes

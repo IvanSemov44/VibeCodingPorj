@@ -40,38 +40,42 @@ function extractRoleNames(user: unknown): string[] {
   return [];
 }
 
-    async function getUserFromApi(req: NextRequest, apiBase: string): Promise<FetchResult> {
-      const headers: HeadersInit = {};
-      const cookie = req.headers.get('cookie');
-      if (!cookie) return { ok: false, status: 0, url: apiBase, body: 'no-cookie' };
-      headers['cookie'] = cookie;
+async function getUserFromApi(req: NextRequest, apiBase: string): Promise<FetchResult> {
+  const headers: HeadersInit = {};
+  const cookie = req.headers.get('cookie');
+  if (!cookie) return { ok: false, status: 0, url: apiBase, body: 'no-cookie' };
+  headers['cookie'] = cookie;
 
-      const buildPath = (base: string) => (base.endsWith('/api') ? `${base}/user` : `${base}/api/user`);
+  const buildPath = (base: string) => (base.endsWith('/api') ? `${base}/user` : `${base}/api/user`);
 
-      const candidates = [
-        apiBase,
-        'http://backend/api',
-        'http://host.docker.internal:8201/api',
-        'http://127.0.0.1:8201/api',
-      ];
+  const candidates = [
+    apiBase,
+    'http://backend/api',
+    'http://host.docker.internal:8201/api',
+    'http://127.0.0.1:8201/api',
+  ];
 
-      let lastErr: FetchResult | null = null;
-      for (const base of candidates) {
-        const userPath = buildPath(base);
-        try {
-          const res = await fetch(userPath, { headers, cache: 'no-store' });
-          const text = await res.text();
-          let json: Record<string, unknown> | null = null;
-          try { json = text ? JSON.parse(text) : null; } catch { json = null; }
-          if (res.ok) return { ok: true, status: res.status, url: userPath, body: text, json };
-          // record non-ok response but continue trying
-          lastErr = { ok: false, status: res.status, url: userPath, body: text, json };
-        } catch (error) {
-          lastErr = { ok: false, status: 0, url: userPath, body: String(error) };
-        }
+  let lastErr: FetchResult | null = null;
+  for (const base of candidates) {
+    const userPath = buildPath(base);
+    try {
+      const res = await fetch(userPath, { headers, cache: 'no-store' });
+      const text = await res.text();
+      let json: Record<string, unknown> | null = null;
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        json = null;
       }
-      return lastErr ?? { ok: false, status: 0, url: apiBase, body: 'unreachable' };
+      if (res.ok) return { ok: true, status: res.status, url: userPath, body: text, json };
+      // record non-ok response but continue trying
+      lastErr = { ok: false, status: res.status, url: userPath, body: text, json };
+    } catch (error) {
+      lastErr = { ok: false, status: 0, url: userPath, body: String(error) };
     }
+  }
+  return lastErr ?? { ok: false, status: 0, url: apiBase, body: 'unreachable' };
+}
 
 export default async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
@@ -94,8 +98,13 @@ export default async function middleware(req: NextRequest) {
       const res = NextResponse.redirect(loginUrl);
       res.headers.set('x-mw-debug', 'no-user-found');
       res.headers.set('x-mw-backend-status', String(result.status || 0));
-      const snippet = typeof result.body === 'string' ? result.body.slice(0, 200) : JSON.stringify(result.body || '');
-      try { res.headers.set('x-mw-backend-body', encodeURIComponent(snippet)); } catch (e) {}
+      const snippet =
+        typeof result.body === 'string'
+          ? result.body.slice(0, 200)
+          : JSON.stringify(result.body || '');
+      try {
+        res.headers.set('x-mw-backend-body', encodeURIComponent(snippet));
+      } catch (e) {}
       return res;
     }
 
@@ -119,7 +128,11 @@ export default async function middleware(req: NextRequest) {
   if (pathname.startsWith('/api/admin')) {
     const apiBase = process.env.NEXT_PUBLIC_API_URL ?? new URL(req.url).origin;
     const userJson = await getUserFromApi(req, apiBase as string);
-    const userData = (userJson.json as unknown as Record<string, unknown>)?.user ?? (userJson.json as unknown as Record<string, unknown>)?.data ?? userJson.json ?? null;
+    const userData =
+      (userJson.json as unknown as Record<string, unknown>)?.user ??
+      (userJson.json as unknown as Record<string, unknown>)?.data ??
+      userJson.json ??
+      null;
 
     if (!userData) {
       return new NextResponse(JSON.stringify({ message: 'Unauthenticated.' }), {

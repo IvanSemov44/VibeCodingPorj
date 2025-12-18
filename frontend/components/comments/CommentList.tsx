@@ -2,7 +2,8 @@ import React from 'react';
 import { useGetCommentsQuery } from '../../store/domains';
 import CommentForm from './CommentForm';
 import CommentItem from './CommentItem';
-import { SkeletonCard } from '../Loading/SkeletonCard';import type { Comment } from '../../lib/types'
+import { SkeletonCard } from '../Loading/SkeletonCard';
+import type { Comment } from '../../lib/types';
 interface CommentListProps {
   toolId: number;
   currentUserId?: number;
@@ -32,7 +33,9 @@ export default function CommentList({ toolId, currentUserId }: CommentListProps)
   // Handle paginated response structure: { data: [...] }
   const comments = Array.isArray((data as Record<string, unknown>)?.data)
     ? ((data as Record<string, unknown>).data as Comment[])
-    : (Array.isArray(data) ? (data as Comment[]) : []);
+    : Array.isArray(data)
+    ? (data as Comment[])
+    : [];
 
   return (
     <div className="space-y-6">

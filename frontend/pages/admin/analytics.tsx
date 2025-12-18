@@ -28,7 +28,7 @@ if (typeof window !== 'undefined') {
     BarElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
   );
 }
 
@@ -53,7 +53,12 @@ export default function AnalyticsDashboard() {
   const [period, setPeriod] = useState('7');
   const [toolFilter, setToolFilter] = useState('');
 
-  const { data: analytics, isLoading, isError, error } = useQuery({
+  const {
+    data: analytics,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['admin', 'analytics', period],
     queryFn: async () => {
       const response = await fetchWithAuth(`/api/admin/analytics?period=${period}`);
@@ -165,12 +170,31 @@ export default function AnalyticsDashboard() {
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <MetricCard label="Total Views" value={analytics.total_views.toLocaleString()} icon="👁️" color="#3b82f6" />
-          <MetricCard label="Unique Viewers" value={analytics.unique_viewers.toLocaleString()} icon="👥" color="#10b981" />
-          <MetricCard label="Total Tools" value={analytics.total_tools.toString()} icon="🛠️" color="#a855f7" />
+          <MetricCard
+            label="Total Views"
+            value={analytics.total_views.toLocaleString()}
+            icon="👁️"
+            color="#3b82f6"
+          />
+          <MetricCard
+            label="Unique Viewers"
+            value={analytics.unique_viewers.toLocaleString()}
+            icon="👥"
+            color="#10b981"
+          />
+          <MetricCard
+            label="Total Tools"
+            value={analytics.total_tools.toString()}
+            icon="🛠️"
+            color="#a855f7"
+          />
           <MetricCard
             label="Avg Views/Tool"
-            value={analytics.total_tools > 0 ? Math.round(analytics.total_views / analytics.total_tools).toString() : '0'}
+            value={
+              analytics.total_tools > 0
+                ? Math.round(analytics.total_views / analytics.total_tools).toString()
+                : '0'
+            }
             icon="📈"
             color="#f59e0b"
           />
@@ -202,13 +226,22 @@ export default function AnalyticsDashboard() {
             <table className="w-full">
               <thead>
                 <tr style={{ borderBottomColor: 'var(--border-color)' }} className="border-b">
-                  <th className="text-left py-3 px-4 font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <th
+                    className="text-left py-3 px-4 font-semibold"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     Tool
                   </th>
-                  <th className="text-right py-3 px-4 font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <th
+                    className="text-right py-3 px-4 font-semibold"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     Views
                   </th>
-                  <th className="text-right py-3 px-4 font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <th
+                    className="text-right py-3 px-4 font-semibold"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     % of Total
                   </th>
                 </tr>
@@ -237,8 +270,14 @@ export default function AnalyticsDashboard() {
                       <td className="py-3 px-4 text-right" style={{ color: 'var(--text-primary)' }}>
                         {tool.views.toLocaleString()}
                       </td>
-                      <td className="py-3 px-4 text-right" style={{ color: 'var(--text-secondary)' }}>
-                        {analytics.total_views > 0 ? ((tool.views / analytics.total_views) * 100).toFixed(1) : 0}%
+                      <td
+                        className="py-3 px-4 text-right"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        {analytics.total_views > 0
+                          ? ((tool.views / analytics.total_views) * 100).toFixed(1)
+                          : 0}
+                        %
                       </td>
                     </tr>
                   ))}
@@ -438,7 +477,10 @@ export default function AnalyticsDashboard() {
               Engagement Rate
             </p>
             <p className="text-2xl font-bold mt-1" style={{ color: 'var(--text-primary)' }}>
-              {analytics.total_tools > 0 ? ((analytics.unique_viewers / analytics.total_tools) * 100).toFixed(1) : 0}%
+              {analytics.total_tools > 0
+                ? ((analytics.unique_viewers / analytics.total_tools) * 100).toFixed(1)
+                : 0}
+              %
             </p>
           </div>
         </div>
@@ -448,7 +490,17 @@ export default function AnalyticsDashboard() {
 }
 
 // Helper Component for Metric Cards
-function MetricCard({ label, value, icon, color }: { label: string; value: string; icon: string; color: string }) {
+function MetricCard({
+  label,
+  value,
+  icon,
+  color,
+}: {
+  label: string;
+  value: string;
+  icon: string;
+  color: string;
+}) {
   return (
     <div
       className="rounded-lg p-6 shadow transition-transform hover:scale-105"

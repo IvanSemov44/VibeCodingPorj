@@ -88,11 +88,15 @@ export default function TagsPage() {
           </div>
           <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
             <div className="text-[var(--text-secondary)] text-sm">Without Tools</div>
-            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.without_tools}</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">
+              {stats.without_tools}
+            </div>
           </div>
           <div className="bg-[var(--secondary-bg)] p-4 rounded-lg border border-[var(--border-color)]">
             <div className="text-[var(--text-secondary)] text-sm">Avg Tools per Tag</div>
-            <div className="text-[var(--text-primary)] text-2xl font-bold">{stats.avg_tools_per_tag}</div>
+            <div className="text-[var(--text-primary)] text-2xl font-bold">
+              {stats.avg_tools_per_tag}
+            </div>
           </div>
         </div>
       )}
@@ -103,7 +107,10 @@ export default function TagsPage() {
           type="text"
           placeholder="Search tags..."
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           className="flex-1 px-4 py-2 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded-lg text-[var(--text-primary)] placeholder-[var(--text-secondary)]"
         />
         <button
@@ -128,18 +135,27 @@ export default function TagsPage() {
               <tr className="border-b border-[var(--border-color)]">
                 <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Name</th>
                 <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Slug</th>
-                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">Description</th>
+                <th className="text-left p-4 text-[var(--text-secondary)] font-medium">
+                  Description
+                </th>
                 <th className="text-center p-4 text-[var(--text-secondary)] font-medium">Tools</th>
                 <th className="text-right p-4 text-[var(--text-secondary)] font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {tags.map((tag: Tag) => (
-                <tr key={tag.id} className="border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--primary-bg)] transition-colors">
+                <tr
+                  key={tag.id}
+                  className="border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--primary-bg)] transition-colors"
+                >
                   <td className="p-4 text-[var(--text-primary)] font-medium">{tag.name}</td>
                   <td className="p-4 text-[var(--text-secondary)]">{tag.slug}</td>
-                  <td className="p-4 text-[var(--text-secondary)] max-w-xs truncate">{tag.description || '-'}</td>
-                  <td className="p-4 text-center text-[var(--text-primary)]">{tag.tools_count || 0}</td>
+                  <td className="p-4 text-[var(--text-secondary)] max-w-xs truncate">
+                    {tag.description || '-'}
+                  </td>
+                  <td className="p-4 text-center text-[var(--text-primary)]">
+                    {tag.tools_count || 0}
+                  </td>
                   <td className="p-4 text-right">
                     <button
                       onClick={() => handleOpenEdit(tag)}
@@ -174,8 +190,14 @@ export default function TagsPage() {
 
       {/* Create/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
-          <div className="bg-[var(--secondary-bg)] p-6 rounded-lg border border-[var(--border-color)] w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-[var(--secondary-bg)] p-6 rounded-lg border border-[var(--border-color)] w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
               {editingTag ? 'Edit Tag' : 'Create Tag'}
             </h2>
@@ -204,7 +226,9 @@ export default function TagsPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
-                disabled={!formData.name.trim() || createMutation.isPending || updateMutation.isPending}
+                disabled={
+                  !formData.name.trim() || createMutation.isPending || updateMutation.isPending
+                }
                 className="flex-1 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
               >
                 {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}

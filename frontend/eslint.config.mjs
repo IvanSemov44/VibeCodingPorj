@@ -89,6 +89,14 @@ const eslintConfig = [
       '@typescript-eslint/no-explicit-any': 'warn', // Downgrade to warning for complex types
     },
   },
+
+  // Next.js auto-generated file - allow triple slash references
+  {
+    files: ['next-env.d.ts'],
+    rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
+    },
+  },
 ];
 
 export default eslintConfig;

@@ -31,14 +31,23 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
   let roleNamesRender: string[] = [];
   if (Array.isArray(user?.roles)) {
-    roleNamesRender = user.roles.map((r: any) => (typeof r === 'string' ? r : r?.name)).filter(Boolean) as string[];
+    roleNamesRender = user.roles
+      .map((r: any) => (typeof r === 'string' ? r : r?.name))
+      .filter(Boolean) as string[];
   } else if ((user as any)?.role) {
     roleNamesRender = [(user as any).role];
   }
   const isAdminRender = roleNamesRender.includes('admin') || roleNamesRender.includes('owner');
   // Debug log for render path
   // eslint-disable-next-line no-console
-  console.debug('[AdminGuard] render user:', user, 'roles:', roleNamesRender, 'isAdmin:', isAdminRender);
+  console.debug(
+    '[AdminGuard] render user:',
+    user,
+    'roles:',
+    roleNamesRender,
+    'isAdmin:',
+    isAdminRender,
+  );
   if (!isAdminRender) return null;
 
   // In development, render a small debug banner with detected roles before showing children

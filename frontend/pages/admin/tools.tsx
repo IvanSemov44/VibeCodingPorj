@@ -18,7 +18,8 @@ import type { Tool, Role, ApiListResponse } from '../../lib/types';
 
 export default function AdminToolsPage() {
   const router = useRouter();
-  const status = typeof router.query.status === 'string' ? (router.query.status as string) : undefined;
+  const status =
+    typeof router.query.status === 'string' ? (router.query.status as string) : undefined;
   const pendingMode = status === 'pending';
   const { user } = useAuth();
 
@@ -26,7 +27,7 @@ export default function AdminToolsPage() {
   const isAdmin = user?.roles?.some((role: string | Role) =>
     typeof role === 'string'
       ? role === 'admin' || role === 'owner'
-      : role?.name === 'admin' || role?.name === 'owner'
+      : role?.name === 'admin' || role?.name === 'owner',
   );
 
   // Always call hooks unconditionally
@@ -46,9 +47,7 @@ export default function AdminToolsPage() {
   const [approvingTool, setApprovingTool] = useState<Tool | null>(null);
 
   const payload = data as ApiListResponse<Tool>;
-  const tools: Tool[] = Array.isArray(payload?.data)
-    ? payload.data
-    : [];
+  const tools: Tool[] = Array.isArray(payload?.data) ? payload.data : [];
 
   async function performApprove(id: number | string) {
     const key = ['admin', 'pending-tools'];
@@ -153,28 +152,28 @@ export default function AdminToolsPage() {
                   <td className="p-2">{t.user?.name ?? t.author_name}</td>
                   <td className="p-2">{t.status ?? (t.is_approved ? 'Approved' : 'Unknown')}</td>
                   <td className="p-2">
-                      <a href={`/tools/${t.slug ?? t.id}`} className="text-[var(--accent)] mr-2">
+                    <a href={`/tools/${t.slug ?? t.id}`} className="text-[var(--accent)] mr-2">
                       View
                     </a>
                     {t.status === 'pending' || t.is_pending ? (
-                        isAdmin ? (
-                          <>
-                            <button
-                              className="ml-2 px-2 py-1 bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-hover)]"
-                              onClick={() => requestApprove(t)}
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className="ml-2 px-2 py-1 bg-[var(--danger)] text-white rounded hover:bg-[var(--danger-hover)]"
-                              onClick={() => setRejectingTool(t)}
-                            >
-                              Reject
-                            </button>
-                          </>
-                        ) : (
-                          <span className="ml-2 text-sm text-tertiary-text">Pending</span>
-                        )
+                      isAdmin ? (
+                        <>
+                          <button
+                            className="ml-2 px-2 py-1 bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-hover)]"
+                            onClick={() => requestApprove(t)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="ml-2 px-2 py-1 bg-[var(--danger)] text-white rounded hover:bg-[var(--danger-hover)]"
+                            onClick={() => setRejectingTool(t)}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        <span className="ml-2 text-sm text-tertiary-text">Pending</span>
+                      )
                     ) : null}
                   </td>
                 </tr>
@@ -189,15 +188,30 @@ export default function AdminToolsPage() {
         <div className="mt-4 flex items-center gap-2">
           <button
             className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-            onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: Math.max(1, (payload?.meta?.current_page ?? 1) - 1) } })}
+            onClick={() =>
+              router.push({
+                pathname: router.pathname,
+                query: {
+                  ...router.query,
+                  page: Math.max(1, (payload?.meta?.current_page ?? 1) - 1),
+                },
+              })
+            }
             disabled={(payload?.meta?.current_page ?? 1) <= 1}
           >
             Previous
           </button>
-          <div className="text-[var(--text-primary)]">Page {payload?.meta?.current_page ?? 1} of {payload?.meta?.last_page ?? '-'}</div>
+          <div className="text-[var(--text-primary)]">
+            Page {payload?.meta?.current_page ?? 1} of {payload?.meta?.last_page ?? '-'}
+          </div>
           <button
             className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-            onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: (payload?.meta?.current_page ?? 0) + 1 } })}
+            onClick={() =>
+              router.push({
+                pathname: router.pathname,
+                query: { ...router.query, page: (payload?.meta?.current_page ?? 0) + 1 },
+              })
+            }
             disabled={(payload?.meta?.current_page ?? 0) >= (payload?.meta?.last_page ?? 1)}
           >
             Next
@@ -215,7 +229,10 @@ export default function AdminToolsPage() {
               className="w-full border border-[var(--border-color)] rounded p-2 h-24 bg-[var(--primary-bg)] text-[var(--text-primary)]"
             />
             <div className="mt-3 flex justify-end gap-2">
-              <button className="px-3 py-2 bg-[var(--secondary-bg)] rounded text-[var(--text-primary)]" onClick={() => setRejectingTool(null)}>
+              <button
+                className="px-3 py-2 bg-[var(--secondary-bg)] rounded text-[var(--text-primary)]"
+                onClick={() => setRejectingTool(null)}
+              >
                 Cancel
               </button>
               <button
@@ -237,7 +254,10 @@ export default function AdminToolsPage() {
           <div>
             <p>Are you sure you want to approve this tool?</p>
             <div className="mt-3 flex justify-end gap-2">
-              <button className="px-3 py-2 bg-gray-200 rounded" onClick={() => setApprovingTool(null)}>
+              <button
+                className="px-3 py-2 bg-gray-200 rounded"
+                onClick={() => setApprovingTool(null)}
+              >
                 Cancel
               </button>
               <button

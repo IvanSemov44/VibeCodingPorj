@@ -7,16 +7,26 @@ interface Props {
   isAdmin?: boolean;
 }
 
-export default function ToolApprovalCard({ tool, onApprove, onRequestReject, isAdmin = false }: Props) {
+export default function ToolApprovalCard({
+  tool,
+  onApprove,
+  onRequestReject,
+  isAdmin = false,
+}: Props) {
   return (
     <div className="border border-[var(--border-color)] rounded p-4 bg-[var(--card-bg)]">
       <h3 className="text-lg font-semibold text-[var(--text-primary)]">{tool.name}</h3>
-      <div className="text-sm text-[var(--text-secondary)]">By: {tool.user?.name ?? tool.author_name}</div>
+      <div className="text-sm text-[var(--text-secondary)]">
+        By: {tool.user?.name ?? tool.author_name}
+      </div>
       <p className="mt-2 text-sm text-[var(--text-secondary)] line-clamp-3">{tool.description}</p>
       <div className="mt-3 flex gap-2 items-center">
         {isAdmin ? (
           <>
-            <button onClick={() => onApprove(tool.id)} className="px-3 py-1 bg-accent text-white rounded">
+            <button
+              onClick={() => onApprove(tool.id)}
+              className="px-3 py-1 bg-accent text-white rounded"
+            >
               Approve
             </button>
             <button
