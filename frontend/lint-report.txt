@@ -1,0 +1,110 @@
+
+> vibecode-full-stack-starter-kit-frontend@0.1.0 lint
+> eslint . --ext .ts,.tsx
+
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\components\admin\AdminGuard.tsx
+  23:5   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  34:42  warning  Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+  35:23  warning  Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+  36:33  warning  Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+  40:3   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\components\admin\AdminLayout.tsx
+  18:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\components\admin\RecentActivity.tsx
+   70:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:16  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  154:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  173:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\components\admin\SystemHealthCard.tsx
+  23:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\components\admin\ToolApprovalCard.tsx
+  4:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\components\comments\CommentItem.tsx
+  35:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\lib\api\public.ts
+  82:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\middleware.ts
+   16:11  warning  'UserResponse' is defined but never used       @typescript-eslint/no-unused-vars
+   98:89  warning  'e' is defined but never used                  @typescript-eslint/no-unused-vars
+  122:11  warning  'userData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\activity.tsx
+   6:11  warning  'Activity' is defined but never used       @typescript-eslint/no-unused-vars
+  17:24  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  22:11  warning  'ActivityStats' is defined but never used  @typescript-eslint/no-unused-vars
+  53:40  warning  '_' is defined but never used              @typescript-eslint/no-unused-vars
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\analytics.tsx
+  90:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\categories.tsx
+  62:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\index.tsx
+   5:8    warning  'RecentActivity' is defined but never used  @typescript-eslint/no-unused-vars
+  11:16   warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  15:121  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  15:151  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  17:91   warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  17:115  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\tags.tsx
+  62:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\tools.tsx
+  128:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  150:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\admin\users\index.tsx
+  18:35  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  19:34  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  21:27  warning  'activateMutation' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  22:29  warning  'deactivateMutation' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  23:27  warning  'setRolesMutation' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  68:28  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  78:83  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  83:68  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\pages\tools\[id]\index.tsx
+   47:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:90  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  198:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ivans\Desktop\Dev\VibeCodingProj\frontend\store\domains\admin.ts
+   61:17  warning  '_data' is defined but never used         @typescript-eslint/no-unused-vars
+  108:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:17  warning  '_data' is defined but never used         @typescript-eslint/no-unused-vars
+  146:24  warning  'vars' is defined but never used          @typescript-eslint/no-unused-vars
+  155:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  196:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  204:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  290:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  298:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 68 problems (0 errors, 68 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+

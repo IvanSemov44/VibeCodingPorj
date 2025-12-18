@@ -7,6 +7,7 @@ type Activity = ActivityLog & {
   subject_type?: string
   subject_id?: number
   meta?: Record<string, unknown>
+  user?: { id: number; name: string; email?: string; roles?: string[] }
 }
 
 function Avatar({ name, id }: { name?: string; id?: number }) {
@@ -42,7 +43,8 @@ function Avatar({ name, id }: { name?: string; id?: number }) {
 function SubjectLink({ activity }: { activity: Activity }) {
   const type = activity.subject_type ?? ''
   const id = activity.subject_id
-  const name = activity.meta?.name || activity.meta?.title || activity.meta?.slug || (type.split('\\').pop() + ' #' + id)
+  const nameValue = activity.meta?.name || activity.meta?.title || activity.meta?.slug || (type.split('\\').pop() + ' #' + id)
+  const name = String(nameValue)
 
   if (!id) return <span className="font-medium">{name}</span>
 

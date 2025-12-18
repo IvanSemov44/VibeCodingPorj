@@ -31,11 +31,14 @@ export default function ProfileCard({ user }: ProfileCardProps): React.ReactElem
           <div className="text-xs text-secondary-text mb-2 uppercase font-semibold">Roles</div>
           <div className="flex gap-2 flex-wrap">
             {user.roles && user.roles.length > 0 ? (
-              user.roles.map((roleName: string) => (
-                <Badge key={roleName} variant={getRoleColor(roleName)}>
-                  {roleName}
-                </Badge>
-              ))
+              user.roles.map((roleItem) => {
+                const roleName = typeof roleItem === 'string' ? roleItem : roleItem.name;
+                return (
+                  <Badge key={roleName} variant={getRoleColor(roleName)}>
+                    {roleName}
+                  </Badge>
+                );
+              })
             ) : (
               <span className="text-tertiary-text">No roles assigned</span>
             )}

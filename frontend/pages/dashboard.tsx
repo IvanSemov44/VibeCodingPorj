@@ -35,7 +35,7 @@ export default function DashboardPage(): React.ReactElement | null {
         <ProfileCard user={user} />
         <QuickActions />
         <ActivityFeed />
-        <RoleCard roles={user.roles} />
+        <RoleCard roles={user.roles?.map((r) => (typeof r === 'string' ? r : r.name))} />
       </div>
 
       <JournalSection />

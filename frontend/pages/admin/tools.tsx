@@ -32,10 +32,10 @@ export default function AdminToolsPage() {
   // Always call hooks unconditionally
   const pendingResult = useGetPendingToolsQuery();
   const toolsResult = useGetToolsQuery({ per_page: 20, page: Number(router.query.page ?? 1) });
-  
+
   const { data, isLoading } = pendingMode ? pendingResult : toolsResult;
   const { refetch } = pendingMode ? pendingResult : toolsResult;
-  
+
   const [approveTrigger] = useApproveToolMutation();
   const [rejectTrigger] = useRejectToolMutation();
   const { addToast } = useToast();
@@ -189,16 +189,16 @@ export default function AdminToolsPage() {
         <div className="mt-4 flex items-center gap-2">
           <button
             className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-            onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: Math.max(1, Number(payload?.meta?.current_page || 1) - 1) } })}
-            disabled={(payload?.meta?.current_page || 1) <= 1}
+            onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: Math.max(1, (payload?.meta?.current_page ?? 1) - 1) } })}
+            disabled={(payload?.meta?.current_page ?? 1) <= 1}
           >
             Previous
           </button>
-          <div className="text-[var(--text-primary)]">Page {payload?.meta?.current_page || 1} of {payload?.meta?.last_page || '-'}</div>
+          <div className="text-[var(--text-primary)]">Page {payload?.meta?.current_page ?? 1} of {payload?.meta?.last_page ?? '-'}</div>
           <button
             className="px-3 py-1 border border-[var(--border-color)] rounded bg-[var(--primary-bg)] text-[var(--text-primary)] disabled:opacity-50"
-            onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: Number(payload?.meta?.current_page || 1) + 1 } })}
-            disabled={payload?.meta?.current_page >= payload?.meta?.last_page}
+            onClick={() => router.push({ pathname: router.pathname, query: { ...router.query, page: (payload?.meta?.current_page ?? 0) + 1 } })}
+            disabled={(payload?.meta?.current_page ?? 0) >= (payload?.meta?.last_page ?? 1)}
           >
             Next
           </button>

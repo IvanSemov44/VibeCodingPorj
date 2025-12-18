@@ -14,10 +14,30 @@ interface FetchResult {
 }
 
 interface UserResponse {
-  id: number;
-  name: string;
-  email: string;
+  id?: number;
+  name?: string;
+  email?: string;
   roles?: Array<{ name: string } | string>;
+}
+
+function extractRoleNames(user: unknown): string[] {
+  if (!user || typeof user !== 'object') return [];
+  const userData = user as Record<string, unknown>;
+
+  if (Array.isArray(userData.roles)) {
+    return userData.roles
+      .map((r) => {
+        if (typeof r === 'string') return r;
+        if (typeof r === 'object' && r !== null && 'name' in r) {
+          return (r as Record<string, unknown>).name as string;
+        }
+        return null;
+      })
+      .filter((r): r is string => r !== null);
+  }
+
+  if (typeof userData.role === 'string') return [userData.role];
+  return [];
 }
 
     async function getUserFromApi(req: NextRequest, apiBase: string): Promise<FetchResult> {
@@ -53,13 +73,6 @@ interface UserResponse {
       return lastErr ?? { ok: false, status: 0, url: apiBase, body: 'unreachable' };
     }
 
-interface UserResponse {
-  id?: number;
-  name?: string;
-  email?: string;
-  roles?: Array<{ name: string }>;
-}
-
 export default async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
@@ -87,12 +100,7 @@ export default async function middleware(req: NextRequest) {
     }
 
     // Normalize roles and enforce admin/owner for page access
-    let roleNames: string[] = [];
-    if (Array.isArray(user.roles)) {
-      roleNames = user.roles.map((r: any) => r?.name).filter(Boolean);
-    } else if ((user as any).role) {
-      roleNames = [(user as any).role];
-    }
+    const roleNames = extractRoleNames(user);
 
     const allowed = roleNames.includes('admin') || roleNames.includes('owner');
     if (!allowed) {
@@ -111,9 +119,9 @@ export default async function middleware(req: NextRequest) {
   if (pathname.startsWith('/api/admin')) {
     const apiBase = process.env.NEXT_PUBLIC_API_URL ?? new URL(req.url).origin;
     const userJson = await getUserFromApi(req, apiBase as string);
-    const user = (userJson as Record<string, unknown>)?.user ?? (userJson as Record<string, unknown>)?.data ?? userJson ?? null;
+    const userData = (userJson.json as unknown as Record<string, unknown>)?.user ?? (userJson.json as unknown as Record<string, unknown>)?.data ?? userJson.json ?? null;
 
-    if (!user) {
+    if (!userData) {
       return new NextResponse(JSON.stringify({ message: 'Unauthenticated.' }), {
         status: 401,
         headers: { 'content-type': 'application/json' },
@@ -121,12 +129,7 @@ export default async function middleware(req: NextRequest) {
     }
 
     // Normalize roles (support array of role objects or single role string)
-    let roleNames: string[] = [];
-    if (Array.isArray(user.roles)) {
-      roleNames = user.roles.map((r: any) => r?.name).filter(Boolean);
-    } else if ((user as any).role) {
-      roleNames = [(user as any).role];
-    }
+    const roleNames = extractRoleNames(userData as User);
 
     const allowed = roleNames.includes('admin') || roleNames.includes('owner');
     if (allowed) return NextResponse.next();
