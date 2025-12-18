@@ -45,6 +45,12 @@ export interface Tool {
   average_rating?: number;
   rating_count?: number;
   user_rating?: { score: number };
+  slug?: string | null;
+  status?: 'pending' | 'approved' | 'rejected';
+  is_pending?: boolean;
+  is_approved?: boolean;
+  user?: { id?: ID; name?: string } | null;
+  author_name?: string;
   [key: string]: unknown;
 }
 

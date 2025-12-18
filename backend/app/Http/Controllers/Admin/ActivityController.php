@@ -18,6 +18,7 @@ class ActivityController extends Controller
             // Create cache key based on all filters
             $cacheKey = 'activities.'.md5(json_encode($request->all()));
 
+            // @phpstan-ignore-next-line - Laravel cache template type variance
             $result = Cache::tags(['activities'])->remember($cacheKey, 60, function () use ($request) {
                 $query = Activity::with('user');
 
@@ -57,6 +58,7 @@ class ActivityController extends Controller
 
                 $perPage = min((int) $request->query('per_page', 20), 100);
 
+                // @phpstan-ignore-next-line - Laravel paginator template type variance
                 return $query->orderBy('created_at', 'desc')
                     ->paginate($perPage)
                     ->through(function (Activity $a) {
@@ -157,6 +159,7 @@ class ActivityController extends Controller
             $filters = array_filter($validated, fn ($v) => $v !== null);
 
             // Dispatch async job
+            // @phpstan-ignore-next-line - Laravel job dispatch magic method
             ExportActivitiesJob::dispatch(auth()->user(), $filters);
 
             Log::info('Activity export job dispatched for user: '.auth()->user()->id, [

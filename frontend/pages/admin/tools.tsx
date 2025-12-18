@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ToolApprovalCard from '../../components/admin/ToolApprovalCard';
+import { ApprovalModals } from '../../components/admin/ApprovalModals';
+import { ToolsTable } from '../../components/admin/ToolsTable';
 import { SkeletonCard } from '../../components/Loading/SkeletonCard';
 import { SkeletonTableRow } from '../../components/Loading/SkeletonTableRow';
-import Modal from '../../components/Modal';
 import { useToast } from '../../components/Toast';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -14,7 +15,7 @@ import {
   useGetToolsQuery,
 } from '../../store/domains';
 import { useAuth } from '../../hooks/useAuth';
-import type { Tool, Role, ApiListResponse } from '../../lib/types';
+import type { Tool, ApiListResponse } from '../../lib/types';
 
 export default function AdminToolsPage() {
   const router = useRouter();
@@ -24,10 +25,10 @@ export default function AdminToolsPage() {
   const { user } = useAuth();
 
   // Check if user is admin
-  const isAdmin = user?.roles?.some((role: string | Role) =>
+  const isAdmin = user?.roles?.some((role: string | Tool['user']) =>
     typeof role === 'string'
       ? role === 'admin' || role === 'owner'
-      : role?.name === 'admin' || role?.name === 'owner',
+      : (role as any)?.name === 'admin' || (role as any)?.name === 'owner',
   );
 
   // Always call hooks unconditionally
@@ -88,6 +89,21 @@ export default function AdminToolsPage() {
     }
   }
 
+  async function handleConfirmReject() {
+    if (rejectingTool) {
+      await handleReject(rejectingTool.id, rejectReason || undefined);
+      setRejectingTool(null);
+      setRejectReason('');
+    }
+  }
+
+  async function handleConfirmApprove() {
+    if (approvingTool) {
+      await performApprove(approvingTool.id);
+      setApprovingTool(null);
+    }
+  }
+
   return (
     <AdminLayout
       title={pendingMode ? 'Pending Tool Approvals' : 'Tools'}
@@ -120,11 +136,13 @@ export default function AdminToolsPage() {
         </div>
       )}
 
-      {!isLoading && tools.length === 0 && <div>No tools found</div>}
+      {!isLoading && tools.length === 0 && (
+        <div className="text-[var(--text-primary)]">No tools found</div>
+      )}
 
       {!isLoading && pendingMode ? (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-          {tools.map((t: any) => (
+          {tools.map((t: Tool) => (
             <ToolApprovalCard
               key={t.id}
               tool={t}
@@ -135,52 +153,12 @@ export default function AdminToolsPage() {
           ))}
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-[var(--card-bg)] border border-[var(--border-color)]">
-            <thead>
-              <tr>
-                <th className="p-2 text-left">Name</th>
-                <th className="p-2 text-left">Owner</th>
-                <th className="p-2 text-left">Status</th>
-                <th className="p-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tools.map((t: any) => (
-                <tr key={t.id} className="border-t">
-                  <td className="p-2">{t.name}</td>
-                  <td className="p-2">{t.user?.name ?? t.author_name}</td>
-                  <td className="p-2">{t.status ?? (t.is_approved ? 'Approved' : 'Unknown')}</td>
-                  <td className="p-2">
-                    <a href={`/tools/${t.slug ?? t.id}`} className="text-[var(--accent)] mr-2">
-                      View
-                    </a>
-                    {t.status === 'pending' || t.is_pending ? (
-                      isAdmin ? (
-                        <>
-                          <button
-                            className="ml-2 px-2 py-1 bg-[var(--accent)] text-white rounded hover:bg-[var(--accent-hover)]"
-                            onClick={() => requestApprove(t)}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            className="ml-2 px-2 py-1 bg-[var(--danger)] text-white rounded hover:bg-[var(--danger-hover)]"
-                            onClick={() => setRejectingTool(t)}
-                          >
-                            Reject
-                          </button>
-                        </>
-                      ) : (
-                        <span className="ml-2 text-sm text-tertiary-text">Pending</span>
-                      )
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ToolsTable
+          tools={tools}
+          isAdmin={isAdmin}
+          onRequestApprove={requestApprove}
+          onRequestReject={(tool) => setRejectingTool(tool)}
+        />
       )}
 
       {/* Pagination for full tools list */}
@@ -219,60 +197,19 @@ export default function AdminToolsPage() {
         </div>
       )}
 
-      {rejectingTool && (
-        <Modal title={`Reject ${rejectingTool.name}`} onClose={() => setRejectingTool(null)}>
-          <div>
-            <label className="block text-sm font-medium mb-2">Reason (optional)</label>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full border border-[var(--border-color)] rounded p-2 h-24 bg-[var(--primary-bg)] text-[var(--text-primary)]"
-            />
-            <div className="mt-3 flex justify-end gap-2">
-              <button
-                className="px-3 py-2 bg-[var(--secondary-bg)] rounded text-[var(--text-primary)]"
-                onClick={() => setRejectingTool(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-3 py-2 bg-[var(--danger)] text-white rounded"
-                onClick={async () => {
-                  await handleReject(rejectingTool.id, rejectReason || undefined);
-                  setRejectingTool(null);
-                  setRejectReason('');
-                }}
-              >
-                Confirm Reject
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
-      {approvingTool && (
-        <Modal title={`Approve ${approvingTool.name}?`} onClose={() => setApprovingTool(null)}>
-          <div>
-            <p>Are you sure you want to approve this tool?</p>
-            <div className="mt-3 flex justify-end gap-2">
-              <button
-                className="px-3 py-2 bg-gray-200 rounded"
-                onClick={() => setApprovingTool(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-3 py-2 bg-green-500 text-white rounded"
-                onClick={async () => {
-                  await performApprove(approvingTool.id);
-                  setApprovingTool(null);
-                }}
-              >
-                Confirm Approve
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
+      <ApprovalModals
+        rejectingTool={rejectingTool}
+        approvingTool={approvingTool}
+        rejectReason={rejectReason}
+        onRejectReasonChange={setRejectReason}
+        onCloseRejectModal={() => {
+          setRejectingTool(null);
+          setRejectReason('');
+        }}
+        onCloseApproveModal={() => setApprovingTool(null)}
+        onConfirmReject={handleConfirmReject}
+        onConfirmApprove={handleConfirmApprove}
+      />
     </AdminLayout>
   );
 }
