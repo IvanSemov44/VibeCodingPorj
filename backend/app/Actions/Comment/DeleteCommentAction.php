@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Comment;
 
+use App\Events\CommentDeleted;
 use App\Models\Comment;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,9 @@ final class DeleteCommentAction
                     ->withProperties(['tool_id' => $toolId])
                     ->log('comment_deleted');
             }
+
+            // Dispatch event before deletion
+            CommentDeleted::dispatch($comment);
 
             // Delete the comment
             $deleted = $comment->delete() !== false;

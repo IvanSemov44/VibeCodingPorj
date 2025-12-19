@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Rating;
 
 use App\DataTransferObjects\RatingData;
+use App\Events\RatingCreated;
 use App\Models\Rating;
 use Illuminate\Support\Facades\DB;
 
@@ -44,7 +45,10 @@ final class CreateRatingAction
                     ->log('rating_created');
             }
 
-            return $rating->load('tool', 'user');
+            // Dispatch event
+            RatingCreated::dispatch($rating->load('tool', 'user'));
+
+            return $rating;
         });
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\User;
 
+use App\Events\UserUnbanned;
 use App\Models\User;
 use App\Support\AuditLogger;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,8 @@ final readonly class UnbanUserAction
     {
         return DB::transaction(function () use ($user, $admin): User {
             $user->update([
-                'banned_at' => null,
+                'is_banned' => false,
+                'banned_until' => null,
                 'ban_reason' => null,
             ]);
 
@@ -36,7 +38,13 @@ final readonly class UnbanUserAction
                 admin: $admin,
             );
 
+            // Dispatch event
+            UserUnbanned::dispatch($user);
+
             return $user->fresh();
+        });
+    }
+}
         });
     }
 }

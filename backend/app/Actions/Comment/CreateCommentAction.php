@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Comment;
 
 use App\DataTransferObjects\CommentData;
+use App\Events\CommentCreated;
 use App\Models\Comment;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +39,10 @@ final class CreateCommentAction
                     ->log('comment_created');
             }
 
-            return $comment->load('user', 'tool');
+            // Dispatch event
+            CommentCreated::dispatch($comment->load('user', 'tool'));
+
+            return $comment;
         });
     }
 }

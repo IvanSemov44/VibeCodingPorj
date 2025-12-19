@@ -57,10 +57,20 @@ class UserController extends Controller
     {
         $this->authorize('users.ban');
 
-        $user->update(['is_active' => false]);
-        activity()->performedOn($user)->log('user_banned');
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:255',
+            'duration' => 'nullable|in:1h,1d,1w,permanent',
+        ]);
 
-        return response()->json(['message' => 'User banned']);
+        $userService = app(\App\Services\UserService::class);
+        $userService->ban(
+            $user,
+            $validated['reason'] ?? null,
+            $validated['duration'] ?? 'permanent',
+            $request->user()
+        );
+
+        return response()->json(['message' => 'User banned successfully']);
     }
 
     public function activate(User $user)

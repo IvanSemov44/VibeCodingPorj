@@ -23,12 +23,13 @@ final readonly class UserService
      *
      * @param User $user The user to ban
      * @param string|null $reason The reason for banning
+     * @param string $duration The ban duration (1h, 1d, 1w, permanent)
      * @param object|null $admin The admin performing the action
      * @return User The banned user
      */
-    public function ban(User $user, ?string $reason = null, ?object $admin = null): User
+    public function ban(User $user, ?string $reason = null, string $duration = 'permanent', ?object $admin = null): User
     {
-        return $this->banAction->execute($user, $reason, $admin);
+        return $this->banAction->execute($user, $reason, $duration, $admin);
     }
 
     /**

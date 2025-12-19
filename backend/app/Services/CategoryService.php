@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Actions\Category\CreateCategoryAction;
-use App\Actions\Category\DeleteCategoryAction;
 use App\Actions\Category\UpdateCategoryAction;
 use App\DataTransferObjects\CategoryData;
 use App\Models\Category;
@@ -15,7 +14,7 @@ final readonly class CategoryService
     public function __construct(
         private CreateCategoryAction $createAction,
         private UpdateCategoryAction $updateAction,
-        private DeleteCategoryAction $deleteAction,
+        private $deleteAction,
     ) {}
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Rating;
 
+use App\Events\RatingDeleted;
 use App\Models\Rating;
 use Illuminate\Support\Facades\DB;
 
@@ -30,6 +31,9 @@ final class DeleteRatingAction
                     ->withProperties(['tool_id' => $toolId])
                     ->log('rating_deleted');
             }
+
+            // Dispatch event before deletion
+            RatingDeleted::dispatch($rating);
 
             // Delete the rating
             $deleted = $rating->delete() !== false;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Journal;
 
+use App\Events\JournalEntryDeleted;
 use App\Models\JournalEntry;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,9 @@ final class DeleteJournalEntryAction
                     ->withProperties(['title' => $title])
                     ->log('journal_entry_deleted');
             }
+
+            // Dispatch event before deletion
+            JournalEntryDeleted::dispatch($entry);
 
             // Delete the entry
             return $entry->delete() !== false;

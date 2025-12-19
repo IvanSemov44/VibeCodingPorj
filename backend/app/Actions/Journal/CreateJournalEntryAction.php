@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Journal;
 
 use App\DataTransferObjects\JournalEntryData;
+use App\Events\JournalEntryCreated;
 use App\Models\JournalEntry;
 use Illuminate\Support\Facades\DB;
 
@@ -31,6 +32,9 @@ final class CreateJournalEntryAction
                     ->withProperties(['title' => $entry->title])
                     ->log('journal_entry_created');
             }
+
+            // Dispatch event
+            JournalEntryCreated::dispatch($entry);
 
             return $entry;
         });
