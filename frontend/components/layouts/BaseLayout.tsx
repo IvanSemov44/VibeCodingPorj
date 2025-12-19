@@ -1,10 +1,20 @@
+/**
+ * BaseLayout
+ * Main application layout with navigation header
+ * Used for authenticated pages and public pages that need the main layout
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/domains';
-import { useTheme } from '../hooks/useTheme';
-import type { User, Role } from '../lib/types';
+import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../../store/domains';
+import { useTheme } from '../../hooks/useTheme';
+import type { User, Role } from '../../lib/types';
 
-export default function Layout({ children }: { children: React.ReactNode }): React.ReactElement {
+export interface BaseLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function BaseLayout({ children }: BaseLayoutProps): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
   const { data, refetch } = useGetUserQuery();
   const [csrfTrigger] = useGetCsrfMutation();
@@ -99,61 +109,51 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
             <div className="text-xs text-secondary-text mt-0.5">Full-stack starter kit</div>
           </div>
 
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/"
-              className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
-            >
-              Home
-            </Link>
-            <Link
-              href="/tools"
-              className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
-            >
+          <nav className="flex items-center gap-6">
+            <Link href="/tools" className="text-secondary-text no-underline hover:text-primary-text transition-colors">
               Tools
             </Link>
-            {!loading && user && (
+            {user ? (
               <>
-                <Link
-                  href="/dashboard"
-                  className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
-                >
-                  Dashboard
-                </Link>
                 {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="px-3 py-2 text-sm font-medium text-primary-text no-underline rounded-md transition-colors hover:bg-secondary-bg"
-                  >
+                  <Link href="/admin/tools" className="text-secondary-text no-underline hover:text-primary-text transition-colors">
                     Admin
                   </Link>
                 )}
+                <button
+                  onClick={toggleTheme}
+                  className="text-secondary-text hover:text-primary-text transition-colors bg-transparent border-none cursor-pointer"
+                  title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+                >
+                  {theme === 'light' ? '🌙' : '☀️'}
+                </button>
+                <div className="text-sm">
+                  <div className="text-primary-text font-medium">{user.name}</div>
+                  <div className="text-secondary-text">{user.email}</div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 rounded bg-accent text-white hover:bg-accent-hover transition-colors border-none cursor-pointer font-semibold text-sm"
+                >
+                  Logout
+                </button>
               </>
-            )}
-
-            <button
-              onClick={toggleTheme}
-              className="w-9 h-9 flex items-center justify-center bg-secondary-bg border-none rounded-full cursor-pointer text-lg transition-all hover:bg-tertiary-bg"
-              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-
-            {!loading && !user && (
-              <Link
-                href="/login"
-                className="px-4 py-2 bg-accent text-white text-sm font-semibold rounded-lg no-underline transition-all hover:bg-accent-hover"
-              >
-                Login
-              </Link>
-            )}
-            {!loading && user && (
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white text-sm font-semibold border-none rounded-lg cursor-pointer transition-all hover:bg-red-600"
-              >
-                Logout
-              </button>
+            ) : (
+              <>
+                <button
+                  onClick={toggleTheme}
+                  className="text-secondary-text hover:text-primary-text transition-colors bg-transparent border-none cursor-pointer"
+                  title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
+                >
+                  {theme === 'light' ? '🌙' : '☀️'}
+                </button>
+                <Link href="/login" className="text-accent no-underline hover:text-accent-hover transition-colors font-medium">
+                  Login
+                </Link>
+                <Link href="/register" className="px-3 py-1.5 rounded bg-accent text-white no-underline hover:bg-accent-hover transition-colors font-semibold text-sm">
+                  Sign Up
+                </Link>
+              </>
             )}
           </nav>
         </div>
@@ -161,10 +161,8 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">{children}</main>
 
-      <footer className="bg-[var(--footer-bg)] border-t border-border mt-auto">
-        <div className="max-w-7xl mx-auto px-6 py-6 text-center text-sm text-secondary-text">
-          © {new Date().getFullYear()} VibeCoding — starter kit
-        </div>
+      <footer className="bg-[var(--secondary-bg)] border-t border-border text-center py-6 text-secondary-text text-sm mt-16">
+        <p>&copy; {new Date().getFullYear()} VibeCoding. All rights reserved.</p>
       </footer>
     </div>
   );

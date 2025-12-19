@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderWithProviders, screen, userEvent, waitFor } from '../../../tests/test-utils';
 import { ThemeInitializer } from '../../../components/ThemeInitializer';
-import Layout from '../../../components/Layout';
+import Layout from '../../../components/layouts';
 import * as api from '../../../lib/api';
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 

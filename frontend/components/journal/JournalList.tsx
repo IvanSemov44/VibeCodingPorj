@@ -5,7 +5,7 @@
 
 import React from 'react';
 import JournalEntry from '../JournalEntry';
-import { LoadingPage } from '../Loading';
+import { LoadingPage } from '../ui';
 import type { JournalEntry as JournalEntryModel } from '../../lib/types';
 
 interface JournalListProps {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Card, Input, Button, Alert } from '../components/ui';
-import AuthLayout from '../components/AuthLayout';
+import { AuthLayout } from '../components/layouts';
 import { useForm } from '../hooks/useForm';
 import { ROUTES, VALIDATION } from '../lib/constants';
 import { useGetCsrfMutation, useRegisterMutation } from '../store/domains';

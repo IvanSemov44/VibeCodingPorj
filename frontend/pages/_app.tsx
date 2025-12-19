@@ -14,7 +14,7 @@ import { Provider } from 'react-redux';
 import '../styles/globals.css';
 
 // Components
-import Layout from '../components/Layout';
+import Layout from '../components/layouts';
 import { ToastContainer } from '../components/Toast';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { ThemeInitializer } from '../components/ThemeInitializer';

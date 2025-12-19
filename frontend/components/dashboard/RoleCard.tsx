@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import Card from '../Card';
+import { Card } from '../ui';
 import { getRoleTitle, getRoleContent } from '../../lib/constants';
 
 interface RoleCardProps {

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import Card from '../Card';
+import { Card } from '../ui';
 import { MOCK_ACTIVITIES } from '../../lib/constants';
 import type { Activity } from '../../lib/constants';
 

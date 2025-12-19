@@ -4,8 +4,7 @@
  */
 
 import React from 'react';
-import Card from '../Card';
-import Badge from '../Badge';
+import { Card, Badge } from '../ui';
 import { getRoleColor } from '../../lib/constants';
 import type { User } from '../../lib/types';
 

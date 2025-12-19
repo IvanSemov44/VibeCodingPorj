@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import AdminLayout from '../../components/admin/AdminLayout';
+import { AdminLayout } from '../../components/layouts';
 import ToolApprovalCard from '../../components/admin/ToolApprovalCard';
 import { ApprovalModals } from '../../components/admin/ApprovalModals';
 import { ToolsTable } from '../../components/admin/ToolsTable';

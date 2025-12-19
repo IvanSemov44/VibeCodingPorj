@@ -1,6 +1,6 @@
 'use client';
 
-import AdminLayout from '../../components/admin/AdminLayout';
+import { AdminLayout } from '../../components/layouts';
 import { useState } from 'react';
 import { useToast } from '../../components/Toast';
 import { useQuery } from '@tanstack/react-query';

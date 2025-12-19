@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import Card from '../Card';
+import { Card } from '../ui';
 
 // Local actions used on admin dashboard. (Currently no quick actions configured.)
 const ACTIONS: Array<{ icon: string; label: string; href: string }> = [];

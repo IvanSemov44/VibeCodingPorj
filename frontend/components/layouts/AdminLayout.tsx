@@ -1,9 +1,15 @@
+/**
+ * AdminLayout
+ * Admin panel layout with navigation and access control
+ * Only accessible to admin and owner roles
+ */
+
 import { ReactNode, useEffect, useMemo } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useRouter } from 'next/router';
-import AdminNav from './AdminNav';
+import AdminNav from '../admin/AdminNav';
 
-interface AdminLayoutProps {
+export interface AdminLayoutProps {
   children: ReactNode;
   title?: string;
   description?: string;

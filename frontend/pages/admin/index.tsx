@@ -1,7 +1,7 @@
 import React from 'react';
 import type { AdminStats } from '../../store/domains/admin/stats';
 import { useGetAdminStatsQuery } from '../../store/domains';
-import AdminLayout from '../../components/admin/AdminLayout';
+import { AdminLayout } from '../../components/layouts';
 import StatsCard from '../../components/admin/StatsCard';
 import SystemHealthCard from '../../components/admin/SystemHealthCard';
 import { SkeletonCard } from '../../components/Loading/SkeletonCard';

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useGetCsrfMutation, useLoginMutation } from '../store/domains';
 import { Card, Input, Button, Alert } from '../components/ui';
-import AuthLayout from '../components/AuthLayout';
+import { AuthLayout } from '../components/layouts';
 import { useForm } from '../hooks/useForm';
 import { ROUTES } from '../lib/constants';
 

@@ -1,3 +1,9 @@
+/**
+ * AuthLayout
+ * Minimal layout for authentication pages (login, register, 2FA setup)
+ * Centered card design without navigation
+ */
+
 import React from 'react';
 import Link from 'next/link';
 

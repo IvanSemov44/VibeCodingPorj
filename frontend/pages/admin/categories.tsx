@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
+import { AdminLayout } from '../../components/layouts';
 import Pagination from '../../components/admin/Pagination';
 import { CreateEditModal, type FieldConfig } from '../../components/admin/CreateEditModal';
 import {

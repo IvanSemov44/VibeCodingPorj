@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminLayout from '../../../components/admin/AdminLayout';
+import { AdminLayout } from '../../../components/layouts';
 import Pagination from '../../../components/admin/Pagination';
 import { ConfirmationModal } from '../../../components/admin/ConfirmationModal';
 import type { AdminUser } from '@/lib/types';

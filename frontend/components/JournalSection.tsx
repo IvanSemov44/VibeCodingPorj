@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { LoadingPage } from './Loading';
+import { LoadingPage } from './ui';
 import { useJournal } from '../hooks/useJournal';
 import { useToast } from './Toast';
 import JournalHeader from './journal/JournalHeader';

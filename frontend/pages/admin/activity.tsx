@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
+import { AdminLayout } from '../../components/layouts';
 import ActivityStats from '../../components/admin/ActivityStats';
 import ActivityFilters from '../../components/admin/ActivityFilters';
 import ExportButtons from '../../components/admin/ExportButtons';

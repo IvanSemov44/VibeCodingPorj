@@ -19,7 +19,6 @@ export { default as Input } from './Input';
 export type { InputProps } from './Input';
 
 export { default as Modal } from './Modal';
-export type { ModalProps } from './Modal';
 
-export { default as Loading } from './Loading';
-export type { SkeletonCardProps, SkeletonTableRowProps } from './Loading';
+export { default as LoadingSpinner, LoadingPage } from './Loading';
+export type { LoadingSize } from './Loading';
