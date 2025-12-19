@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useGetToolQuery, useDeleteToolMutation } from '../../../store/domains';
+import { getImageOptimizationProps } from '../../../lib/imageOptimization';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../components/Toast';
 import SkeletonToolDetail from '../../../components/Loading/SkeletonToolDetail';
@@ -123,8 +124,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
                     <Image
                       src={s}
                       alt={`Screenshot ${idx + 1}`}
-                      width={400}
-                      height={260}
+                      {...getImageOptimizationProps('screenshot_full')}
                       className="object-cover w-full"
                     />
                   </div>

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useDeleteToolMutation } from '../store/domains';
 import { usePrefetchTool } from '../store/utils/prefetch';
+import { getImageOptimizationProps } from '../lib/imageOptimization';
 import { useAuth } from '../hooks/useAuth';
 import type { Tool } from '../lib/types';
 
@@ -50,9 +51,8 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
           {tool.screenshots && tool.screenshots[0] ? (
             <Image
               src={tool.screenshots[0]}
-              alt="thumb"
-              width={96}
-              height={64}
+              alt="Tool screenshot thumbnail"
+              {...getImageOptimizationProps('thumbnail')}
               className="rounded-lg object-cover flex-shrink-0"
             />
           ) : null}

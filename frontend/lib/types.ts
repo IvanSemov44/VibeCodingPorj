@@ -184,7 +184,7 @@ export interface Activity {
     email: string;
     roles?: string[];
   } | null;
-  meta: Record<string, any> | null;
+  meta: Record<string, unknown> | null;
   created_at: string;
   created_at_human: string;
 }

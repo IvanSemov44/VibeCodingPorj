@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { ErrorMessage } from 'formik';
 import { useDeleteToolScreenshotMutation } from '../../store/domains';
 import { useGetCsrfMutation } from '../../store/domains';
+import { getImageOptimizationProps } from '../../lib/imageOptimization';
 
 interface ScreenshotManagerProps {
   screenshots: string[];
@@ -114,9 +115,8 @@ export default function ScreenshotManager({
             <div key={s} className="flex flex-col items-center">
               <Image
                 src={s}
-                alt="screenshot"
-                width={120}
-                height={80}
+                alt="Tool screenshot preview"
+                {...getImageOptimizationProps('screenshot_card')}
                 className="object-cover rounded-md border border-[var(--border-color)]"
               />
               <button
