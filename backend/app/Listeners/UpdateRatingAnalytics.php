@@ -20,7 +20,7 @@ final class UpdateRatingAnalytics implements ShouldQueue
     {
         // Update tool's average rating and dispatch analytics job
         $event->rating->tool->updateAverageRating();
-        
+
         UpdateAnalyticsJob::dispatch($event->rating->tool_id, 'rating');
     }
 }

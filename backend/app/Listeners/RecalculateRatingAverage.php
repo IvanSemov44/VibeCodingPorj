@@ -20,7 +20,7 @@ final class RecalculateRatingAverage implements ShouldQueue
     {
         // Recalculate tool's average rating
         $event->rating->tool->updateAverageRating();
-        
+
         UpdateAnalyticsJob::dispatch($event->rating->tool_id, 'rating');
     }
 }
