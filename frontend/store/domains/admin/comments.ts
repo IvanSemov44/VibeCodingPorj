@@ -85,9 +85,9 @@ export function useRateToolMutation() {
     mutationFn: async ({ toolId, score, review }) => api.rateTool(toolId, score, review),
     onSuccess: (_data, vars) => {
       // Invalidate the tool list
-      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.tools.lists() });
       // Invalidate the specific tool to refresh rating display
-      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOL, String(vars.toolId)] });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.tools.detail(vars.toolId) });
     },
   });
   const trigger = (arg: { toolId: string | number; score: number; review?: string }) => ({
@@ -101,8 +101,8 @@ export function useDeleteRatingMutation() {
   const m = useMutation<void, Error, string | number>({
     mutationFn: async (toolId) => api.deleteRating(toolId),
     onSuccess: (_data, toolId) => {
-      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
-      qc.invalidateQueries({ queryKey: ['tool', toolId] });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.tools.lists() });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.tools.detail(toolId) });
     },
   });
   const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });

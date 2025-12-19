@@ -20,5 +20,7 @@ export type { InputProps } from './Input';
 
 export { default as Modal } from './Modal';
 
-export { default as LoadingSpinner, LoadingPage } from './Loading';
+// Loading components with new consolidated API
+export { default as LoadingSpinner, Spinner, LoadingPage, LoadingOverlay, Skeleton } from './Loading';
 export type { LoadingSize } from './Loading';
+

@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useDeleteToolMutation } from '../store/domains';
+import { usePrefetchTool } from '../store/utils/prefetch';
 import { useAuth } from '../hooks/useAuth';
 import type { Tool } from '../lib/types';
 
@@ -14,6 +15,7 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
   // router not used here
 
   const [deleteTrigger] = useDeleteToolMutation();
+  const prefetchTool = usePrefetchTool();
   const { user } = useAuth(false);
 
   const canManage = Boolean(
@@ -32,8 +34,17 @@ export default function ToolEntry({ tool, onDeleted }: Props): React.ReactElemen
       alert('Failed to delete');
     }
   };
+
+  // Prefetch tool details when user hovers over the entry
+  const handleMouseEnter = () => {
+    prefetchTool(tool.id);
+  };
+
   return (
-    <div className="bg-[var(--card-bg)] border border-border rounded-xl p-4 transition-all hover:shadow-md">
+    <div
+      className="bg-[var(--card-bg)] border border-border rounded-xl p-4 transition-all hover:shadow-md"
+      onMouseEnter={handleMouseEnter}
+    >
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex items-start gap-4 flex-1 min-w-0">
           {tool.screenshots && tool.screenshots[0] ? (

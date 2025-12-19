@@ -4,7 +4,7 @@ import { QUERY_KEYS } from '../../queryKeys';
 
 export function useGetRolesQuery(options?: Record<string, unknown>) {
   return useQuery<{ id: number; name: string }[]>({
-    queryKey: [QUERY_KEYS.ROLES],
+    queryKey: QUERY_KEYS.roles.list(),
     queryFn: async () => api.getRoles(),
     staleTime: 1000 * 60 * 10, // 10 minutes - roles rarely change
     ...(options || {}),

@@ -1,109 +1,142 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\DataTransferObjects\CommentData;
+use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Requests\ModerateCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Tool;
+use App\Services\CommentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class CommentController extends Controller
+final class CommentController
 {
-    /**
-     * Get all comments for a tool
-     */
-    public function index(Tool $tool)
-    {
-        $comments = Comment::where('tool_id', $tool->id)
-            ->approved()
-            ->topLevel()
-            ->with(['user:id,name', 'replies.user:id,name'])
-            ->orderByDesc('created_at')
-            ->paginate(20);
+    public function __construct(
+        private CommentService $service,
+    ) {}
 
-        return response()->json($comments);
+    /**
+     * Display all comments for a tool.
+     *
+     * @param Tool $tool
+     * @param Request $request
+     * @return AnonymousResourceCollection
+     */
+    public function index(
+        Tool $tool,
+        Request $request
+    ): AnonymousResourceCollection {
+        $comments = $tool->comments()
+            ->where('is_moderated', true)
+            ->with('user', 'replies')
+            ->latest()
+            ->paginate($request->input('per_page', 15));
+
+        return CommentResource::collection($comments);
     }
 
     /**
-     * Post a new comment
+     * Store a newly created comment.
+     *
+     * @param Tool $tool
+     * @param StoreCommentRequest $request
+     * @return JsonResponse
      */
-    public function store(Request $request, Tool $tool)
-    {
-        $validated = $request->validate([
-            'content' => 'required|string|min:3|max:2000',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
+    public function store(
+        Tool $tool,
+        StoreCommentRequest $request
+    ): JsonResponse {
+        $this->authorize('create', Comment::class);
 
-        // Auto-approve for admins/owners, pending for others
-        $user = auth()->user();
-        $status = $user && $user->hasAnyRole(['admin', 'owner']) ? 'approved' : 'pending';
+        $data = CommentData::fromRequest(array_merge(
+            $request->validated(),
+            ['tool_id' => $tool->id]
+        ));
 
-        $comment = Comment::create([
-            'tool_id' => $tool->id,
-            'user_id' => auth()->id(),
-            'parent_id' => $validated['parent_id'] ?? null,
-            'content' => strip_tags($validated['content']), // XSS prevention
-            'status' => $status,
-        ]);
+        $comment = $this->service->create($data, auth()->user());
 
-        // Log activity
-        try {
-            \App\Models\Activity::create([
-                'subject_type' => get_class($comment),
-                'subject_id' => $comment->id,
-                'action' => 'commented',
-                'user_id' => auth()->id(),
-                'meta' => ['tool' => $tool->name, 'status' => $status],
-                'created_at' => now(),
-            ]);
-        } catch (\Exception $e) {
-            logger()->warning('Failed to log comment activity', ['error' => $e->getMessage()]);
-        }
-
-        return response()->json([
-            'message' => $status === 'approved'
-                ? 'Comment posted successfully'
-                : 'Comment submitted for moderation',
-            'data' => $comment->load('user:id,name'),
-        ], 201);
+        return response()->json(
+            new CommentResource($comment->load('user')),
+            201
+        );
     }
 
     /**
-     * Delete a comment
+     * Display the specified comment.
+     *
+     * @param Comment $comment
+     * @return CommentResource
      */
-    public function destroy(Comment $comment)
+    public function show(Comment $comment): CommentResource
     {
-        // Allow comment owner or admin/owner to delete
-        $user = auth()->user();
-        if ($comment->user_id !== $user->id && ! $user->hasAnyRole(['admin', 'owner'])) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('view', $comment);
 
-        $comment->delete();
-
-        return response()->json(['message' => 'Comment deleted']);
+        return new CommentResource(
+            $comment->load('user', 'tool', 'replies')
+        );
     }
 
     /**
-     * Admin: Moderate a comment
+     * Update the specified comment.
+     *
+     * @param Comment $comment
+     * @param UpdateCommentRequest $request
+     * @return CommentResource
      */
-    public function moderate(Comment $comment, Request $request)
+    public function update(
+        Comment $comment,
+        UpdateCommentRequest $request
+    ): CommentResource {
+        $this->authorize('update', $comment);
+
+        $data = CommentData::fromRequest($request->validated());
+        $updated = $this->service->create($data, auth()->user());
+
+        return new CommentResource($updated);
+    }
+
+    /**
+     * Delete the specified comment.
+     *
+     * @param Comment $comment
+     * @return JsonResponse
+     */
+    public function destroy(Comment $comment): JsonResponse
     {
-        $user = auth()->user();
-        if (! $user->hasAnyRole(['admin', 'owner'])) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        $this->authorize('delete', $comment);
 
-        $validated = $request->validate([
-            'status' => 'required|in:approved,rejected,spam',
-        ]);
+        $this->service->delete($comment, auth()->user());
 
-        $comment->update([
-            'status' => $validated['status'],
-            'moderated_by' => auth()->id(),
-            'moderated_at' => now(),
-        ]);
+        return response()->json(null, 204);
+    }
 
-        return response()->json(['message' => 'Comment moderated']);
+    /**
+     * Moderate a comment (approve/reject).
+     *
+     * @param Comment $comment
+     * @param ModerateCommentRequest $request
+     * @return CommentResource
+     */
+    public function moderate(
+        Comment $comment,
+        ModerateCommentRequest $request
+    ): CommentResource {
+        $this->authorize('moderate', Comment::class);
+
+        $approved = $request->boolean('approved');
+        $moderated = $this->service->moderate(
+            $comment,
+            $approved,
+            auth()->user()
+        );
+
+        return new CommentResource($moderated);
     }
 }

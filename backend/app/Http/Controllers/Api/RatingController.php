@@ -1,60 +1,104 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\DataTransferObjects\RatingData;
+use App\Http\Requests\StoreRatingRequest;
+use App\Http\Resources\RatingResource;
 use App\Models\Rating;
 use App\Models\Tool;
-use Illuminate\Http\Request;
+use App\Services\RatingService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class RatingController extends Controller
+final class RatingController
 {
+    public function __construct(
+        private RatingService $service,
+    ) {}
+
     /**
-     * Submit or update a rating for a tool
+     * Display all ratings for a tool.
+     *
+     * @param Tool $tool
+     * @return AnonymousResourceCollection
      */
-    public function store(Request $request, Tool $tool)
+    public function index(Tool $tool): AnonymousResourceCollection
     {
-        $validated = $request->validate([
-            'score' => 'required|integer|min:1|max:5',
-            'review' => 'nullable|string|max:500',
-        ]);
+        $ratings = $tool->ratings()
+            ->with('user')
+            ->latest()
+            ->paginate(15);
 
-        $rating = Rating::updateOrCreate(
-            ['tool_id' => $tool->id, 'user_id' => auth()->id()],
-            $validated
+        return RatingResource::collection($ratings);
+    }
+
+    /**
+     * Store a new rating or update existing.
+     *
+     * @param Tool $tool
+     * @param StoreRatingRequest $request
+     * @return JsonResponse
+     */
+    public function store(
+        Tool $tool,
+        StoreRatingRequest $request
+    ): JsonResponse {
+        $this->authorize('create', Rating::class);
+
+        $data = RatingData::fromRequest(array_merge(
+            $request->validated(),
+            ['tool_id' => $tool->id, 'user_id' => auth()->id()]
+        ));
+
+        $rating = $this->service->create($data, auth()->user());
+
+        return response()->json(
+            new RatingResource($rating),
+            201
         );
+    }
 
-        // Log activity
-        try {
-            \App\Models\Activity::create([
-                'subject_type' => get_class($rating),
-                'subject_id' => $rating->id,
-                'action' => 'rated',
-                'user_id' => auth()->id(),
-                'meta' => ['tool' => $tool->name, 'score' => $validated['score']],
-                'created_at' => now(),
-            ]);
-        } catch (\Exception $e) {
-            logger()->warning('Failed to log rating activity', ['error' => $e->getMessage()]);
+    /**
+     * Display ratings summary.
+     *
+     * @param Tool $tool
+     * @return JsonResponse
+     */
+    public function summary(Tool $tool): JsonResponse
+    {
+        $breakdown = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+
+        $ratings = $tool->ratings()
+            ->selectRaw('score, COUNT(*) as count')
+            ->groupBy('score')
+            ->get();
+
+        foreach ($ratings as $rating) {
+            $breakdown[$rating->score] = $rating->count;
         }
 
         return response()->json([
-            'message' => 'Rating submitted successfully',
-            'data' => $rating,
+            'average' => $tool->average_rating,
+            'count' => $tool->ratings()->count(),
+            'breakdown' => $breakdown,
         ]);
     }
 
     /**
-     * Delete user's rating for a tool
+     * Delete a rating.
+     *
+     * @param Rating $rating
+     * @return JsonResponse
      */
-    public function destroy(Tool $tool)
+    public function destroy(Rating $rating): JsonResponse
     {
-        $rating = Rating::where('tool_id', $tool->id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+        $this->authorize('delete', $rating);
 
-        $rating->delete();
+        $this->service->delete($rating, auth()->user());
 
-        return response()->json(['message' => 'Rating removed']);
+        return response()->json(null, 204);
     }
 }

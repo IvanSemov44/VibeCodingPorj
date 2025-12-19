@@ -17,7 +17,7 @@ export function useApproveToolMutation() {
     mutationFn: async (id) => api.approveTool(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'pending-tools'] });
-      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.tools.lists() });
     },
   });
   const trigger = (arg: string | number) => ({ unwrap: () => m.mutateAsync(arg) });
@@ -29,8 +29,9 @@ export function useRejectToolMutation() {
   const m = useMutation<unknown, Error, { id: string | number; reason?: string }>({
     mutationFn: async ({ id, reason }) => api.rejectTool(id, reason),
     onSuccess: () => {
+      // Refresh the tools list to show updated status
       qc.invalidateQueries({ queryKey: ['admin', 'pending-tools'] });
-      qc.invalidateQueries({ queryKey: [QUERY_KEYS.TOOLS] });
+      qc.invalidateQueries({ queryKey: QUERY_KEYS.tools.lists() });
     },
   });
   const trigger = (arg: { id: string | number; reason?: string }) => ({

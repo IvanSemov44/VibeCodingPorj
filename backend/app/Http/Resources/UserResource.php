@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -7,21 +9,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin \App\Models\User
- *
- * @property-read mixed $id
- * @property-read mixed $name
- * @property-read mixed $email
- * @property-read mixed $email_verified_at
- * @property-read mixed $is_active
- * @property-read mixed $two_factor_type
- * @property-read mixed $telegram_verified
- * @property-read mixed $last_login_at
- * @property-read mixed $created_at
- * @property-read mixed $updated_at
- * @property-read mixed $roles
- * @property-read mixed $permissions
  */
-class UserResource extends JsonResource
+final class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -35,19 +24,14 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at?->toIso8601String(),
-            'is_active' => $this->is_active ?? true,
-            'two_factor_enabled' => ! empty($this->two_factor_type),
-            'two_factor_type' => $this->two_factor_type,
-            'telegram_verified' => $this->telegram_verified ?? false,
-            'last_login_at' => $this->last_login_at?->toIso8601String(),
+            'is_banned' => $this->is_banned ?? false,
+            'banned_until' => $this->banned_until?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
-            'roles' => $this->whenLoaded('roles', function () {
-                return $this->roles->pluck('name');
-            }),
-            'permissions' => $this->whenLoaded('permissions', function () {
-                return $this->permissions->pluck('name');
-            }),
+            'roles' => $this->whenLoaded('roles', fn () => $this->roles->map(fn ($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
+            ])),
         ];
     }
 }
