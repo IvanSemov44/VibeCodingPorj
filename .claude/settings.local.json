@@ -20,7 +20,8 @@
       "Bash(tee:*)",
       "Bash(composer check:*)",
       "Bash(composer analyse:*)",
-      "Bash(./vendor/bin/phpstan analyse:*)"
+      "Bash(./vendor/bin/phpstan analyse:*)",
+      "Bash(npm run test:*)"
     ]
   }
 }

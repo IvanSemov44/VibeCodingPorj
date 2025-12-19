@@ -141,3 +141,6 @@ Route::get('status', function () {
 
 // Include monitoring routes
 require __DIR__ . '/monitoring.php';
+
+// Include search routes
+require __DIR__ . '/search.php';
