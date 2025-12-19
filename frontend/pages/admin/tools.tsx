@@ -27,10 +27,10 @@ export default function AdminToolsPage() {
   const [page, setPage] = useState(1);
 
   // Check if user is admin
-  const isAdmin = user?.roles?.some((role: string | Tool['user']) =>
+  const isAdmin = user?.roles?.some((role) =>
     typeof role === 'string'
       ? role === 'admin' || role === 'owner'
-      : (role as any)?.name === 'admin' || (role as any)?.name === 'owner',
+      : typeof role === 'object' && role !== null && 'name' in role ? (role.name === 'admin' || role.name === 'owner') : false,
   );
 
   // Always call hooks unconditionally

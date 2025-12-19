@@ -57,8 +57,9 @@ export default function TagsPage() {
       }
       setShowModal(false);
       setFormData({ name: '', description: '' });
-    } catch (err: any) {
-      alert(err?.message || 'Failed to save tag');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save tag';
+      alert(message);
     }
   };
 
@@ -66,8 +67,9 @@ export default function TagsPage() {
     if (!confirm(`Delete tag "${name}"?`)) return;
     try {
       await deleteTag(id).unwrap();
-    } catch (err: any) {
-      alert(err?.message || 'Failed to delete tag. It may be used by tools.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete tag. It may be used by tools.';
+      alert(message);
     }
   };
 

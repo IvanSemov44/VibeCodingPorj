@@ -172,6 +172,23 @@ export interface ActivityLog {
   created_at: string;
 }
 
+// Activity type for admin dashboard - different from ActivityLog
+export interface Activity {
+  id: number;
+  subject_type: string;
+  subject_id: number;
+  action: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    roles?: string[];
+  } | null;
+  meta: Record<string, any> | null;
+  created_at: string;
+  created_at_human: string;
+}
+
 export interface CategoryStats {
   total: number;
   with_tools: number;

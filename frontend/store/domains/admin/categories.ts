@@ -1,27 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as api from '../../../lib/api';
+import type { Category, ApiListResponse } from '../../../lib/types';
 
 export function useGetAdminCategoriesQuery(
   params: Record<string, unknown> = {},
   options?: Record<string, unknown>,
 ) {
   const key = ['admin', 'categories', params];
-  return useQuery<{
-    data: any[];
-    current_page?: number;
-    last_page?: number;
-    per_page?: number;
-    total?: number;
-  }>({
+  return useQuery<ApiListResponse<Category>>({
     queryKey: key,
     queryFn: async () =>
-      (await api.getAdminCategories(params)) as {
-        data: any[];
-        current_page?: number;
-        last_page?: number;
-        per_page?: number;
-        total?: number;
-      },
+      (await api.getAdminCategories(params)) as ApiListResponse<Category>,
     staleTime: 1000 * 60 * 5, // 5 minutes - categories don't change often
     ...(options || {}),
   });

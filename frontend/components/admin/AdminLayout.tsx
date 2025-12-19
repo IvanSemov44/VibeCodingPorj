@@ -16,7 +16,7 @@ export default function AdminLayout({ children, title, description }: AdminLayou
   // Check if user is admin - memoize to prevent recalculation
   const isAdmin = useMemo(
     () =>
-      user?.roles?.some((role: any) =>
+      user?.roles?.some((role) =>
         typeof role === 'string'
           ? role === 'admin' || role === 'owner'
           : role?.name === 'admin' || role?.name === 'owner',

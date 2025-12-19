@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import Pagination from '../../../components/admin/Pagination';
 import { ConfirmationModal } from '../../../components/admin/ConfirmationModal';
+import type { AdminUser } from '@/lib/types';
 import {
   useGetAdminUsersQuery,
   useActivateUserMutation,
@@ -21,8 +22,8 @@ export default function AdminUsersPage() {
 
   const { data, isLoading, isError } = useGetAdminUsersQuery(params, { keepPreviousData: true });
 
-  const users = (data && (data as any).data) || [];
-  const meta = (data && (data as any).meta) || {};
+  const users = (data?.data) || [];
+  const meta = (data?.meta) || {};
   const { data: rolesList } = useGetRolesQuery();
   const [activateTrigger, activateMutation] = useActivateUserMutation();
   const [deactivateTrigger, deactivateMutation] = useDeactivateUserMutation();
@@ -78,18 +79,24 @@ export default function AdminUsersPage() {
                 </td>
               </tr>
             )}
-            {users.map((u: any) => (
+            {users.map((u: AdminUser) => (
               <tr key={u.id} className="border-t border-[var(--border-color)]">
                 <td className="p-2 text-[var(--text-primary)]">{u.name}</td>
                 <td className="p-2 text-[var(--text-primary)]">{u.email}</td>
                 <td className="p-2 text-[var(--text-primary)]">
                   <select
                     className="p-1 border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] rounded"
-                    value={(u.roles && u.roles[0] && String(u.roles[0].id)) || ''}
+                    value={
+                      u.roles && u.roles[0]
+                        ? typeof u.roles[0] === 'string'
+                          ? u.roles[0]
+                          : String(u.roles[0].id)
+                        : ''
+                    }
                     onChange={(e) => {
                       const val = e.target.value;
                       const role = Array.isArray(rolesList)
-                        ? rolesList.find((rr: any) => String(rr.id) === val)
+                        ? rolesList.find((rr) => String(rr.id) === val)
                         : null;
                       setRoleChangePending({
                         userId: u.id,
@@ -101,7 +108,7 @@ export default function AdminUsersPage() {
                   >
                     <option value="">(none)</option>
                     {Array.isArray(rolesList) &&
-                      rolesList.map((r: any) => (
+                      rolesList.map((r) => (
                         <option key={r.id} value={String(r.id)}>
                           {r.name}
                         </option>

@@ -1,3 +1,5 @@
+import { Activity } from '@/lib/types';
+
 const ACTION_COLORS: Record<string, string> = {
   created: 'bg-green-100 text-green-800',
   updated: 'bg-yellow-100 text-yellow-800',
@@ -5,22 +7,6 @@ const ACTION_COLORS: Record<string, string> = {
   restored: 'bg-blue-100 text-blue-800',
   // add other action keys as needed
 };
-
-interface Activity {
-  id: number;
-  subject_type: string;
-  subject_id: number;
-  action: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    roles?: string[];
-  } | null;
-  meta: Record<string, any> | null;
-  created_at: string;
-  created_at_human: string;
-}
 
 interface ActivityCardProps {
   activity: Activity;

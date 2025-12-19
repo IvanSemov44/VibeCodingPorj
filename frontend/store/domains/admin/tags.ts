@@ -1,27 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as api from '../../../lib/api';
+import type { Tag, ApiListResponse } from '../../../lib/types';
 
 export function useGetAdminTagsQuery(
   params: Record<string, unknown> = {},
   options?: Record<string, unknown>,
 ) {
   const key = ['admin', 'tags', params];
-  return useQuery<{
-    data: any[];
-    current_page?: number;
-    last_page?: number;
-    per_page?: number;
-    total?: number;
-  }>({
+  return useQuery<ApiListResponse<Tag>>({
     queryKey: key,
     queryFn: async () =>
-      (await api.getAdminTags(params)) as {
-        data: any[];
-        current_page?: number;
-        last_page?: number;
-        per_page?: number;
-        total?: number;
-      },
+      (await api.getAdminTags(params)) as ApiListResponse<Tag>,
     staleTime: 1000 * 60 * 5, // 5 minutes - tags don't change often
     ...(options || {}),
   });

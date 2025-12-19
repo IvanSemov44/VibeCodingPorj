@@ -1,7 +1,9 @@
+import type { Activity } from '@/lib/types';
+
 interface ActivityListProps {
   isLoading: boolean;
-  error: any;
-  activities: any[];
+  error: Error | null;
+  activities: Activity[];
   children: React.ReactNode;
 }
 

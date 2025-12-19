@@ -8,6 +8,7 @@ import { useToast } from '../../../components/Toast';
 import SkeletonToolDetail from '../../../components/Loading/SkeletonToolDetail';
 import StarRating from '../../../components/ratings/StarRating';
 import CommentList from '../../../components/comments/CommentList';
+import type { Tool } from '../../../lib/types';
 
 // types in this file are inferred from API responses — no local aliases needed
 
@@ -44,7 +45,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
   const description = t.description == null ? '' : String(t.description);
   const averageRating = typeof t.average_rating === 'number' ? t.average_rating : 0;
   const ratingCount = typeof t.rating_count === 'number' ? t.rating_count : 0;
-  const userRatingScore = user && t.user_rating ? (t.user_rating as any).score : undefined;
+  const userRatingScore = user && typeof t.user_rating === 'object' && t.user_rating !== null && 'score' in t.user_rating ? (t.user_rating as { score: number }).score : undefined;
 
   return (
     <div className="max-w-7xl my-6 mx-auto px-4">
@@ -59,7 +60,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
                 <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                   <span>Created by</span>
                   <span className="font-semibold text-[var(--text-primary)]">
-                    {(t.user as any)?.name ?? 'Unknown'}
+                    {typeof t.user === 'object' && t.user !== null && 'name' in t.user ? String(t.user.name) : 'Unknown'}
                   </span>
                 </div>
               </div>
@@ -104,7 +105,7 @@ export default function ToolDetailPage(): React.ReactElement | null {
             </div>
 
             {/* Actions for owners/admins */}
-            <ToolActions tool={tool as any} />
+            <ToolActions tool={tool} />
           </div>
 
           {/* Screenshots Sidebar */}
@@ -158,13 +159,13 @@ export default function ToolDetailPage(): React.ReactElement | null {
         >
           <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Information</h2>
           <div className="space-y-3">
-            {((t.categories as any[]) || []).length > 0 && (
+            {Array.isArray(t.categories) && t.categories.length > 0 && (
               <div>
                 <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-1">
                   Categories
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {((t.categories as any[]) || []).map((c) => (
+                  {(t.categories as Array<{ id: string | number; name: string }>).map((c) => (
                     <span
                       key={c.id}
                       className="px-2 py-1 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded text-sm"
@@ -175,13 +176,13 @@ export default function ToolDetailPage(): React.ReactElement | null {
                 </div>
               </div>
             )}
-            {((t.roles as any[]) || []).length > 0 && (
+            {Array.isArray(t.roles) && t.roles.length > 0 && (
               <div>
                 <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-1">
                   Roles
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {((t.roles as any[]) || []).map((r) => (
+                  {(t.roles as Array<{ id: string | number; name: string }>).map((r) => (
                     <span
                       key={r.id}
                       className="px-2 py-1 bg-[var(--secondary-bg)] border border-[var(--border-color)] rounded text-sm"
@@ -192,13 +193,13 @@ export default function ToolDetailPage(): React.ReactElement | null {
                 </div>
               </div>
             )}
-            {((t.tags as any[]) || []).length > 0 && (
+            {Array.isArray(t.tags) && t.tags.length > 0 && (
               <div>
                 <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase mb-1">
                   Tags
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {((t.tags as any[]) || []).map((tg) => (
+                  {(t.tags as Array<{ id: string | number; name: string }>).map((tg) => (
                     <span
                       key={tg.id}
                       className="px-2.5 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 rounded-full text-sm font-medium"
@@ -231,18 +232,18 @@ export default function ToolDetailPage(): React.ReactElement | null {
   );
 }
 
-function ToolActions({ tool }: { tool: any }) {
+function ToolActions({ tool }: { tool: Tool | undefined }) {
   const { user } = useAuth(false);
   const [deleteTrigger] = useDeleteToolMutation();
   const { addToast } = useToast();
 
   const canManage = Boolean(
-    user &&
+    tool && user &&
       (user.id === (tool.user && tool.user.id) || (user.roles && user.roles.includes('owner'))),
   );
 
   async function handleDelete() {
-    if (!confirm('Delete this tool?')) return;
+    if (!tool || !confirm('Delete this tool?')) return;
     try {
       await deleteTrigger(tool.id).unwrap();
       addToast('Tool deleted', 'success');
@@ -258,11 +259,13 @@ function ToolActions({ tool }: { tool: any }) {
   return (
     <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
       <div className="flex gap-2">
+        {tool && (
         <Link href={`/tools/${tool.id}/edit`}>
           <button className="py-2 px-4 rounded-md border border-[var(--border-color)] bg-[var(--primary-bg)] text-[var(--text-primary)] hover:bg-[var(--secondary-bg)] transition-colors">
             ✏️ Edit Tool
           </button>
         </Link>
+        )}
         <button
           onClick={handleDelete}
           className="py-2 px-4 rounded-md border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 transition-colors"

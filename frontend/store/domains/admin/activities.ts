@@ -1,27 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import * as api from '../../../lib/api';
+import type { ActivityLog, ApiListResponse } from '../../../lib/types';
 
 export function useGetActivitiesQuery(
   params: Record<string, unknown> = {},
   options?: Record<string, unknown>,
 ) {
   const key = ['admin', 'activities', params];
-  return useQuery<{
-    data: any[];
-    current_page?: number;
-    last_page?: number;
-    per_page?: number;
-    total?: number;
-  }>({
+  return useQuery<ApiListResponse<ActivityLog>>({
     queryKey: key,
     queryFn: async () =>
-      (await api.getActivities(params)) as {
-        data: any[];
-        current_page?: number;
-        last_page?: number;
-        per_page?: number;
-        total?: number;
-      },
+      (await api.getActivities(params)) as ApiListResponse<ActivityLog>,
     ...(options || {}),
   });
 }

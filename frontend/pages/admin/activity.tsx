@@ -3,6 +3,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import ActivityStats from '../../components/admin/ActivityStats';
 import ActivityFilters from '../../components/admin/ActivityFilters';
 import ExportButtons from '../../components/admin/ExportButtons';
+import { Activity } from '@/lib/types';
 import ActivityList from '../../components/admin/ActivityList';
 import ActivityCard from '../../components/admin/ActivityCard';
 import PaginationControls from '../../components/admin/PaginationControls';
@@ -49,7 +50,8 @@ export default function ActivityLogPage() {
   const { data, isLoading, error } = useGetActivitiesQuery(params);
   const { data: stats } = useGetActivityStatsQuery();
 
-  const activities = data?.data || [];
+  // Backend returns Activity structure (typed as ActivityLog in API layer for now)
+  const activities = (data?.data as unknown as Activity[]) || [];
   const totalPages = data?.last_page || 1;
 
   // Memoized handlers

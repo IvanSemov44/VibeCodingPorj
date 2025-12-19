@@ -57,8 +57,9 @@ export default function CategoriesPage() {
       }
       setShowModal(false);
       setFormData({ name: '', description: '' });
-    } catch (err: any) {
-      alert(err?.message || 'Failed to save category');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save category';
+      alert(message);
     }
   };
 
@@ -66,8 +67,9 @@ export default function CategoriesPage() {
     if (!confirm(`Delete category "${name}"?`)) return;
     try {
       await deleteCategory(id).unwrap();
-    } catch (err: any) {
-      alert(err?.message || 'Failed to delete category. It may be used by tools.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete category. It may be used by tools.';
+      alert(message);
     }
   };
 
