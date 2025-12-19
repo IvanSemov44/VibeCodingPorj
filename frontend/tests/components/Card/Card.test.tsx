@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderWithProviders, screen } from '../../../tests/test-utils';
-import Card from '../../../components/Card';
+import Card from '../../../../components/ui/Card';
 import { describe, test, expect } from 'vitest';
 
 describe('Card component', () => {

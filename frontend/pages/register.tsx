@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import Card from '../components/Card';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import Alert from '../components/Alert';
+import { Card, Input, Button, Alert } from '../components/ui';
 import AuthLayout from '../components/AuthLayout';
 import { useForm } from '../hooks/useForm';
 import { ROUTES, VALIDATION } from '../lib/constants';

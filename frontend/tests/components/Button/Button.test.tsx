@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../../tests/test-utils';
-import Button from '../../../components/Button';
+import Button from '../../../components/ui/Button';
 import { describe, test, vi, expect } from 'vitest';
 
 describe('Button component', () => {

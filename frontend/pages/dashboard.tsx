@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { LoadingPage } from '../components/Loading';
+import { LoadingPage } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import JournalSection from '../components/JournalSection';
 import WelcomeHeader from '../components/dashboard/WelcomeHeader';

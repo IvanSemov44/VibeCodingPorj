@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderWithProviders, screen } from '../../../tests/test-utils';
-import Badge from '../../../components/Badge';
+import Badge from '../../../components/ui/Badge';
 import { describe, test, expect } from 'vitest';
 
 describe('Badge component', () => {

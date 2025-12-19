@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderWithProviders, screen, userEvent } from '../../../tests/test-utils';
-import Alert from '../../../components/Alert';
+import Alert from '../../../components/ui/Alert';
 import { describe, expect, test, vi } from 'vitest';
 
 describe('Alert component', () => {

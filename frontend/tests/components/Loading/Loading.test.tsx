@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
 import { renderWithProviders, screen } from '../../../tests/test-utils';
-import LoadingSpinner, { LoadingPage } from '../../../components/Loading';
+import LoadingSpinner, { LoadingPage } from '../../../../components/ui/Loading';
 import { describe, test, expect } from 'vitest';
 
 describe('Loading components', () => {

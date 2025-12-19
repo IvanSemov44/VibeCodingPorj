@@ -1,12 +1,14 @@
 /**
- * Custom hook for accessing theme state from Redux
- * Replaces the old useTheme hook from ThemeContext
+ * @deprecated Use `useTheme` from './useTheme' instead.
+ * This is kept for backward compatibility only.
+ * 
+ * Custom hook for accessing theme state from Redux.
+ * This is a simple re-export of the consolidated useTheme hook.
  */
 
-import useTheme from './useTheme';
+import { useTheme } from './useTheme';
 
+/** @deprecated Use useTheme instead */
 export function useAppTheme() {
-  // Delegate to the new `useTheme` hook which performs side-effects
-  // (localStorage and DOM updates) while keeping reducers pure.
   return useTheme();
 }

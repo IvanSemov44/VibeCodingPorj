@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useGetUserQuery, useGetCsrfMutation, useLogoutMutation } from '../store/domains';
-import { useAppTheme } from '../hooks/useAppTheme';
+import { useTheme } from '../hooks/useTheme';
 import type { User, Role } from '../lib/types';
 
 export default function Layout({ children }: { children: React.ReactNode }): React.ReactElement {
@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }): Rea
   const [csrfTrigger] = useGetCsrfMutation();
   const [logoutTrigger] = useLogoutMutation();
   const [loading, setLoading] = useState<boolean>(true);
-  const { theme, toggleTheme } = useAppTheme();
+  const { theme, toggleTheme } = useTheme();
 
   // Determine admin/owner role safely — roles may be strings or objects, or missing
   const isAdmin = React.useMemo(() => {

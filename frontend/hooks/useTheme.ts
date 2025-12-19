@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import { setTheme, toggleTheme, initializeTheme, type Theme } from '../store/themeSlice';
 
-export default function useTheme() {
+function useTheme() {
   const dispatch = useDispatch();
   const { theme, mounted } = useSelector((s: RootState) => s.theme);
 
@@ -50,3 +50,6 @@ export default function useTheme() {
 
   return { theme, mounted, toggleTheme: toggle, setTheme: set };
 }
+
+export default useTheme;
+export { useTheme };
