@@ -51,7 +51,7 @@ final class MailableTest extends TestCase
 
         Mail::send(new WelcomeMailable($user));
 
-        Mail::assertSent(WelcomeMailable::class, fn (WelcomeMailable $mail) => 
+        Mail::assertSent(WelcomeMailable::class, fn (WelcomeMailable $mail) =>
             $mail->hasTo($user->email)
         );
     }

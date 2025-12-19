@@ -21,7 +21,8 @@
       "Bash(composer check:*)",
       "Bash(composer analyse:*)",
       "Bash(./vendor/bin/phpstan analyse:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(cat:*)"
     ]
   }
 }
