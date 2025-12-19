@@ -138,3 +138,6 @@ Route::get('status', function () {
         'time' => now()->toDateTimeString(),
     ]);
 });
+
+// Include monitoring routes
+require __DIR__ . '/monitoring.php';

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Mail\WelcomeMailable;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
 final class SendWelcomeEmailJob implements ShouldQueue
 {
@@ -28,8 +30,7 @@ final class SendWelcomeEmailJob implements ShouldQueue
     public function handle(): void
     {
         // Send welcome email to new user
-        // TODO: Implement mailable class
-        // $this->user->notify(new WelcomeNotification());
+        Mail::send(new WelcomeMailable($this->user));
 
         // Log job completion
         \Log::info('Welcome email job processed', [

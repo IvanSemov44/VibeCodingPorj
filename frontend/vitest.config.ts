@@ -1,40 +1,51 @@
 import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
+  plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./tests/setupTests.ts'],
     globals: true,
-    watch: false,
-    // Ensure both top-level `tests/` and colocated `tests/` are discovered
-    include: ['tests/**/*.{test,spec}.{js,ts,tsx}', '__tests__/**/*.{test,spec}.{js,ts,tsx}'],
+    setupFiles: ['./tests/setup/vitest.setup.ts'],
+    include: ['tests/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['node_modules', 'dist', '.next'],
     testTimeout: 20000,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov'],
-      // Include only the source files we are testing now so we can incrementally reach 100%
+      reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './coverage',
       include: [
         'components/**/*.{ts,tsx}',
-        'components/journal/**/*.{ts,tsx}',
-        'components/journal/components/**/*.{ts,tsx}',
-        'hooks/useAsync.{ts,tsx}',
-        'hooks/useJournal.{ts,tsx}',
-        'lib/utils.{ts,tsx}',
-        'lib/classNames.{ts,tsx}',
-        'lib/errors.{ts,tsx}',
-        'context/ThemeContext.{ts,tsx}',
-        'store/journalSlice.{ts,tsx}',
-        'pages/login.{ts,tsx}',
+        'hooks/**/*.{ts,tsx}',
+        'lib/**/*.{ts,tsx}',
+        'pages/**/*.{ts,tsx}',
+        'store/**/*.{ts,tsx}',
       ],
-      // Exclude tests, type decls, build and public assets
-      exclude: ['**/*.config.*', '**/*.d.ts', 'public/**', 'styles/**', 'node_modules/**'],
-      // Coverage thresholds — relaxed to allow incremental improvements
+      exclude: [
+        'node_modules/',
+        'tests/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        'pages/_app.tsx',
+        'pages/_document.tsx',
+        'pages/api/**',
+        '.next/**',
+        'dist/**',
+        'public/**',
+        'styles/**',
+      ],
       thresholds: {
-        statements: 60,
-        branches: 60,
-        functions: 60,
-        lines: 60,
+        statements: 70,
+        branches: 65,
+        functions: 75,
+        lines: 70,
       },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './'),
     },
   },
 });

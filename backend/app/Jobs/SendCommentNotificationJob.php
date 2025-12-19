@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Mail\CommentNotificationMailable;
 use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
 final class SendCommentNotificationJob implements ShouldQueue
 {
@@ -31,18 +33,16 @@ final class SendCommentNotificationJob implements ShouldQueue
         $tool = $this->comment->tool;
         $user = $this->comment->user;
 
-        // Notify tool owner if comment is on their tool
+        // Notify tool owner if comment is on their tool and not by tool owner
         if ($tool->user_id !== $user->id) {
-            // TODO: Implement notification sending
-            // $tool->user->notify(new NewCommentNotification($this->comment));
+            Mail::send(new CommentNotificationMailable($this->comment, 'owner'));
         }
 
         // Notify parent comment author if this is a reply
         if ($this->comment->parent_id !== null) {
             $parentComment = $this->comment->parent;
             if ($parentComment->user_id !== $user->id) {
-                // TODO: Implement notification sending
-                // $parentComment->user->notify(new ReplyToCommentNotification($this->comment));
+                Mail::send(new CommentNotificationMailable($this->comment, 'parent_author'));
             }
         }
 
