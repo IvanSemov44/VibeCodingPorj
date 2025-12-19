@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { rest } from 'msw';
 import { mockAdminUsers, mockPendingTools, mockTools } from '../../fixtures';
 import type { AdminUser, AdminStats, Activity } from '@/lib/types';
 
@@ -62,66 +62,70 @@ const mockActivities: Activity[] = [
 
 export const adminHandlers = [
   // Get admin dashboard stats
-  http.get(`${API_BASE_URL}/api/admin/stats`, () => {
-    return HttpResponse.json(mockAdminStats);
+  rest.get(`${API_BASE_URL}/api/admin/stats`, (req, res, ctx) => {
+    return res(ctx.json(mockAdminStats));
   }),
 
   // Get all users (admin)
-  http.get(`${API_BASE_URL}/api/admin/users`, () => {
-    return HttpResponse.json({ data: mockAdminUsers });
+  rest.get(`${API_BASE_URL}/api/admin/users`, (req, res, ctx) => {
+    return res(ctx.json({ data: mockAdminUsers }));
   }),
 
   // Ban/unban user
-  http.post(`${API_BASE_URL}/api/admin/users/:id/ban`, ({ params }) => {
-    const { id } = params;
-    return HttpResponse.json({ message: `User ${id} banned successfully` });
+  rest.post(`${API_BASE_URL}/api/admin/users/:id/ban`, (req, res, ctx) => {
+    const { id } = req.params;
+    return res(ctx.json({ message: `User ${id} banned successfully` }));
   }),
 
-  http.post(`${API_BASE_URL}/api/admin/users/:id/unban`, ({ params }) => {
-    const { id } = params;
-    return HttpResponse.json({ message: `User ${id} unbanned successfully` });
+  rest.post(`${API_BASE_URL}/api/admin/users/:id/unban`, (req, res, ctx) => {
+    const { id } = req.params;
+    return res(ctx.json({ message: `User ${id} unbanned successfully` }));
   }),
 
   // Approve/reject tools
-  http.post(`${API_BASE_URL}/api/admin/tools/:id/approve`, ({ params }) => {
-    const { id } = params;
+  rest.post(`${API_BASE_URL}/api/admin/tools/:id/approve`, (req, res, ctx) => {
+    const { id } = req.params;
     const tool = mockTools.find((t) => t.id === Number(id));
 
     if (!tool) {
-      return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
     }
 
-    return HttpResponse.json({
-      ...tool,
-      status: 'approved',
-      is_approved: true,
-      is_pending: false,
-    });
+    return res(
+      ctx.json({
+        ...tool,
+        status: 'approved',
+        is_approved: true,
+        is_pending: false,
+      }),
+    );
   }),
 
-  http.post(`${API_BASE_URL}/api/admin/tools/:id/reject`, ({ params }) => {
-    const { id } = params;
+  rest.post(`${API_BASE_URL}/api/admin/tools/:id/reject`, (req, res, ctx) => {
+    const { id } = req.params;
     const tool = mockTools.find((t) => t.id === Number(id));
 
     if (!tool) {
-      return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
     }
 
-    return HttpResponse.json({
-      ...tool,
-      status: 'rejected',
-      is_approved: false,
-      is_pending: false,
-    });
+    return res(
+      ctx.json({
+        ...tool,
+        status: 'rejected',
+        is_approved: false,
+        is_pending: false,
+      }),
+    );
   }),
 
   // Get pending tools
-  http.get(`${API_BASE_URL}/api/admin/tools/pending`, () => {
-    return HttpResponse.json({ data: mockPendingTools });
+  rest.get(`${API_BASE_URL}/api/admin/tools/pending`, (req, res, ctx) => {
+    return res(ctx.json({ data: mockPendingTools }));
   }),
 
   // Get activity log
-  http.get(`${API_BASE_URL}/api/admin/activity`, () => {
-    return HttpResponse.json({ data: mockActivities });
+  rest.get(`${API_BASE_URL}/api/admin/activity`, (req, res, ctx) => {
+    return res(ctx.json({ data: mockActivities }));
   }),
 ];

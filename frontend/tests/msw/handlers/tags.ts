@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { rest } from 'msw';
 import { mockTags, mockTag1, mockTagStats } from '../../fixtures';
 import type { Tag, TagCreatePayload, TagUpdatePayload } from '@/lib/types';
 
@@ -9,46 +9,46 @@ let tags = [...mockTags];
 
 export const tagsHandlers = [
   // Get tags list
-  http.get(`${API_BASE_URL}/api/tags`, () => {
-    return HttpResponse.json({ data: tags });
+  rest.get(`${API_BASE_URL}/api/tags`, (req, res, ctx) => {
+    return res(ctx.json({ data: tags }));
   }),
 
   // Get single tag
-  http.get(`${API_BASE_URL}/api/tags/:id`, ({ params }) => {
-    const { id } = params;
+  rest.get(`${API_BASE_URL}/api/tags/:id`, (req, res, ctx) => {
+    const { id } = req.params;
     const tag = tags.find((t) => t.id === Number(id) || t.slug === id);
 
     if (!tag) {
-      return HttpResponse.json({ message: 'Tag not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tag not found' }));
     }
 
-    return HttpResponse.json(tag);
+    return res(ctx.json(tag));
   }),
 
   // Create tag
-  http.post<never, TagCreatePayload>(`${API_BASE_URL}/api/tags`, async ({ request }) => {
-    const body = await request.json();
+  rest.post(`${API_BASE_URL}/api/tags`, async (req, res, ctx) => {
+    const body = await req.json<TagCreatePayload>();
 
     // Validate required fields
     if (!body.name) {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(422),
+        ctx.json({
           message: 'Validation failed',
           errors: { name: ['Name is required'] },
-        },
-        { status: 422 },
+        }),
       );
     }
 
     // Check for duplicate slug
     const slug = body.slug || body.name.toLowerCase().replace(/\s+/g, '-');
     if (tags.some((t) => t.slug === slug)) {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(422),
+        ctx.json({
           message: 'Validation failed',
           errors: { slug: ['Slug already exists'] },
-        },
-        { status: 422 },
+        }),
       );
     }
 
@@ -63,50 +63,47 @@ export const tagsHandlers = [
 
     tags.push(newTag);
 
-    return HttpResponse.json(newTag, { status: 201 });
+    return res(ctx.status(201), ctx.json(newTag));
   }),
 
   // Update tag
-  http.put<{ id: string }, TagUpdatePayload>(
-    `${API_BASE_URL}/api/tags/:id`,
-    async ({ params, request }) => {
-      const { id } = params;
-      const body = await request.json();
-      const tagIndex = tags.findIndex((t) => t.id === Number(id));
-
-      if (tagIndex === -1) {
-        return HttpResponse.json({ message: 'Tag not found' }, { status: 404 });
-      }
-
-      // Update tag
-      const updatedTag = {
-        ...tags[tagIndex],
-        ...body,
-      };
-
-      tags[tagIndex] = updatedTag;
-
-      return HttpResponse.json(updatedTag);
-    },
-  ),
-
-  // Delete tag
-  http.delete(`${API_BASE_URL}/api/tags/:id`, ({ params }) => {
-    const { id } = params;
+  rest.put(`${API_BASE_URL}/api/tags/:id`, async (req, res, ctx) => {
+    const { id } = req.params;
+    const body = await req.json<TagUpdatePayload>();
     const tagIndex = tags.findIndex((t) => t.id === Number(id));
 
     if (tagIndex === -1) {
-      return HttpResponse.json({ message: 'Tag not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tag not found' }));
+    }
+
+    // Update tag
+    const updatedTag = {
+      ...tags[tagIndex],
+      ...body,
+    };
+
+    tags[tagIndex] = updatedTag;
+
+    return res(ctx.json(updatedTag));
+  }),
+
+  // Delete tag
+  rest.delete(`${API_BASE_URL}/api/tags/:id`, (req, res, ctx) => {
+    const { id } = req.params;
+    const tagIndex = tags.findIndex((t) => t.id === Number(id));
+
+    if (tagIndex === -1) {
+      return res(ctx.status(404), ctx.json({ message: 'Tag not found' }));
     }
 
     tags.splice(tagIndex, 1);
 
-    return HttpResponse.json({ message: 'Tag deleted successfully' }, { status: 200 });
+    return res(ctx.json({ message: 'Tag deleted successfully' }));
   }),
 
   // Get tag stats
-  http.get(`${API_BASE_URL}/api/admin/tags/stats`, () => {
-    return HttpResponse.json(mockTagStats);
+  rest.get(`${API_BASE_URL}/api/admin/tags/stats`, (req, res, ctx) => {
+    return res(ctx.json(mockTagStats));
   }),
 ];
 

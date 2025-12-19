@@ -147,3 +147,6 @@ require __DIR__ . '/search.php';
 
 // Include notification routes
 require __DIR__ . '/notifications.php';
+
+// Include settings routes
+require __DIR__ . '/settings.php';

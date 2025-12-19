@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { rest } from 'msw';
 import {
   mockTools,
   mockTool1,
@@ -16,8 +16,8 @@ let tools = [...mockTools];
 
 export const toolsHandlers = [
   // Get tools list
-  http.get(`${API_BASE_URL}/api/tools`, ({ request }) => {
-    const url = new URL(request.url);
+  rest.get(`${API_BASE_URL}/api/tools`, (req, res, ctx) => {
+    const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const perPage = parseInt(url.searchParams.get('per_page') || '10');
     const status = url.searchParams.get('status');
@@ -67,33 +67,33 @@ export const toolsHandlers = [
       },
     };
 
-    return HttpResponse.json(response);
+    return res(ctx.json(response));
   }),
 
   // Get single tool
-  http.get(`${API_BASE_URL}/api/tools/:id`, ({ params }) => {
-    const { id } = params;
+  rest.get(`${API_BASE_URL}/api/tools/:id`, (req, res, ctx) => {
+    const { id } = req.params;
     const tool = tools.find((t) => t.id === Number(id));
 
     if (!tool) {
-      return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
     }
 
-    return HttpResponse.json(tool);
+    return res(ctx.json(tool));
   }),
 
   // Create tool
-  http.post<never, ToolCreatePayload>(`${API_BASE_URL}/api/tools`, async ({ request }) => {
-    const body = await request.json();
+  rest.post(`${API_BASE_URL}/api/tools`, async (req, res, ctx) => {
+    const body = await req.json<ToolCreatePayload>();
 
     // Validate required fields
     if (!body.name) {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(422),
+        ctx.json({
           message: 'Validation failed',
           errors: { name: ['Name is required'] },
-        },
-        { status: 422 },
+        }),
       );
     }
 
@@ -118,54 +118,51 @@ export const toolsHandlers = [
 
     tools.push(newTool);
 
-    return HttpResponse.json(newTool, { status: 201 });
+    return res(ctx.status(201), ctx.json(newTool));
   }),
 
   // Update tool
-  http.put<{ id: string }, ToolUpdatePayload>(
-    `${API_BASE_URL}/api/tools/:id`,
-    async ({ params, request }) => {
-      const { id } = params;
-      const body = await request.json();
-      const toolIndex = tools.findIndex((t) => t.id === Number(id));
-
-      if (toolIndex === -1) {
-        return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
-      }
-
-      // Update tool
-      const updatedTool = {
-        ...tools[toolIndex],
-        ...body,
-      };
-
-      tools[toolIndex] = updatedTool;
-
-      return HttpResponse.json(updatedTool);
-    },
-  ),
-
-  // Delete tool
-  http.delete(`${API_BASE_URL}/api/tools/:id`, ({ params }) => {
-    const { id } = params;
+  rest.put(`${API_BASE_URL}/api/tools/:id`, async (req, res, ctx) => {
+    const { id } = req.params;
+    const body = await req.json<ToolUpdatePayload>();
     const toolIndex = tools.findIndex((t) => t.id === Number(id));
 
     if (toolIndex === -1) {
-      return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
+    }
+
+    // Update tool
+    const updatedTool = {
+      ...tools[toolIndex],
+      ...body,
+    };
+
+    tools[toolIndex] = updatedTool;
+
+    return res(ctx.json(updatedTool));
+  }),
+
+  // Delete tool
+  rest.delete(`${API_BASE_URL}/api/tools/:id`, (req, res, ctx) => {
+    const { id } = req.params;
+    const toolIndex = tools.findIndex((t) => t.id === Number(id));
+
+    if (toolIndex === -1) {
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
     }
 
     tools.splice(toolIndex, 1);
 
-    return HttpResponse.json({ message: 'Tool deleted successfully' }, { status: 200 });
+    return res(ctx.json({ message: 'Tool deleted successfully' }));
   }),
 
   // Upload screenshots
-  http.post(`${API_BASE_URL}/api/tools/:id/screenshots`, async ({ params, request }) => {
-    const { id } = params;
+  rest.post(`${API_BASE_URL}/api/tools/:id/screenshots`, async (req, res, ctx) => {
+    const { id } = req.params;
     const tool = tools.find((t) => t.id === Number(id));
 
     if (!tool) {
-      return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
     }
 
     // Mock file upload - just add some dummy URLs
@@ -176,23 +173,23 @@ export const toolsHandlers = [
 
     const updatedScreenshots = [...(tool.screenshots || []), ...newScreenshots];
 
-    return HttpResponse.json({ screenshots: updatedScreenshots });
+    return res(ctx.json({ screenshots: updatedScreenshots }));
   }),
 
   // Delete screenshot
-  http.delete(`${API_BASE_URL}/api/tools/:id/screenshots`, async ({ params, request }) => {
-    const { id } = params;
-    const body = await request.json();
+  rest.delete(`${API_BASE_URL}/api/tools/:id/screenshots`, async (req, res, ctx) => {
+    const { id } = req.params;
+    const body = await req.json<{ url: string }>();
     const tool = tools.find((t) => t.id === Number(id));
 
     if (!tool) {
-      return HttpResponse.json({ message: 'Tool not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'Tool not found' }));
     }
 
     // Remove the screenshot URL
     const updatedScreenshots = (tool.screenshots || []).filter((url) => url !== body.url);
 
-    return HttpResponse.json({ screenshots: updatedScreenshots });
+    return res(ctx.json({ screenshots: updatedScreenshots }));
   }),
 ];
 

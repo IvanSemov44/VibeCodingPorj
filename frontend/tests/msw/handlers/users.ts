@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { rest } from 'msw';
 import { mockUsers, mockUser, mockAdminUser } from '../../fixtures';
 import type { User } from '@/lib/types';
 
@@ -9,45 +9,42 @@ let users = [...mockUsers];
 
 export const usersHandlers = [
   // Get users list (public)
-  http.get(`${API_BASE_URL}/api/users`, () => {
-    return HttpResponse.json({ data: users });
+  rest.get(`${API_BASE_URL}/api/users`, (req, res, ctx) => {
+    return res(ctx.json({ data: users }));
   }),
 
   // Get single user
-  http.get(`${API_BASE_URL}/api/users/:id`, ({ params }) => {
-    const { id } = params;
+  rest.get(`${API_BASE_URL}/api/users/:id`, (req, res, ctx) => {
+    const { id } = req.params;
     const user = users.find((u) => u.id === Number(id));
 
     if (!user) {
-      return HttpResponse.json({ message: 'User not found' }, { status: 404 });
+      return res(ctx.status(404), ctx.json({ message: 'User not found' }));
     }
 
-    return HttpResponse.json(user);
+    return res(ctx.json(user));
   }),
 
   // Update user profile
-  http.put<{ id: string }, Partial<User>>(
-    `${API_BASE_URL}/api/users/:id`,
-    async ({ params, request }) => {
-      const { id } = params;
-      const body = await request.json();
-      const userIndex = users.findIndex((u) => u.id === Number(id));
+  rest.put(`${API_BASE_URL}/api/users/:id`, async (req, res, ctx) => {
+    const { id } = req.params;
+    const body = await req.json<Partial<User>>();
+    const userIndex = users.findIndex((u) => u.id === Number(id));
 
-      if (userIndex === -1) {
-        return HttpResponse.json({ message: 'User not found' }, { status: 404 });
-      }
+    if (userIndex === -1) {
+      return res(ctx.status(404), ctx.json({ message: 'User not found' }));
+    }
 
-      // Update user
-      const updatedUser = {
-        ...users[userIndex],
-        ...body,
-      };
+    // Update user
+    const updatedUser = {
+      ...users[userIndex],
+      ...body,
+    };
 
-      users[userIndex] = updatedUser;
+    users[userIndex] = updatedUser;
 
-      return HttpResponse.json(updatedUser);
-    },
-  ),
+    return res(ctx.json(updatedUser));
+  }),
 ];
 
 // Helper to reset users to initial state (useful for tests)
