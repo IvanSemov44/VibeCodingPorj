@@ -19,7 +19,7 @@ return new class extends Migration
                 ->unique()
                 ->constrained('users')
                 ->onDelete('cascade');
-            
+
             // Privacy Settings
             $table->enum('privacy_level', ['public', 'private', 'friends_only'])
                 ->default('public')
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->boolean('show_activity')
                 ->default(true)
                 ->comment('Whether to publicly show activity');
-            
+
             // Theme & Display
             $table->enum('theme', ['light', 'dark', 'system'])
                 ->default('system')
@@ -41,7 +41,7 @@ return new class extends Migration
             $table->integer('items_per_page')
                 ->default(20)
                 ->comment('Default pagination limit');
-            
+
             // Notification Settings
             $table->enum('email_digest_frequency', ['off', 'daily', 'weekly', 'monthly'])
                 ->default('weekly')
@@ -58,7 +58,7 @@ return new class extends Migration
             $table->boolean('email_marketing')
                 ->default(true)
                 ->comment('Receive marketing emails');
-            
+
             // Tool Preferences
             $table->boolean('enable_api_access')
                 ->default(false)
@@ -66,7 +66,7 @@ return new class extends Migration
             $table->boolean('enable_webhooks')
                 ->default(false)
                 ->comment('Allow webhook integrations');
-            
+
             // Search & Discovery
             $table->boolean('personalized_recommendations')
                 ->default(true)
@@ -74,7 +74,7 @@ return new class extends Migration
             $table->json('saved_filters')
                 ->nullable()
                 ->comment('User-saved search filters');
-            
+
             // Accessibility
             $table->boolean('high_contrast_mode')
                 ->default(false)
@@ -85,7 +85,7 @@ return new class extends Migration
             $table->boolean('large_text_mode')
                 ->default(false)
                 ->comment('Enable larger text sizes');
-            
+
             // Account Settings
             $table->boolean('two_factor_enabled')
                 ->default(false)
@@ -93,9 +93,9 @@ return new class extends Migration
             $table->string('timezone')
                 ->default('UTC')
                 ->comment('User timezone');
-            
+
             $table->timestamps();
-            
+
             // Indexes for performance
             $table->index('privacy_level');
             $table->index('theme');
