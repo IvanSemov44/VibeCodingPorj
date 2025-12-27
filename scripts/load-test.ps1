@@ -40,19 +40,19 @@ $totalStartTime = Get-Date
 foreach ($endpoint in $endpoints) {
     Write-Host "Testing: $($endpoint.Description)" -ForegroundColor Green
     Write-Host "  $($endpoint.Method) $($endpoint.Path)"
-    
+
     $url = "$BaseUrl$($endpoint.Path)"
     $endpointResults = @()
-    
+
     $requestsPerWorker = [Math]::Ceiling($Requests / $Concurrent)
-    
+
     # Simulate concurrent requests
     for ($i = 0; $i -lt $Concurrent; $i++) {
         $job = Start-Job -ScriptBlock {
             param($url, $requestsPerWorker)
-            
+
             $localResults = @()
-            
+
             for ($r = 0; $r -lt $requestsPerWorker; $r++) {
                 try {
                     $startTime = Get-Date
@@ -61,7 +61,7 @@ foreach ($endpoint in $endpoints) {
                         -TimeoutSec 30 `
                         -ErrorAction Stop
                     $duration = (Get-Date) - $startTime
-                    
+
                     $localResults += @{
                         StatusCode = $response.StatusCode
                         Duration = $duration.TotalMilliseconds
@@ -77,11 +77,11 @@ foreach ($endpoint in $endpoints) {
                     }
                 }
             }
-            
+
             return $localResults
         } -ArgumentList @($url, $requestsPerWorker)
     }
-    
+
     # Wait for jobs to complete
     $jobs = Get-Job
     foreach ($job in $jobs) {
@@ -89,14 +89,14 @@ foreach ($endpoint in $endpoints) {
         $endpointResults += $jobResults
         Remove-Job -Job $job
     }
-    
+
     # Analyze results
     $successCount = ($endpointResults | Where-Object { $_.Success }).Count
     $failureCount = ($endpointResults | Where-Object { -not $_.Success }).Count
     $avgDuration = ($endpointResults | Measure-Object -Property Duration -Average).Average
     $minDuration = ($endpointResults | Measure-Object -Property Duration -Minimum).Minimum
     $maxDuration = ($endpointResults | Measure-Object -Property Duration -Maximum).Maximum
-    
+
     Write-Host "  Results:"
     Write-Host "    Successful: $successCount / $($endpointResults.Count)"
     Write-Host "    Failed: $failureCount"
@@ -104,7 +104,7 @@ foreach ($endpoint in $endpoints) {
     Write-Host "    Min Response Time: $($minDuration | Round 2)ms"
     Write-Host "    Max Response Time: $($maxDuration | Round 2)ms"
     Write-Host ""
-    
+
     $results += @{
         Endpoint = $endpoint.Path
         Description = $endpoint.Description
